@@ -8,7 +8,7 @@
 PRODUCT_NAME = pingre
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.pingre
+PRODUCT_BUNDLE_IDENTIFIER = com.example.flutterApplication1
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.example. All rights reserved.
