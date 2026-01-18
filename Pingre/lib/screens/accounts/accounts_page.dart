@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/widgets/time_range.dart';
 
 class AccountsPage extends StatefulWidget {
   const AccountsPage({super.key});
@@ -48,6 +49,7 @@ class _AccountsPageState extends State<AccountsPage> {
           ),
         ],
       ),
+      TimeRangeSegmentedControl(value: TimeRange.month, onChanged: (value) {},),
     ],
   );
 }

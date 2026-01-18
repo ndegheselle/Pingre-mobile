@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:decimal/decimal.dart';
 
-class Metadata
-{
+class Metadata {
   final String name;
   final String description;
   final Color color;
@@ -12,7 +11,7 @@ class Metadata
     required this.name,
     required this.description,
     required this.color,
-    required this.icon
+    required this.icon,
   });
 }
 
@@ -37,21 +36,12 @@ class Account {
   }
 }
 
-/// Transaction category (e.g. Food, Rent, Salary)
-class Category {
-  final String id;
-  final String name;
-
-  Category({required this.id, required this.name});
-}
-
 /// A line of transaction in an account
 class Transaction {
   final String id;
   final DateTime date;
   final Decimal amount;
   final String description;
-  final Category? category;
   final List<String> tags;
 
   Transaction({
@@ -59,7 +49,6 @@ class Transaction {
     required this.date,
     required this.amount,
     this.description = '',
-    this.category,
     List<String>? tags,
   }) : tags = tags ?? [];
 }
@@ -87,7 +76,6 @@ class RecurrentTransaction extends Transaction {
     required super.date,
     required super.amount,
     super.description = '',
-    super.category,
     required this.recurrence,
     required this.startDate,
     this.endDate,
