@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import './screens/home.dart';
+import 'screens/home_page.dart';
 
 void main() {
   runApp(const Application());

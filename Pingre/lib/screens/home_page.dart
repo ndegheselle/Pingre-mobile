@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/screens/settings.dart';
+import 'package:pingre/screens/accounts/accounts_page.dart';
+import 'package:pingre/screens/app_settings_page.dart';
+import 'package:pingre/screens/settings/settings_page.dart';
 
 final contents = [
-  const Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [Text('Home Placeholder')],
-  ),
+  const AccountsPage(),
   const Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [Text('Categories Placeholder')],
@@ -15,10 +14,7 @@ final contents = [
     mainAxisAlignment: MainAxisAlignment.center,
     children: [Text('Search Placeholder')],
   ),
-  const Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [Text('Settings Placeholder')],
-  ),
+  const SettingsPage()
 ];
 
 class HomePage extends StatefulWidget {
@@ -29,19 +25,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _index = 3;
+  int _index = 0;
 
   void openSettings() {
     Navigator.of(
       context,
-    ).push(MaterialPageRoute<void>(builder: (context) => const SettingsPage()));
+    ).push(MaterialPageRoute<void>(builder: (context) => const AppSettingsPage()));
   }
 
   @override
   Widget build(BuildContext context) {
     final headers = [
-      FHeader.nested(
-        prefixes: const [Icon(FIcons.piggyBank)],
+      FHeader(
         title: const Text('Accounts'),
         suffixes: [
           FHeaderAction(
@@ -50,18 +45,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      FHeader.nested(
-        prefixes: const [Icon(FIcons.chartNoAxesCombined)],
-        title: const Text('Stats'),
-        suffixes: [
-          FHeaderAction(
-            icon: const Icon(FIcons.settings),
-            onPress: openSettings,
-          ),
-        ],
-      ),
-      FHeader.nested(
-        prefixes: const [Icon(FIcons.calendar1)],
+      FHeader(
         title: const Text('Recurrent'),
         suffixes: [
           FHeaderAction(
@@ -70,12 +54,20 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      FHeader.nested(
-        prefixes: const [Icon(FIcons.tags)],
-        title: const Text('Categories'),
+      FHeader(
+        title: const Text('Report'),
         suffixes: [
           FHeaderAction(
             icon: const Icon(FIcons.settings),
+            onPress: openSettings,
+          ),
+        ],
+      ),
+      FHeader(
+        title: const Text('Settings'),
+        suffixes: [
+          FHeaderAction(
+            icon: const Icon(FIcons.slidersHorizontal),
             onPress: openSettings,
           ),
         ],
@@ -91,20 +83,20 @@ class _HomePageState extends State<HomePage> {
             onChange: (index) => setState(() => _index = index),
             children: const [
               FBottomNavigationBarItem(
-                icon: Icon(FIcons.piggyBank),
+                icon: Icon(FIcons.coins),
                 label: Text('Accounts'),
-              ),
-              FBottomNavigationBarItem(
-                icon: Icon(FIcons.chartNoAxesCombined),
-                label: Text('Stats'),
               ),
               FBottomNavigationBarItem(
                 icon: Icon(FIcons.calendar1),
                 label: Text('Recurrent'),
               ),
               FBottomNavigationBarItem(
-                icon: Icon(FIcons.tags),
-                label: Text('Categories'),
+                icon: Icon(FIcons.chartNoAxesCombined),
+                label: Text('Report'),
+              ),
+              FBottomNavigationBarItem(
+                icon: Icon(FIcons.slidersHorizontal),
+                label: Text('Settings'),
               ),
             ],
           ),
@@ -116,16 +108,19 @@ class _HomePageState extends State<HomePage> {
           left: 0,
           right: 0,
           child: Center(
-            child: SizedBox(
-              width: 64,
-              height: 64,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  shape: const CircleBorder(),
-                  padding: EdgeInsets.zero,
+            child: FTooltip(
+              tipBuilder: (context, _) => const Text('Add transaction'),
+              child: SizedBox(
+                width: 64,
+                height: 64,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(),
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: const Icon(FIcons.plus, size: 24),
                 ),
-                child: const Icon(FIcons.plus, size: 24),
               ),
             ),
           ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+class AppSettingsPage extends StatelessWidget {
+  const AppSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) => FScaffold(
