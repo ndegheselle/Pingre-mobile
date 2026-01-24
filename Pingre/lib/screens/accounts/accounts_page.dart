@@ -49,7 +49,7 @@ class _AccountsPageState extends State<AccountsPage> {
           ),
         ],
       ),
-      TimeRangeSegmentedControl(value: TimeRange.month, onChanged: (value) {},),
+      TimeRange(value: EnumTimeRange.month),
     ],
   );
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/theme/theme.dart';
 import 'screens/home_page.dart';
 
 void main() {
@@ -11,26 +12,23 @@ class Application extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /// Try changing this and hot reloading the application.
-    ///
-    /// To create a custom theme:
-    /// ```shell
-    /// dart forui theme create [theme template].
-    /// ```
-    final theme = FThemes.zinc.dark;
-
     return MaterialApp(
-      // TODO: replace with your application's supported locales.
       supportedLocales: FLocalizations.supportedLocales,
-      // TODO: add your application's localizations delegates.
       localizationsDelegates: const [...FLocalizations.localizationsDelegates],
-      // MaterialApp's theme is also animated by default with the same duration and curve.
-      // See https://api.flutter.dev/flutter/material/MaterialApp/themeAnimationStyle.html for how to configure this.
-      //
-      // There is a known issue with implicitly animated widgets where their transition occurs AFTER the theme's.
-      // See https://github.com/duobaseio/forui/issues/670.
-      theme: theme.toApproximateMaterialTheme(),
-      builder: (_, child) => FAnimatedTheme(data: theme, child: child!),
+
+      /// Use light and dark themes here
+      theme: light.toApproximateMaterialTheme(),
+      darkTheme: dark.toApproximateMaterialTheme(),
+      themeMode: ThemeMode.system, // Uses system brightness automatically
+
+      builder: (context, child) {
+        /// Wrap with FAnimatedTheme so Forui widgets get animated theme changes
+        final brightness = MediaQuery.of(context).platformBrightness;
+        final fTheme = brightness == Brightness.dark ? dark : light;
+
+        return FAnimatedTheme(data: fTheme, child: child!);
+      },
+
       home: const HomePage(),
     );
   }

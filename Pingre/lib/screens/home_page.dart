@@ -3,6 +3,7 @@ import 'package:forui/forui.dart';
 import 'package:pingre/screens/accounts/accounts_page.dart';
 import 'package:pingre/screens/app_settings_page.dart';
 import 'package:pingre/screens/settings/settings_page.dart';
+import 'package:pingre/screens/transactions/transaction_create_page.dart';
 
 final contents = [
   const AccountsPage(),
@@ -14,7 +15,7 @@ final contents = [
     mainAxisAlignment: MainAxisAlignment.center,
     children: [Text('Search Placeholder')],
   ),
-  const SettingsPage()
+  const SettingsPage(),
 ];
 
 class HomePage extends StatefulWidget {
@@ -28,16 +29,24 @@ class _HomePageState extends State<HomePage> {
   int _index = 0;
 
   void openSettings() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (context) => const AppSettingsPage()));
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (context) => const AppSettingsPage()),
+    );
+  }
+
+  void openTransactionCreate() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) => const TransactionCreatePage(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final headers = [
       FHeader(
-        title: const Text('Accounts'),
+        title: const Text('Transactions'),
         suffixes: [
           FHeaderAction(
             icon: const Icon(FIcons.settings),
@@ -46,7 +55,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       FHeader(
-        title: const Text('Recurrent'),
+        title: const Text('Accounts'),
         suffixes: [
           FHeaderAction(
             icon: const Icon(FIcons.settings),
@@ -64,10 +73,10 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       FHeader(
-        title: const Text('Settings'),
+        title: const Text('Tags'),
         suffixes: [
           FHeaderAction(
-            icon: const Icon(FIcons.slidersHorizontal),
+            icon: const Icon(FIcons.settings),
             onPress: openSettings,
           ),
         ],
@@ -84,19 +93,19 @@ class _HomePageState extends State<HomePage> {
             children: const [
               FBottomNavigationBarItem(
                 icon: Icon(FIcons.coins),
-                label: Text('Accounts'),
+                label: Text('Transactions'),
               ),
               FBottomNavigationBarItem(
-                icon: Icon(FIcons.calendar1),
-                label: Text('Recurrent'),
+                icon: Icon(FIcons.piggyBank),
+                label: Text('Accounts'),
               ),
               FBottomNavigationBarItem(
                 icon: Icon(FIcons.chartNoAxesCombined),
                 label: Text('Report'),
               ),
               FBottomNavigationBarItem(
-                icon: Icon(FIcons.slidersHorizontal),
-                label: Text('Settings'),
+                icon: Icon(FIcons.tags),
+                label: Text('Tags'),
               ),
             ],
           ),
@@ -114,7 +123,7 @@ class _HomePageState extends State<HomePage> {
                 width: 64,
                 height: 64,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: openTransactionCreate,
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),
                     padding: EdgeInsets.zero,
