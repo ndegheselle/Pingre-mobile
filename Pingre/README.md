@@ -15,3 +15,7 @@
 - categories
     - manage tags
     - manage categories
+
+# Inspiration
+https://www.macstories.net/reviews/nudget-review-budgeting-made-simple/
+https://www.nudgetapp.com/

@@ -27,7 +27,8 @@ class _TransactionCreatePageState extends State<TransactionCreatePage> {
               child: FButton(
                 style: FButtonStyle.primary(),
                 onPress: () {},
-                child: const Icon(FIcons.plus),
+                prefix: const Icon(FIcons.plus),
+                child: const Text("Add"),
               ),
             ),
             const SizedBox(width: 4),
@@ -35,7 +36,8 @@ class _TransactionCreatePageState extends State<TransactionCreatePage> {
               child: FButton(
                 style: FButtonStyle.ghost(),
                 onPress: () => Navigator.pop(context),
-                child: const Icon(FIcons.x),
+                prefix: const Icon(FIcons.x),
+                child: const Text("Cancel"),
               ),
             ),
           ],
@@ -46,28 +48,39 @@ class _TransactionCreatePageState extends State<TransactionCreatePage> {
           Container(
             decoration: BoxDecoration(
               color: context.colors.success,
-              borderRadius:
-                  theme.style.borderRadius, // Adjust the radius for roundness
+              borderRadius: theme.style.borderRadius,
             ),
-            child: Padding(
-              padding: EdgeInsets.all(80),
-              child: FTextField(
-                keyboardType: TextInputType.number,
-                maxLines: 1,
-                style: (style) => style.copyWith(
-                  contentTextStyle: style.contentTextStyle.map(
-                    (textStyle) => theme.typography.xl4,
-                  ),
-                  hintTextStyle: style.hintTextStyle.map(
-                    (textStyle) => theme.typography.xl4,
-                  ),
-                  border: FWidgetStateMap({
-                    WidgetState.any: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: FTextField(
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    style: (style) => style.copyWith(
+                      contentTextStyle: style.contentTextStyle.map(
+                        (textStyle) => theme.typography.xl4.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      border: FWidgetStateMap({
+                        WidgetState.any: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.transparent),
+                        ),
+                      }),
                     ),
-                  }),
+                  ),
                 ),
-              ),
+                Text(
+                  'kg',
+                  style: theme.typography.xl4.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
