@@ -14,63 +14,64 @@ class _TransactionCreatePageState extends State<TransactionCreatePage> {
   Widget build(BuildContext context) {
     final theme = FTheme.of(context);
 
-    return FScaffold(
-      header: FHeader.nested(
-        title: const Text('New transaction'),
-        prefixes: [FHeaderAction.back(onPress: () => Navigator.pop(context))],
+    return Container(
+      height: .infinity,
+      width: .infinity,
+      decoration: BoxDecoration(
+        color: context.theme.colors.background,
+        border: Border(top: BorderSide(color: context.theme.colors.border)),
       ),
-      footer: Padding(
-        padding: EdgeInsets.all(4),
-        child: Row(
-          children: [
-            Expanded(
-              child: FButton(
-                style: FButtonStyle.primary(),
-                onPress: () {},
-                child: const Icon(FIcons.plus),
-              ),
-            ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: FButton(
-                style: FButtonStyle.ghost(),
-                onPress: () => Navigator.pop(context),
-                child: const Icon(FIcons.x),
-              ),
-            ),
-          ],
-        ),
-      ),
-      child: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: context.colors.success,
-              borderRadius:
-                  theme.style.borderRadius, // Adjust the radius for roundness
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(80),
-              child: FTextField(
-                keyboardType: TextInputType.number,
-                maxLines: 1,
-                style: (style) => style.copyWith(
-                  contentTextStyle: style.contentTextStyle.map(
-                    (textStyle) => theme.typography.xl4,
-                  ),
-                  hintTextStyle: style.hintTextStyle.map(
-                    (textStyle) => theme.typography.xl4,
-                  ),
-                  border: FWidgetStateMap({
-                    WidgetState.any: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
+      child: Padding(
+        padding: const .all(8),
+        child: Center(
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  const Text("-",
+                  style: TextStyle(
+                      fontSize: 24, // Bigger font size
+                      fontWeight: .bold, // Bold text
+                    )),
+                  Expanded(
+                    child: Padding(
+                      padding: .symmetric(horizontal: 8),
+                      child: FTextField(
+                        textAlign: .right,
+                        keyboardType: TextInputType.number,
+                        maxLines: 1,
+                        style: (style) => style.copyWith(
+                          contentTextStyle: style.contentTextStyle.map(
+                            (textStyle) => theme.typography.xl.copyWith(
+                              fontWeight: .bold,
+                              height: 1.4,
+                            ),
+                          ),
+                          hintTextStyle: style.hintTextStyle.map(
+                            (textStyle) =>
+                                theme.typography.xl.copyWith(fontWeight: .bold),
+                          ),
+                          border: FWidgetStateMap({
+                            WidgetState.any: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.transparent),
+                            ),
+                          }),
+                        ),
+                      ),
                     ),
-                  }),
-                ),
+                  ),
+                  const Text(
+                    "€",
+                    style: TextStyle(
+                      fontSize: 24, // Bigger font size
+                      fontWeight: .bold, // Bold text
+                    ),
+                  ),
+                ],
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

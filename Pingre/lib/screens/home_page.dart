@@ -34,14 +34,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void openTransactionCreate() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) => const TransactionCreatePage(),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final headers = [
@@ -123,7 +115,11 @@ class _HomePageState extends State<HomePage> {
                 width: 64,
                 height: 64,
                 child: ElevatedButton(
-                  onPressed: openTransactionCreate,
+                  onPressed: () => showFSheet(
+                    context: context,
+                    side: .btt,
+                    builder: (context) => const TransactionCreatePage(),
+                  ),
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),
                     padding: EdgeInsets.zero,
