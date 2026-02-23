@@ -2,18 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
 class CustomColors extends ThemeExtension<CustomColors> {
-  final Color success;
-  // Add all your custom colors here
-
-  const CustomColors({
-    required this.success,
-  });
+  final Color success = const Color(0xFF48c78e);
+  
+  const CustomColors();
 
   @override
   CustomColors copyWith({Color? success}) {
-    return CustomColors(
-      success: success ?? this.success,
-    );
+    return CustomColors();
   }
 
   @override
@@ -21,18 +16,11 @@ class CustomColors extends ThemeExtension<CustomColors> {
     if (other is! CustomColors) {
       return this;
     }
-    return CustomColors(
-      success: Color.lerp(success, other.success, t)!,
-    );
+    return CustomColors();
   }
 
-  factory CustomColors.light() => const CustomColors(
-    success: Colors.yellow,
-  );
-
-  factory CustomColors.dark() => const CustomColors(
-    success: Colors.cyan,
-  );
+  factory CustomColors.light() => const CustomColors();
+  factory CustomColors.dark() => const CustomColors();
 }
 
 // Use like this : context.colors.primaryBrand
