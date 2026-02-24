@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/theme/colors.dart';
+import 'package:pingre/screens/transactions/tags.dart';
+import 'package:pingre/screens/transactions/value_input.dart';
+
 
 class TransactionCreatePage extends StatefulWidget {
   const TransactionCreatePage({super.key});
@@ -22,52 +24,17 @@ class _TransactionCreatePageState extends State<TransactionCreatePage> {
         border: Border(top: BorderSide(color: context.theme.colors.border)),
       ),
       child: Padding(
-        padding: const .all(8),
+        padding: const .all(4),
         child: Center(
           child: Column(
             children: [
-              Row(
-                children: [
-                  const Text("-",
-                  style: TextStyle(
-                      fontSize: 24, // Bigger font size
-                      fontWeight: .bold, // Bold text
-                    )),
-                  Expanded(
-                    child: Padding(
-                      padding: .symmetric(horizontal: 8),
-                      child: FTextField(
-                        textAlign: .right,
-                        keyboardType: TextInputType.number,
-                        maxLines: 1,
-                        style: (style) => style.copyWith(
-                          contentTextStyle: style.contentTextStyle.map(
-                            (textStyle) => theme.typography.xl.copyWith(
-                              fontWeight: .bold,
-                              height: 1.4,
-                            ),
-                          ),
-                          hintTextStyle: style.hintTextStyle.map(
-                            (textStyle) =>
-                                theme.typography.xl.copyWith(fontWeight: .bold),
-                          ),
-                          border: FWidgetStateMap({
-                            WidgetState.any: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.transparent),
-                            ),
-                          }),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Text(
-                    "€",
-                    style: TextStyle(
-                      fontSize: 24, // Bigger font size
-                      fontWeight: .bold, // Bold text
-                    ),
-                  ),
-                ],
+              ValueInput(),
+              Tags(),
+              Expanded(child: Text("fa")),
+              FButton(
+                onPress: () => {},
+                prefix: Icon(FIcons.plus),
+                child: const Text("Add"),
               ),
             ],
           ),

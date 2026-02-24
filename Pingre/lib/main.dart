@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/theme/theme.dart';
+
 import 'screens/home_page.dart';
 
 void main() {
@@ -26,7 +27,7 @@ class Application extends StatelessWidget {
         final brightness = MediaQuery.of(context).platformBrightness;
         final fTheme = brightness == Brightness.dark ? dark : light;
 
-        return FAnimatedTheme(data: fTheme, child: child!);
+        return FTheme(data: fTheme, child: child!);
       },
 
       home: const HomePage(),
