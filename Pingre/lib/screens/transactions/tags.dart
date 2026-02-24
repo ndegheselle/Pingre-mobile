@@ -51,18 +51,20 @@ class _TagsState extends State<Tags> {
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: () => _removeItem(text),
-                      child: const Icon(
-                        FIcons.x,
-                      ),
+                      child: const Icon(FIcons.x),
                     ),
                   ],
                 ),
               ),
             ),
+            FButton(
+              onPress: () => {},
+              prefix: const Icon(FIcons.plus),
+              size: .xs,
+              child: const Text("new"),
+            ),
           ],
         ),
-        
-            FButton(onPress: () => {}, prefix: const Icon(FIcons.plus), size: .xs, child: const Text("new"))
       ],
     );
   }

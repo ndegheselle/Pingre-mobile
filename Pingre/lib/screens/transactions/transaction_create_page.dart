@@ -29,6 +29,7 @@ class _TransactionCreatePageState extends State<TransactionCreatePage> {
           child: Column(
             children: [
               ValueInput(),
+              SizedBox(height: 4),
               Tags(),
               Expanded(child: Text("fa")),
               FButton(
