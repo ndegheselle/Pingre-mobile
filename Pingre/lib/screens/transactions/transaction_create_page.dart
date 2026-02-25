@@ -31,28 +31,27 @@ class _TransactionCreatePageState extends State<TransactionCreatePage> {
               SizedBox(height: 4),
               Expanded(child: Tags()),
               SizedBox(height: 4),
-              FTextField.multiline(label: const Text('Notes')),
-              SizedBox(height: 4),
-              SizedBox(height: 60, child: Row(
-                children: [
-                  Expanded(
-                    child: FDateField(
-                      label: const Text("Date"),
-                      control: .managed(initial: .now()),
-                      clearable: true,
+              FTextField.multiline(hint: 'Notes ...'),
+              SizedBox(
+                height: 60,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: FDateField(
+                        control: .managed(initial: .now()),
+                        clearable: true,
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 4),
-                  Expanded(
-                    child: FTimeField(
-                      label: const Text("Time"),
-                      control: .managed(initial: .now()),
-                      hour24: true,
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: FTimeField(
+                        control: .managed(initial: .now()),
+                        hour24: true,
+                      ),
                     ),
-                  ),
-                ],
-              )),
-              SizedBox(height: 8),
+                  ],
+                ),
+              ),
               FButton(
                 onPress: () => {},
                 prefix: Icon(FIcons.plus),
