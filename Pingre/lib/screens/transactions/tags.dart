@@ -32,6 +32,7 @@ class _TagsState extends State<Tags> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.theme.colors;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -39,7 +40,7 @@ class _TagsState extends State<Tags> {
           alignment: WrapAlignment.center,
           runAlignment: WrapAlignment.center,
           spacing: 2,
-          runSpacing: 2,
+          runSpacing: 4,
           children: [
             ...items.map(
               (text) => FBadge(
@@ -51,17 +52,21 @@ class _TagsState extends State<Tags> {
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: () => _removeItem(text),
-                      child: const Icon(FIcons.x),
+                      child: const Icon(FIcons.x, size: 18),
                     ),
                   ],
                 ),
               ),
             ),
-            FButton(
-              onPress: () => {},
-              prefix: const Icon(FIcons.plus),
-              size: .xs,
-              child: const Text("new"),
+            FBadge(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(FIcons.plus, size: 18, color: colors.background),
+                  const SizedBox(width: 4),
+                  const Text("add tag"),
+                ],
+              ),
             ),
           ],
         ),
