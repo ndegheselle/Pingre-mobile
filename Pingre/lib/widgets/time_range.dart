@@ -39,7 +39,6 @@ class _TimeRangeState extends State<TimeRange> {
   @override
   Widget build(BuildContext context) {
     final theme = FTheme.of(context);
-
     return Container(
       padding: padding,
       decoration: BoxDecoration(
@@ -85,7 +84,7 @@ class _TimeRangeState extends State<TimeRange> {
                       },
                       child: Container(
                         color: Colors.transparent,
-                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.symmetric(vertical: 5),
                         child: Center(
                           child: AnimatedDefaultTextStyle(
                             duration: const Duration(milliseconds: 250),

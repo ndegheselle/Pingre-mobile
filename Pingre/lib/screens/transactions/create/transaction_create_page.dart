@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/screens/transactions/tags.dart';
-import 'package:pingre/screens/transactions/value_input.dart';
+import 'package:pingre/screens/transactions/create/tags.dart';
+import 'package:pingre/screens/transactions/create/value_input.dart';
 
 class TransactionCreatePage extends StatefulWidget {
   const TransactionCreatePage({super.key});
@@ -26,7 +26,7 @@ class _TransactionCreatePageState extends State<TransactionCreatePage> {
           children: [
             ValueInput(),
             SizedBox(height: 4),
-            Expanded(child: Tags()),
+            Tags(),
             SizedBox(height: 4),
             FTextField.multiline(hint: 'Notes ...'),
             SizedBox(height: 4),
@@ -39,7 +39,8 @@ class _TransactionCreatePageState extends State<TransactionCreatePage> {
                   ),
                 ),
                 SizedBox(width: 4),
-                Expanded(
+                SizedBox(
+                  width: 100,
                   child: FTimeField(
                     control: .managed(initial: .now()),
                     hour24: true,
@@ -47,7 +48,7 @@ class _TransactionCreatePageState extends State<TransactionCreatePage> {
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            Spacer(),
             FButton(
               size: .lg,
               onPress: () => {},

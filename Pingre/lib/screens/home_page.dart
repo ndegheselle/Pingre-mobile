@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/screens/accounts/accounts_page.dart';
 import 'package:pingre/screens/app_settings_page.dart';
 import 'package:pingre/screens/settings/settings_page.dart';
-import 'package:pingre/screens/transactions/transaction_create_page.dart';
+import 'package:pingre/screens/transactions/create/transaction_create_page.dart';
+import 'package:pingre/screens/transactions/transactions_page.dart';
 
 final contents = [
-  const AccountsPage(),
+  const TransactionsPage(),
   const Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [Text('Categories Placeholder')],
