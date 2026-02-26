@@ -20,30 +20,34 @@ class _ValueInputState extends State<ValueInput> {
 
     return Row(
       children: [
-        FButton.icon(
-          variant: .ghost,
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
-            transitionBuilder: (child, animation) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            child: Icon(
-              _isMinus ? FIcons.minus : FIcons.plus,
-              key: ValueKey(_isMinus), // IMPORTANT
-              size: 28,
-              color: color,
+        SizedBox(
+          width: 48,
+          child: FButton.icon(
+            variant: .ghost,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              transitionBuilder: (child, animation) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              child: Icon(
+                _isMinus ? FIcons.minus : FIcons.plus,
+                key: ValueKey(_isMinus), // IMPORTANT
+                size: 28,
+                color: color,
+              ),
             ),
+            onPress: () {
+              setState(() {
+                _isMinus = !_isMinus;
+              });
+            },
           ),
-          onPress: () {
-            setState(() {
-              _isMinus = !_isMinus;
-            });
-          },
         ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: FTextField(
+              autofocus: true,
               textAlign: TextAlign.right,
               keyboardType: TextInputType.number,
               maxLines: 1,
@@ -61,7 +65,7 @@ class _ValueInputState extends State<ValueInput> {
             ),
           ),
         ),
-        Icon(FIcons.euro, size: 28, color: color),
+        SizedBox(width: 48, child: Icon(FIcons.euro, size: 28, color: color)),
       ],
     );
   }

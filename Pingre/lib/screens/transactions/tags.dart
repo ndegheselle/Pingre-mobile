@@ -17,11 +17,17 @@ class _TagsState extends State<Tags> {
     'Pineapple',
     'Strawberry',
   ];
+  final FAutocompleteController _addTagController = FAutocompleteController();
 
   void _addItem() {
+    final value = _addTagController.text.trim();
+    if (value.isEmpty) return;
+
     setState(() {
-      items.add('Item ${items.length + 1}');
+      items.add(value);
     });
+
+    _addTagController.clear();
   }
 
   void _removeItem(String item) {
@@ -32,41 +38,48 @@ class _TagsState extends State<Tags> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.theme.colors;
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Wrap(
           alignment: WrapAlignment.center,
-          runAlignment: WrapAlignment.center,
           spacing: 2,
           runSpacing: 4,
-          children: [
-            ...items.map(
-              (text) => FBadge(
-                variant: .outline,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(text),
-                    const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: () => _removeItem(text),
-                      child: const Icon(FIcons.x, size: 18),
-                    ),
-                  ],
+          children: items
+              .map(
+                (text) => FBadge(
+                  variant: .outline,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(text),
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: () => _removeItem(text),
+                        child: const Icon(FIcons.x, size: 18),
+                      ),
+                    ],
+                  ),
                 ),
+              )
+              .toList(),
+        ),
+        SizedBox(height: 4),
+        Row(
+          children: [
+            Expanded(
+              child: FAutocomplete(
+                hint: 'Tag name ...',
+                clearable: (value) => value.text.isNotEmpty,
+                items: items,
+                control: .managed(controller: _addTagController),
+                onSubmit: (_) => _addItem(),
               ),
             ),
-            FBadge(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(FIcons.plus, size: 18, color: colors.background),
-                  const SizedBox(width: 4),
-                  const Text("add tag"),
-                ],
-              ),
+            SizedBox(width: 4),
+            FButton.icon(
+              variant: .secondary,
+              onPress: _addItem,
+              child: Icon(FIcons.plus),
             ),
           ],
         ),

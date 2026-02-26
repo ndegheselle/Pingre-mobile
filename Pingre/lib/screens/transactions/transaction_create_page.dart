@@ -13,8 +13,6 @@ class TransactionCreatePage extends StatefulWidget {
 class _TransactionCreatePageState extends State<TransactionCreatePage> {
   @override
   Widget build(BuildContext context) {
-    final theme = FTheme.of(context);
-
     return Container(
       height: .infinity,
       width: .infinity,
@@ -23,42 +21,40 @@ class _TransactionCreatePageState extends State<TransactionCreatePage> {
         border: Border(top: BorderSide(color: context.theme.colors.border)),
       ),
       child: Padding(
-        padding: const .all(4),
-        child: Center(
-          child: Column(
-            children: [
-              ValueInput(),
-              SizedBox(height: 4),
-              Expanded(child: Tags()),
-              SizedBox(height: 4),
-              FTextField.multiline(hint: 'Notes ...'),
-              SizedBox(
-                height: 60,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: FDateField(
-                        control: .managed(initial: .now()),
-                        clearable: true,
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: FTimeField(
-                        control: .managed(initial: .now()),
-                        hour24: true,
-                      ),
-                    ),
-                  ],
+        padding: const .all(8),
+        child: Column(
+          children: [
+            ValueInput(),
+            SizedBox(height: 4),
+            Expanded(child: Tags()),
+            SizedBox(height: 4),
+            FTextField.multiline(hint: 'Notes ...'),
+            SizedBox(height: 4),
+            Row(
+              children: [
+                Expanded(
+                  child: FDateField(
+                    control: .managed(initial: .now()),
+                    clearable: true,
+                  ),
                 ),
-              ),
-              FButton(
-                onPress: () => {},
-                prefix: Icon(FIcons.plus),
-                child: const Text("Add"),
-              ),
-            ],
-          ),
+                SizedBox(width: 4),
+                Expanded(
+                  child: FTimeField(
+                    control: .managed(initial: .now()),
+                    hour24: true,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            FButton(
+              size: .lg,
+              onPress: () => {},
+              prefix: Icon(FIcons.plus),
+              child: const Text("Add"),
+            ),
+          ],
         ),
       ),
     );
