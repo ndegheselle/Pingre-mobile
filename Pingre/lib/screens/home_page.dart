@@ -78,6 +78,7 @@ class _HomePageState extends State<HomePage> {
     return Stack(
       children: [
         FScaffold(
+          childPad: false,
           header: headers[_index],
           footer: FBottomNavigationBar(
             index: _index,

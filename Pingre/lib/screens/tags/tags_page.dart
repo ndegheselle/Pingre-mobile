@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/screens/tags/tag_edit.dart';
 
 class Tag {
   Tag({required this.name, this.color});
@@ -19,9 +20,9 @@ class _TagsPageState extends State<TagsPage> {
   final TextEditingController _controller = TextEditingController();
 
   final List<Tag> _tags = [
-    Tag(name: 'Work', color: Colors.blue),
-    Tag(name: 'Personal', color: Colors.green),
-    Tag(name: 'Urgent', color: Colors.red),
+    Tag(name: 'Work'),
+    Tag(name: 'Personal'),
+    Tag(name: 'Urgent'),
   ];
 
   String _search = '';
@@ -44,6 +45,13 @@ class _TagsPageState extends State<TagsPage> {
       _tags.add(Tag(name: name));
       _controller.clear();
       _search = '';
+    });
+  }
+
+  void _updateTag(Tag old, Tag updated) {
+    setState(() {
+      final index = _tags.indexOf(old);
+      if (index != -1) _tags[index] = updated;
     });
   }
 
@@ -95,12 +103,27 @@ class _TagsPageState extends State<TagsPage> {
                       (tag) => FTile(
                         prefix: CircleAvatar(
                           backgroundColor:
-                              tag.color ?? Theme.of(context).primaryColor,
+                              tag.color ?? context.theme.colors.foreground,
                           radius: 6,
                         ),
                         style: const .delta(margin: .value(.zero)),
                         title: Text(tag.name),
                         suffix: const Icon(FIcons.chevronRight),
+                        onPress: () => showFSheet(
+                          context: context,
+                          side: .btt,
+                          builder: (context) => TagEdit(
+                            tag: tag,
+                            onRemove: () {
+                              _removeTag(tag);
+                              Navigator.of(context).pop();
+                            },
+                            onSave: (updated) {
+                              _updateTag(tag, updated);
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ),
                       ),
                     )
                     .toList(),

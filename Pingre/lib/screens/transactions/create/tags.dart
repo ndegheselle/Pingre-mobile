@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/screens/tags/tags_page.dart';
 
 class Tags extends StatefulWidget {
   const Tags({super.key});
@@ -9,14 +10,12 @@ class Tags extends StatefulWidget {
 }
 
 class _TagsState extends State<Tags> {
-  final List<String> items = [
-    'Apple',
-    'Banana',
-    'Orange',
-    'Mango',
-    'Pineapple',
-    'Strawberry',
+  final List<Tag> _tags = [
+    Tag(name: 'Work', color: Colors.red),
+    Tag(name: 'Personal'),
+    Tag(name: 'Urgent'),
   ];
+  
   final FAutocompleteController _addTagController = FAutocompleteController();
 
   void _addItem() {
@@ -24,15 +23,15 @@ class _TagsState extends State<Tags> {
     if (value.isEmpty) return;
 
     setState(() {
-      items.add(value);
+      _tags.add(Tag(name: value));
     });
 
     _addTagController.clear();
   }
 
-  void _removeItem(String item) {
+  void _removeItem(Tag item) {
     setState(() {
-      items.remove(item);
+      _tags.remove(item);
     });
   }
 
@@ -51,17 +50,18 @@ class _TagsState extends State<Tags> {
                 alignment: WrapAlignment.center,
                 spacing: 2,
                 runSpacing: 4,
-                children: items
+                children: _tags
                     .map(
-                      (text) => FBadge(
+                      (tag) => FBadge(
                         variant: .outline,
+                        style: .delta(decoration: .delta(border: .all(color: tag.color ?? context.theme.colors.border))),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(text),
+                            Text(tag.name),
                             const SizedBox(width: 4),
                             GestureDetector(
-                              onTap: () => _removeItem(text),
+                              onTap: () => _removeItem(tag),
                               child: const Icon(FIcons.x, size: 18),
                             ),
                           ],
@@ -80,7 +80,7 @@ class _TagsState extends State<Tags> {
               child: FAutocomplete(
                 hint: 'Tag name ...',
                 clearable: (value) => value.text.isNotEmpty,
-                items: items,
+                items: [],
                 control: .managed(controller: _addTagController),
                 onSubmit: (_) => _addItem(),
               ),
