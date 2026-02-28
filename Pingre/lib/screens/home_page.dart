@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/screens/app_settings_page.dart';
-import 'package:pingre/screens/settings/settings_page.dart';
+import 'package:pingre/screens/tags/tags_page.dart';
 import 'package:pingre/screens/transactions/create/transaction_create_page.dart';
 import 'package:pingre/screens/transactions/transactions_page.dart';
 
@@ -15,7 +15,7 @@ final contents = [
     mainAxisAlignment: MainAxisAlignment.center,
     children: [Text('Search Placeholder')],
   ),
-  const SettingsPage(),
+  const TagsPage(),
 ];
 
 class HomePage extends StatefulWidget {
