@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/services/tags.dart';
 import 'package:pingre/theme_extensions.dart';
+import 'package:provider/provider.dart';
 
 import 'screens/home_page.dart';
 
 void main() {
-  runApp(const Application());
+  runApp(MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TagsService()),
+        // add more services here
+      ],
+      child: const Application(),
+    ),);
 }
 
 class Application extends StatelessWidget {

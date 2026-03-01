@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/screens/tags/tags_page.dart';
+import 'package:pingre/services/tags.dart';
 import 'package:pingre/widgets/color_picker.dart';
+import 'package:provider/provider.dart';
+
+Future<dynamic> showTagEdit(BuildContext context, Tag tag) {
+  return showFSheet(
+    context: context,
+    side: .btt,
+    builder: (context) => TagEdit(tag: tag),
+  );
+}
 
 class TagEdit extends StatefulWidget {
   final Tag tag;
-  final VoidCallback onRemove;
-  final ValueChanged<Tag> onSave;
 
-  const TagEdit({super.key, required this.tag,     required this.onRemove,
-    required this.onSave,});
+  const TagEdit({super.key, required this.tag});
 
   @override
   State<TagEdit> createState() => _TagEditState();
@@ -21,14 +27,18 @@ class _TagEditState extends State<TagEdit> {
 
   _TagEditState();
 
-  void save()
-  {
-    widget.onSave(Tag(name: _nameController.text, color: _selectedColor));
+  void save() {
+    Provider.of<TagsService>(context, listen: false).updateTag(
+      widget.tag.id,
+      name: _nameController.text.trim(),
+      color: _selectedColor,
+    );
+    Navigator.of(context).pop();
   }
 
-  void remove()
-  {
-    widget.onRemove();
+  void remove() {
+    Provider.of<TagsService>(context, listen: false).removeTag(widget.tag.id);
+    Navigator.of(context).pop();
   }
 
   @override
@@ -57,9 +67,15 @@ class _TagEditState extends State<TagEdit> {
         padding: const .all(8),
         child: Column(
           children: [
-            ColorPicker(initialColor: _selectedColor, onChanged: (color) => setState(() => _selectedColor = color)),
+            ColorPicker(
+              initialColor: _selectedColor,
+              onChanged: (color) => setState(() => _selectedColor = color),
+            ),
             const SizedBox(height: 4),
-            FTextField(label: const Text("Name"), control: .managed(controller: _nameController),),
+            FTextField(
+              label: const Text("Name"),
+              control: .managed(controller: _nameController),
+            ),
             const Spacer(),
 
             FButton(

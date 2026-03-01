@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/screens/tags/tags_page.dart';
+import 'package:pingre/services/tags.dart';
 
 class Tags extends StatefulWidget {
   const Tags({super.key});
