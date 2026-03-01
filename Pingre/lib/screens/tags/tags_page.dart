@@ -17,12 +17,11 @@ class _TagsPageState extends State<TagsPage> {
   String _search = '';
 
   void _addTag() {
-    final name = _controller.text.trim();
-    if (name.isEmpty) return;
     Provider.of<TagsService>(
       context,
       listen: false,
-    ).addTag(Tag(name: name)); // duplicate check lives in the service
+    ).getOrCreate(_controller.text.trim());
+
     _controller.clear();
     setState(() => _search = '');
   }

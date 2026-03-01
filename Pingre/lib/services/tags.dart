@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -23,13 +24,20 @@ class TagsService extends ChangeNotifier {
 
   List<Tag> get tags => List.unmodifiable(_tags);
 
-  void addTag(Tag tag) {
-    if (_tags.any((t) => t.name == tag.name)) {
-      return;
-    }
-
+  Tag _addTag(Tag tag) {
     _tags.add(tag);
     notifyListeners();
+    return tag;
+  }
+
+  Tag getOrCreate(String name) {
+    return search(name) ?? _addTag(Tag(name: name.trim()));
+  }
+
+  Tag? search(String name) {
+    return _tags.firstWhereOrNull(
+      (t) => t.name.toLowerCase() == name.trim().toLowerCase(),
+    );
   }
 
   void updateTag(String id, {String? name, Color? color}) {

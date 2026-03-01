@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/screens/transactions/create/tags.dart';
+import 'package:pingre/screens/tags/tags_select.dart';
 import 'package:pingre/screens/transactions/create/value_input.dart';
 
 class TransactionCreatePage extends StatefulWidget {
@@ -26,7 +26,7 @@ class _TransactionCreatePageState extends State<TransactionCreatePage> {
           children: [
             ValueInput(),
             SizedBox(height: 4),
-            Tags(),
+            TagsSelect(),
             SizedBox(height: 4),
             FTextField.multiline(hint: 'Notes ...'),
             SizedBox(height: 4),

@@ -1,29 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/services/tags.dart';
+import 'package:provider/provider.dart';
 
-class Tags extends StatefulWidget {
-  const Tags({super.key});
+class TagsSelect extends StatefulWidget {
+  final List<Tag> initialSelection;
 
+  const TagsSelect({super.key, this.initialSelection = const []});
   @override
-  State<Tags> createState() => _TagsState();
+  State<TagsSelect> createState() => _TagsSelectState();
 }
 
-class _TagsState extends State<Tags> {
-  final List<Tag> _tags = [
-    Tag(name: 'Work', color: Colors.red),
-    Tag(name: 'Personal'),
-    Tag(name: 'Urgent'),
-  ];
-  
+class _TagsSelectState extends State<TagsSelect> {
   final FAutocompleteController _addTagController = FAutocompleteController();
+  late List<Tag> _selection;
+
+  @override
+  void initState() {
+    super.initState();
+    _selection = List<Tag>.from(widget.initialSelection);
+  }
 
   void _addItem() {
-    final value = _addTagController.text.trim();
-    if (value.isEmpty) return;
+    final service = context.read<TagsService>();
+    final tag = service.getOrCreate(_addTagController.text);
 
+    if (!_selection.contains(tag)) return;
     setState(() {
-      _tags.add(Tag(name: value));
+      _selection.add(tag);
     });
 
     _addTagController.clear();
@@ -31,7 +35,7 @@ class _TagsState extends State<Tags> {
 
   void _removeItem(Tag item) {
     setState(() {
-      _tags.remove(item);
+      _selection.remove(item);
     });
   }
 
@@ -50,11 +54,17 @@ class _TagsState extends State<Tags> {
                 alignment: WrapAlignment.center,
                 spacing: 2,
                 runSpacing: 4,
-                children: _tags
+                children: _selection
                     .map(
                       (tag) => FBadge(
                         variant: .outline,
-                        style: .delta(decoration: .delta(border: .all(color: tag.color ?? context.theme.colors.border))),
+                        style: .delta(
+                          decoration: .delta(
+                            border: .all(
+                              color: tag.color ?? context.theme.colors.border,
+                            ),
+                          ),
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -77,12 +87,14 @@ class _TagsState extends State<Tags> {
         Row(
           children: [
             Expanded(
-              child: FAutocomplete(
-                hint: 'Tag name ...',
-                clearable: (value) => value.text.isNotEmpty,
-                items: [],
-                control: .managed(controller: _addTagController),
-                onSubmit: (_) => _addItem(),
+              child: Consumer<TagsService>(
+                builder: (context, service, child) => FAutocomplete(
+                  hint: 'Tag name ...',
+                  clearable: (value) => value.text.isNotEmpty,
+                  items: service.tags.map((t) => t.name).toList(),
+                  control: .managed(controller: _addTagController),
+                  onSubmit: (_) => _addItem(),
+                ),
               ),
             ),
             SizedBox(width: 4),
