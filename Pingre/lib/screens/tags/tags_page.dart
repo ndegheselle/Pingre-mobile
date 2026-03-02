@@ -14,8 +14,6 @@ class TagsPage extends StatefulWidget {
 class _TagsPageState extends State<TagsPage> {
   final TextEditingController _controller = TextEditingController();
 
-  String _search = '';
-
   void _addTag() {
     Provider.of<TagsService>(
       context,
@@ -23,17 +21,20 @@ class _TagsPageState extends State<TagsPage> {
     ).getOrCreate(_controller.text.trim());
 
     _controller.clear();
-    setState(() => _search = '');
+    setState(() => _controller.text = '');
   }
 
   @override
   Widget build(BuildContext context) {
+    
     final service = context.watch<TagsService>();
-    final filteredTags = _search.isEmpty
+    final filteredTags = _controller.text.isEmpty
         ? service.tags
         : service.tags
               .where(
-                (t) => t.name.toLowerCase().contains(_search.toLowerCase()),
+                (t) => t.name.toLowerCase().contains(
+                  _controller.text.toLowerCase(),
+                ),
               )
               .toList();
 
@@ -43,23 +44,37 @@ class _TagsPageState extends State<TagsPage> {
           children: [
             Expanded(
               child: FTextField(
-                control: .managed(
-                  controller: _controller,
-                  onChange: (value) {
-                    setState(() {
-                      _search = value.text;
-                    });
-                  },
-                ),
+                control: .managed(controller: _controller),
                 hint: 'Tag name ...',
                 clearable: (value) => value.text.isNotEmpty,
               ),
             ),
-            const SizedBox(width: 4),
-            FButton.icon(
-              variant: .secondary,
-              onPress: _addTag,
-              child: const Icon(FIcons.plus),
+            ValueListenableBuilder(
+              valueListenable: _controller,
+              builder: (context, _, _) {
+                final showButton = _controller.text.isNotEmpty;
+                return AnimatedSize(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOut,
+                  alignment: Alignment.centerRight, // grows left → right
+                  child: ClipRect(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      widthFactor: showButton ? 1.0 : 0.0,
+                      child: Row(
+                        children: [
+                          SizedBox(width: 4),
+                          FButton.icon(
+                            variant: .outline,
+                            onPress: _addTag,
+                            child: const Icon(FIcons.plus),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),

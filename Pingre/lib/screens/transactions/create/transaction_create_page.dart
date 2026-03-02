@@ -27,7 +27,7 @@ class _TransactionCreatePageState extends State<TransactionCreatePage> {
             ValueInput(),
             SizedBox(height: 4),
             TagsSelect(),
-            SizedBox(height: 4),
+            SizedBox(height: 8),
             FTextField.multiline(hint: 'Notes ...'),
             SizedBox(height: 4),
             Row(
