@@ -3,12 +3,11 @@ import 'package:forui/forui.dart';
 import 'package:pingre/services/tags.dart';
 import 'package:provider/provider.dart';
 
-Future<dynamic> showTagsSelect(BuildContext context) {
-  return showFDialog(
-    context: context,
-    builder: (context) => TagsSelect(),
-  );
-}
+/*
+  List of all tags order by updatedAt
+  Search on top to filter or add
+  Select / deselect by pressing on it
+*/
 
 class TagsSelect extends StatefulWidget {
   final List<Tag> initialSelection;
@@ -19,101 +18,57 @@ class TagsSelect extends StatefulWidget {
 }
 
 class _TagsSelectState extends State<TagsSelect> {
-  final FAutocompleteController _searchController = FAutocompleteController();
-  late List<Tag> _selection;
+  final Set<String> _selected = {};
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _selection = List<Tag>.from(widget.initialSelection);
+    _selected.addAll(widget.initialSelection.map((e) => e.id));
   }
 
-  void _addItem() {
-    final service = context.read<TagsService>();
-    final tag = service.getOrCreate(_searchController.text);
-
-    if (_selection.contains(tag)) return;
+  void _toggleTag(Tag tag) {
     setState(() {
-      _selection.add(tag);
+      if (_selected.contains(tag.id)) {
+        _selected.remove(tag.id);
+      } else {
+        _selected.add(tag.id);
+      }
     });
-
-    _searchController.clear();
   }
 
-  void _removeItem(Tag item) {
-    setState(() {
-      _selection.remove(item);
-    });
+  void _addTag() {
+    var tag = Provider.of<TagsService>(
+      context,
+      listen: false,
+    ).getOrCreate(_controller.text.trim());
+
+    _toggleTag(tag);
+    _controller.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: .min,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        ConstrainedBox(
-          constraints: .new(maxHeight: 100),
-          child: _selection.isEmpty
-              ? const Opacity(opacity: 0.5, child: Text("No tags"))
-              : SizedBox(
-                  width: double.infinity,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 2,
-                      runSpacing: 4,
-                      children: _selection
-                          .map(
-                            (tag) => FBadge(
-                              variant: .outline,
-                              style: .delta(
-                                decoration: .delta(
-                                  border: .all(
-                                    color:
-                                        tag.color ??
-                                        context.theme.colors.border,
-                                  ),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(tag.name),
-                                  const SizedBox(width: 4),
-                                  GestureDetector(
-                                    onTap: () => _removeItem(tag),
-                                    child: const Icon(FIcons.x, size: 18),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ),
-                ),
-        ),
-        SizedBox(height: 4),
         Row(
           children: [
             Expanded(
-              child: Consumer<TagsService>(
-                builder: (context, service, child) => FAutocomplete(
-                  hint: 'Tag name ...',
-                  clearable: (value) => value.text.isNotEmpty,
-                  items: service.tags.map((t) => t.name).toList(),
-                  control: .managed(
-                    controller: _searchController,
-                  ),
-                  onSubmit: (_) => _addItem(),
+              child: FTextField(
+                control: .managed(controller: _controller),
+                prefixBuilder: (context, style, variants) => Padding(
+                  padding: .directional(start: 8),
+                  child: Opacity(opacity: 0.5, child: Icon(FIcons.search)),
                 ),
+                hint: 'Tag name ...',
+                clearable: (value) => value.text.isNotEmpty,
               ),
             ),
             ValueListenableBuilder(
-              valueListenable: _searchController,
+              valueListenable: _controller,
               builder: (context, _, _) {
-                final showButton = _searchController.text.isNotEmpty;
+                final showButton = _controller.text.isNotEmpty;
                 return AnimatedSize(
                   duration: const Duration(milliseconds: 250),
                   curve: Curves.easeOut,
@@ -127,7 +82,7 @@ class _TagsSelectState extends State<TagsSelect> {
                           SizedBox(width: 4),
                           FButton.icon(
                             variant: .outline,
-                            onPress: _addItem,
+                            onPress: _addTag,
                             child: const Icon(FIcons.plus),
                           ),
                         ],
@@ -138,6 +93,63 @@ class _TagsSelectState extends State<TagsSelect> {
               },
             ),
           ],
+        ),
+
+        const SizedBox(height: 4),
+
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 100),
+          child: SizedBox(
+            width: double.infinity,
+            child: SingleChildScrollView(
+              child: ValueListenableBuilder(
+                valueListenable: _controller,
+                builder: (context, _, _) {
+                  final search = _controller.text.trim();
+                  return Consumer<TagsService>(
+                    builder: (context, service, child) {
+                      final filtered =
+                          service.tags
+                              .where(
+                                (tag) => tag.name.toLowerCase().contains(
+                                  search.toLowerCase(),
+                                ),
+                              )
+                              .toList()
+                            ..sort((a, b) {
+                              final aSelected = _selected.contains(a.id);
+                              final bSelected = _selected.contains(b.id);
+
+                              if (aSelected != bSelected) {
+                                return aSelected ? -1 : 1; // selected first
+                              }
+
+                              return b.updatedAt.compareTo(
+                                a.updatedAt,
+                              ); // newest first
+                            });
+
+                      return Wrap(
+                        alignment: WrapAlignment.start,
+                        spacing: 2,
+                        runSpacing: 4,
+                        children: filtered.map((tag) {
+                          final isSelected = _selected.contains(tag.id);
+                          return GestureDetector(
+                            onTap: () => _toggleTag(tag),
+                            child: FBadge(
+                              variant: isSelected ? .android : .outline,
+                              child: Text(tag.name),
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
         ),
       ],
     );

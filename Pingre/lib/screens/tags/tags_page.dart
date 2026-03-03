@@ -21,12 +21,10 @@ class _TagsPageState extends State<TagsPage> {
     ).getOrCreate(_controller.text.trim());
 
     _controller.clear();
-    setState(() => _controller.text = '');
   }
 
   @override
   Widget build(BuildContext context) {
-    
     final service = context.watch<TagsService>();
     final filteredTags = _controller.text.isEmpty
         ? service.tags
@@ -45,6 +43,10 @@ class _TagsPageState extends State<TagsPage> {
             Expanded(
               child: FTextField(
                 control: .managed(controller: _controller),
+                prefixBuilder: (context, style, variants) => Padding(
+                  padding: .directional(start: 8),
+                  child: Opacity(opacity: 0.5, child: Icon(FIcons.search)),
+                ),
                 hint: 'Tag name ...',
                 clearable: (value) => value.text.isNotEmpty,
               ),

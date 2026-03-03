@@ -6,9 +6,10 @@ class Tag {
   final String id;
   final String name;
   final Color? color;
+  DateTime updatedAt;
 
   Tag({required this.name, this.color, String? id})
-    : id = id ?? const Uuid().v4();
+    : id = id ?? const Uuid().v4(), updatedAt = DateTime.now();
 
   Tag copyWith({String? name, Color? color}) {
     return Tag(
