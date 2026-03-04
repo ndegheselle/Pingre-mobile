@@ -27,20 +27,6 @@ class _TagEditState extends State<TagEdit> {
 
   _TagEditState();
 
-  void save() {
-    Provider.of<TagsService>(context, listen: false).updateTag(
-      widget.tag.id,
-      name: _nameController.text.trim(),
-      color: _selectedColor,
-    );
-    Navigator.of(context).pop();
-  }
-
-  void remove() {
-    Provider.of<TagsService>(context, listen: false).removeTag(widget.tag.id);
-    Navigator.of(context).pop();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -52,6 +38,51 @@ class _TagEditState extends State<TagEdit> {
   void dispose() {
     _nameController.dispose();
     super.dispose();
+  }
+  
+  void _save() {
+    Provider.of<TagsService>(context, listen: false).updateTag(
+      widget.tag.id,
+      name: _nameController.text.trim(),
+      color: _selectedColor,
+    );
+    Navigator.of(context).pop();
+  }
+
+  void _remove() {
+    showFDialog(
+      context: context,
+      builder: (context, style, animation) => FDialog(
+        style: style,
+        animation: animation,
+        title: const Text('Delete tag'),
+        body: const Text(
+          'Are you sure you want to delete this tag? This action cannot be undone.',
+        ),
+        actions: [
+          FButton(
+            variant: .destructive,
+            size: .sm,
+            child: const Text('Delete'),
+            onPress: () {
+              Provider.of<TagsService>(
+                context,
+                listen: false,
+              ).removeTag(widget.tag.id);
+
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            },
+          ),
+          FButton(
+            variant: .outline,
+            size: .sm,
+            child: const Text('Cancel'),
+            onPress: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -80,13 +111,13 @@ class _TagEditState extends State<TagEdit> {
 
             FButton(
               variant: .destructive,
-              onPress: remove,
+              onPress: _remove,
               prefix: const Icon(FIcons.trash),
               child: const Text("Remove"),
             ),
             const SizedBox(height: 8),
             FButton(
-              onPress: save,
+              onPress: _save,
               prefix: const Icon(FIcons.save),
               child: const Text("Save"),
             ),

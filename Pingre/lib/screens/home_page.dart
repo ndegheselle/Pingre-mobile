@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/screens/app_settings_page.dart';
 import 'package:pingre/screens/tags/tags_page.dart';
-import 'package:pingre/screens/transactions/create/transaction_create_page.dart';
+import 'package:pingre/screens/transactions/edit/transaction_edit.dart';
 import 'package:pingre/screens/transactions/transactions_page.dart';
 
 final contents = [
@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> {
                   onPressed: () => showFSheet(
                     context: context,
                     side: .btt,
-                    builder: (context) => const TransactionCreatePage(),
+                    builder: (context) => const TransactionEdit(),
                   ),
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),

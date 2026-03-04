@@ -10,21 +10,22 @@ import 'package:provider/provider.dart';
 */
 
 class TagsSelect extends StatefulWidget {
-  final List<Tag> initialSelection;
+  final Set<String> initialSelection;
+  final ValueChanged<Set<String>>? onChanged;
 
-  const TagsSelect({super.key, this.initialSelection = const []});
+  const TagsSelect({super.key, this.initialSelection = const {}, this.onChanged});
   @override
   State<TagsSelect> createState() => _TagsSelectState();
 }
 
 class _TagsSelectState extends State<TagsSelect> {
-  final Set<String> _selected = {};
+  late Set<String> _selected = {};
   final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _selected.addAll(widget.initialSelection.map((e) => e.id));
+    _selected = widget.initialSelection;
   }
 
   void _toggleTag(Tag tag) {
@@ -35,6 +36,7 @@ class _TagsSelectState extends State<TagsSelect> {
         _selected.add(tag.id);
       }
     });
+    widget.onChanged?.call(Set.unmodifiable(_selected));
   }
 
   void _addTag() {
