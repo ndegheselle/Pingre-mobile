@@ -5,7 +5,7 @@ import 'package:pingre/theme_extensions.dart';
 class NumberValueController extends ValueNotifier<double> {
   NumberValueController([super.initialValue = 0]);
 
-  bool get isNegative => value < 0;
+  bool get isNegative => value <= 0;
   double get absolute => value.abs();
   String get formatted => absolute.toStringAsFixed(2);
 
@@ -36,10 +36,40 @@ class ValueInput extends StatefulWidget {
 }
 
 class _ValueInputState extends State<ValueInput> {
-  void _onTextChanged(String text) {
-    final value = double.tryParse(text);
+  late TextEditingController _textController;
+
+  void _onTextChanged() {
+    final value = double.tryParse(_textController.text);
     if (value != null) {
       widget.controller.setAbsolute(value);
+    }
+    else
+    {
+      _textController.text = widget.controller.formatted;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _textController = TextEditingController(text: widget.controller.formatted);
+
+    // Listen to changes in the controller
+    widget.controller.addListener(_onControllerChanged);
+    _textController.addListener(_onTextChanged);
+  }
+
+  @override
+  void dispose() {
+    // Remove the listener when the widget is disposed
+    widget.controller.removeListener(_onControllerChanged);
+    super.dispose();
+  }
+
+  void _onControllerChanged() {
+    // Trigger a rebuild when the controller's value changes
+    if (mounted) {
+      setState(() {});
     }
   }
 
@@ -48,7 +78,6 @@ class _ValueInputState extends State<ValueInput> {
     final color = widget.controller.isNegative
         ? context.theme.semantic.negative
         : context.theme.semantic.positive;
-
     return Row(
       children: [
         SizedBox(
@@ -73,10 +102,7 @@ class _ValueInputState extends State<ValueInput> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: FTextField(
-              control: .managed(
-                initial: TextEditingValue(text: widget.controller.formatted),
-                onChange: (val) => _onTextChanged(val.text),
-              ),
+              control: .managed(controller: _textController),
               autofocus: true,
               textAlign: TextAlign.right,
               keyboardType: TextInputType.number,

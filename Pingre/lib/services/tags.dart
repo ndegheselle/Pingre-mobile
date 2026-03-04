@@ -9,48 +9,88 @@ class Tag {
   DateTime updatedAt;
 
   Tag({required this.name, this.color, String? id})
-    : id = id ?? const Uuid().v4(), updatedAt = DateTime.now();
+    : id = id ?? const Uuid().v4(),
+      updatedAt = DateTime.now();
 
   Tag copyWith({String? name, Color? color}) {
-    return Tag(
-      id: id, // preserve the same id
-      name: name ?? this.name,
-      color: color ?? this.color,
-    );
+    return Tag(id: id, name: name ?? this.name, color: color ?? this.color);
   }
 }
 
 class TagsService extends ChangeNotifier {
-  final List<Tag> _tags = [];
+  final Map<String, Tag> tagsMap = {};
+  Iterable<Tag> get tags => tagsMap.values;
 
-  List<Tag> get tags => List.unmodifiable(_tags);
+  TagsService() {
+    // Initialize with test tags
+    _initializeTestTags();
+  }
+
+  void _initializeTestTags() {
+    List<String> testTagNames = [
+      'Urgent',
+      'Work',
+      'Personal',
+      'Shopping',
+      'Travel',
+      'Health',
+      'Fitness',
+      'Study',
+      'Meeting',
+      'Family',
+      'Friends',
+      'Hobby',
+      'Food',
+      'Music',
+      'Books',
+      'Movies',
+      'Sports',
+      'Finance',
+      'Project',
+      'Ideas',
+    ];
+
+    for (var name in testTagNames) {
+      createIfMissing(name);
+    }
+  }
 
   Tag _addTag(Tag tag) {
-    _tags.add(tag);
+    tagsMap[tag.id] = tag;
     notifyListeners();
     return tag;
   }
 
   Tag getOrCreate(String name) {
-    return search(name) ?? _addTag(Tag(name: name.trim()));
+    String cleanedName = name.trim();
+    var tag = tags.firstWhereOrNull(
+      (t) => t.name.toLowerCase() == cleanedName.toLowerCase(),
+    );
+
+    return tag ?? _addTag(Tag(name: cleanedName));
   }
 
-  Tag? search(String name) {
-    return _tags.firstWhereOrNull(
-      (t) => t.name.toLowerCase() == name.trim().toLowerCase(),
-    );
+  void createIfMissing(String name) {
+    getOrCreate(name);
+  }
+
+  Iterable<Tag> search(String name) {
+    return tags.where((t) => t.name.toLowerCase() == name.trim().toLowerCase());
+  }
+
+  Tag? getTagById(String id) {
+    return tagsMap[id];
   }
 
   void updateTag(String id, {String? name, Color? color}) {
-    final index = _tags.indexWhere((tag) => tag.id == id);
-    if (index == -1) return;
+    if (!tagsMap.containsKey(id)) return;
 
-    _tags[index] = _tags[index].copyWith(name: name, color: color);
+    tagsMap[id] = tagsMap[id]!.copyWith(name: name, color: color);
     notifyListeners();
   }
 
   void removeTag(String id) {
-    _tags.removeWhere((tag) => tag.id == id);
+    tagsMap.remove(id);
     notifyListeners();
   }
 }

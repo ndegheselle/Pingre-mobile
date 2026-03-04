@@ -18,7 +18,7 @@ class _TagsPageState extends State<TagsPage> {
     Provider.of<TagsService>(
       context,
       listen: false,
-    ).getOrCreate(_controller.text.trim());
+    ).createIfMissing(_controller.text.trim());
 
     _controller.clear();
   }
@@ -28,13 +28,7 @@ class _TagsPageState extends State<TagsPage> {
     final service = context.watch<TagsService>();
     final filteredTags = _controller.text.isEmpty
         ? service.tags
-        : service.tags
-              .where(
-                (t) => t.name.toLowerCase().contains(
-                  _controller.text.toLowerCase(),
-                ),
-              )
-              .toList();
+        : service.search(_controller.text);
 
     return Column(
       children: [
