@@ -26,7 +26,7 @@ class TransactionEdit extends StatefulWidget {
 class _TransactionEditState extends State<TransactionEdit> {
   late bool _isEditing;
 
-  Set<String> _tagsId = {};
+  TagsSelection? _tagsSelection;
   late FDateFieldControl _dateControl;
   late FTimeFieldControl _timeControl;
   late FTextFieldControl _noteControl;
@@ -39,7 +39,7 @@ class _TransactionEditState extends State<TransactionEdit> {
     _isEditing = widget.transaction != null;
 
     final initialDate = widget.transaction?.date ?? DateTime.now();
-    _tagsId = widget.transaction?.tagsId ?? {};
+    _tagsSelection = widget.transaction?.tags;
     _valueController = NumberValueController(widget.transaction?.value ?? -1);
     _dateControl = FDateFieldControl.managed(initial: initialDate);
     _timeControl = FTimeFieldControl.managed(
@@ -51,13 +51,13 @@ class _TransactionEditState extends State<TransactionEdit> {
   }
 
   void _selectTags() async {
-    final selectedTagIds = await showTagsSelect(
+    final selection = await showTagsSelect(
       context,
-      initialSelection: _tagsId,
+      initialSelection: _tagsSelection,
     );
-    if (selectedTagIds != null) {
+    if (selection != null) {
       setState(() {
-        _tagsId = selectedTagIds;
+        _tagsSelection = selection;
       });
     }
   }

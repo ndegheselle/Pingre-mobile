@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/services/tags.dart';
+import 'package:pingre/services/transactions.dart';
 import 'package:provider/provider.dart';
 
-Future<Set<String>?> showTagsSelect(BuildContext context, {Set<String>? initialSelection}) {
-  return showFSheet<Set<String>>(
+Future<TagsSelection?> showTagsSelect(
+  BuildContext context, {
+  TagsSelection? initialSelection,
+}) {
+  return showFSheet<TagsSelection>(
     mainAxisMaxRatio: 6 / 10,
     context: context,
     side: .btt,
@@ -13,33 +17,42 @@ Future<Set<String>?> showTagsSelect(BuildContext context, {Set<String>? initialS
 }
 
 class TagsSelect extends StatefulWidget {
-  final Set<String>? initialSelection;
-  final ValueChanged<Set<String>>? onChanged;
+  final TagsSelection? initialSelection;
 
-  const TagsSelect({super.key, this.initialSelection, this.onChanged});
+  const TagsSelect({super.key, this.initialSelection});
   @override
   State<TagsSelect> createState() => _TagsSelectState();
 }
 
 class _TagsSelectState extends State<TagsSelect> {
-  late Set<String> _selected = {};
+  late Tag? _primaryTag;
+  late Set<String> _secondariesIds;
+
   final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _selected = widget.initialSelection ?? {};
+    _primaryTag = widget.initialSelection?.primary;
+    _secondariesIds =
+        widget.initialSelection?.secondaries.map((t) => t.id).toSet() ?? {};
   }
 
   void _toggleTag(Tag tag) {
     setState(() {
-      if (_selected.contains(tag.id)) {
-        _selected.remove(tag.id);
+      if (_primaryTag == null) {
+        _primaryTag = tag;
       } else {
-        _selected.add(tag.id);
+        _secondariesIds.add(tag.id);
       }
     });
-    widget.onChanged?.call(Set.unmodifiable(_selected));
+  }
+
+  void _setPrimaryTag(Tag tag) {
+    if (_primaryTag == tag) return;
+    setState(() {
+      _primaryTag = tag;
+    });
   }
 
   void _addTag() {
@@ -50,6 +63,23 @@ class _TagsSelectState extends State<TagsSelect> {
 
     _toggleTag(tag);
     _controller.clear();
+  }
+
+  bool _isSelected(String id) {
+    if (id == _primaryTag?.id) return true;
+    return _secondariesIds.contains(id);
+  }
+
+  void _confirm() {
+    if (_primaryTag == null) return Navigator.of(context).pop();
+
+    var service = Provider.of<TagsService>(context, listen: false);
+    var secondaries = _secondariesIds
+        .map((id) => service.tagsMap[id]!)
+        .toList();
+    return Navigator.of(
+      context,
+    ).pop(TagsSelection(primary: _primaryTag!, secondaries: secondaries));
   }
 
   @override
@@ -70,7 +100,10 @@ class _TagsSelectState extends State<TagsSelect> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Select tags", style: context.theme.typography.xl.copyWith(fontWeight: .bold)),
+            Text(
+              "Select tags",
+              style: context.theme.typography.xl.copyWith(fontWeight: .bold),
+            ),
             SizedBox(height: 4),
             Row(
               children: [
@@ -92,7 +125,7 @@ class _TagsSelectState extends State<TagsSelect> {
                     return AnimatedSize(
                       duration: const Duration(milliseconds: 250),
                       curve: Curves.easeOut,
-                      alignment: Alignment.centerRight, // grows left → right
+                      alignment: Alignment.centerRight,
                       child: ClipRect(
                         child: Align(
                           alignment: Alignment.centerRight,
@@ -131,12 +164,13 @@ class _TagsSelectState extends State<TagsSelect> {
                                       : service.search(search))
                                   .toList();
                           filtered.sort((a, b) {
-                            final aSelected = _selected.contains(a.id);
-                            final bSelected = _selected.contains(b.id);
+                            if (a == _primaryTag) return -1;
+                            if (b == _primaryTag) return 1;
 
-                            if (aSelected != bSelected) {
-                              return aSelected ? -1 : 1; // selected first
-                            }
+                            final aSelected = _secondariesIds.contains(a.id);
+                            final bSelected = _secondariesIds.contains(b.id);
+
+                            if (aSelected != bSelected) return aSelected ? -1 : 1;
 
                             return b.updatedAt.compareTo(
                               a.updatedAt,
@@ -155,22 +189,43 @@ class _TagsSelectState extends State<TagsSelect> {
                                   spacing: 4,
                                   runSpacing: 4,
                                   children: filtered.map((tag) {
-                                    final isSelected = _selected.contains(
-                                      tag.id,
-                                    );
+                                    final isSelected = _isSelected(tag.id);
+                                    final isPrimary = tag.id == _primaryTag?.id;
                                     return GestureDetector(
+                                      onLongPress: () => _setPrimaryTag(tag),
                                       onTap: () => _toggleTag(tag),
                                       child: FBadge(
-                                        style: .delta(contentStyle: .delta(labelTextStyle: .delta(fontSize: context.theme.typography.lg.fontSize))),
+                                        style: .delta(
+                                          contentStyle: .delta(
+                                            labelTextStyle: .delta(
+                                              fontSize: context
+                                                  .theme
+                                                  .typography
+                                                  .lg
+                                                  .fontSize,
+                                            ),
+                                          ),
+                                        ),
                                         variant: isSelected
-                                            ? .android
+                                            ? (isPrimary
+                                                  ? .android
+                                                  : .secondary)
                                             : .outline,
-                                        child: Row(children: [
-                                          if (isSelected)
-                                            Icon(FIcons.check, color: context.theme.colors.background, fontWeight: .bold,),
-                                          SizedBox(width: 4),
-                                          Text(tag.name)
-                                        ],),
+                                        child: Row(
+                                          children: [
+                                            if (isSelected)
+                                              Icon(
+                                                FIcons.check,
+                                                color: context
+                                                    .theme
+                                                    .colors
+                                                    .background,
+                                                fontWeight: .bold,
+                                              ),
+                                            SizedBox(width: 4),
+                                            Text(tag.name),
+                                          ],
+                                        ),
                                       ),
                                     );
                                   }).toList(),
@@ -183,7 +238,7 @@ class _TagsSelectState extends State<TagsSelect> {
               ),
             ),
             FButton(
-              onPress: () => Navigator.of(context).pop(_selected),
+              onPress: _confirm,
               prefix: const Icon(FIcons.check),
               child: const Text("Confirm"),
             ),
