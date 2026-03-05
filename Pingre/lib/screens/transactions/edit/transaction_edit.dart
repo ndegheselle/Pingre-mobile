@@ -85,25 +85,48 @@ class _TransactionEditState extends State<TransactionEdit> {
       decoration: BoxDecoration(
         color: context.theme.colors.background,
         border: Border(top: BorderSide(color: context.theme.colors.border)),
+        borderRadius: BorderRadius.only(
+          topLeft: context.theme.style.borderRadius.topLeft,
+          topRight: context.theme.style.borderRadius.topRight,
+        ),
       ),
       child: Padding(
-        padding: const .all(8),
+        padding: const .only(left: 8, right: 8, bottom: 8),
         child: Column(
           children: [
+            Text(
+              _isEditing ? "Edit transaction" : "New transaction",
+              style: context.theme.typography.xl.copyWith(fontWeight: .bold),
+            ),
+            SizedBox(height: 4),
             ValueInput(controller: _valueController),
             SizedBox(height: 4),
-            _tagsId.isEmpty
-                ? const Center(
-                    child: Opacity(opacity: 0.5, child: Text("Not tags")),
-                  )
-                : TagsDisplay(tagIds: _tagsId),
-            SizedBox(height: 4),
-            FButton(
-              variant: .outline,
-              onPress: _selectTags,
-              prefix: const Icon(FIcons.tag),
-              child: const Text("Add tags"),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _tagsId.isEmpty
+                      ? const Center(
+                          child: Opacity(opacity: 0.5, child: Text("No tags")),
+                        )
+                      : TagsDisplay(tagIds: _tagsId),
+                  SizedBox(height: 4),
+                  Center(
+                    child: SizedBox(
+                      width: 150,
+                      child: FButton(
+                        size: .sm,
+                        variant: .secondary,
+                        onPress: _selectTags,
+                        prefix: const Icon(FIcons.tag),
+                        child: const Text("Select tags"),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
+
             SizedBox(height: 4),
             FTextField.multiline(hint: 'Notes ...', control: _noteControl),
             SizedBox(height: 4),
@@ -117,7 +140,6 @@ class _TransactionEditState extends State<TransactionEdit> {
                 ),
               ],
             ),
-            Spacer(),
             if (_isEditing)
               FButton(
                 variant: .destructive,

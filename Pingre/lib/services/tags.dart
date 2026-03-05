@@ -75,7 +75,7 @@ class TagsService extends ChangeNotifier {
   }
 
   Iterable<Tag> search(String name) {
-    return tags.where((t) => t.name.toLowerCase() == name.trim().toLowerCase());
+    return tags.where((t) => t.name.toLowerCase().contains(name.trim().toLowerCase()));
   }
 
   Tag? getTagById(String id) {

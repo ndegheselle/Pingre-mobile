@@ -60,12 +60,18 @@ class _TagsSelectState extends State<TagsSelect> {
       decoration: BoxDecoration(
         color: context.theme.colors.background,
         border: Border(top: BorderSide(color: context.theme.colors.border)),
+        borderRadius: BorderRadius.only(
+          topLeft: context.theme.style.borderRadius.topLeft,
+          topRight: context.theme.style.borderRadius.topRight,
+        ),
       ),
       child: Padding(
-        padding: const .all(8),
+        padding: const .only(left: 8, right: 8, bottom: 8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Text("Select tags", style: context.theme.typography.xl.copyWith(fontWeight: .bold)),
+            SizedBox(height: 4),
             Row(
               children: [
                 Expanded(

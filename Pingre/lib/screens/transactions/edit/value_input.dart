@@ -42,9 +42,7 @@ class _ValueInputState extends State<ValueInput> {
     final value = double.tryParse(_textController.text);
     if (value != null) {
       widget.controller.setAbsolute(value);
-    }
-    else
-    {
+    } else {
       _textController.text = widget.controller.formatted;
     }
   }
@@ -79,6 +77,7 @@ class _ValueInputState extends State<ValueInput> {
         ? context.theme.semantic.negative
         : context.theme.semantic.positive;
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(
           width: 48,
@@ -94,25 +93,35 @@ class _ValueInputState extends State<ValueInput> {
                 widget.controller.isNegative ? FIcons.minus : FIcons.plus,
                 size: 28,
                 color: color,
+                fontWeight: .bold,
               ),
             ),
           ),
         ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
+        Flexible(
+          child: IntrinsicWidth(
             child: FTextField(
               control: .managed(controller: _textController),
               autofocus: true,
-              textAlign: TextAlign.right,
+              textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
               maxLines: 1,
               style: .delta(
+                contentPadding: .value(.zero),
+                border: FVariants(
+                  InputBorder.none,
+                  variants: {
+                    [.focused]: InputBorder.none,
+                    [.disabled]: InputBorder.none,
+                    [.error]: InputBorder.none,
+                    [.error.and(.disabled)]: InputBorder.none,
+                  },
+                ),
                 contentTextStyle: .delta([
                   .base(
                     .delta(
                       color: color,
-                      fontSize: 24,
+                      fontSize: 32,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -121,7 +130,13 @@ class _ValueInputState extends State<ValueInput> {
             ),
           ),
         ),
-        SizedBox(width: 48, child: Icon(FIcons.euro, size: 28, color: color)),
+        SizedBox(
+          width: 48,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Icon(FIcons.euro, size: 28, color: color, fontWeight: .bold),
+          ),
+        ),
       ],
     );
   }

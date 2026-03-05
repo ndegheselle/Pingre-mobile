@@ -25,31 +25,26 @@ class _TagsPageState extends State<TagsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final service = context.watch<TagsService>();
-    final filteredTags = _controller.text.isEmpty
-        ? service.tags
-        : service.search(_controller.text);
-
-    return Column(
-      children: [
-        Row(
+    return ValueListenableBuilder(
+      valueListenable: _controller,
+      builder: (context, _, _) {
+        final showButton = _controller.text.isNotEmpty;
+        return Column(
           children: [
-            Expanded(
-              child: FTextField(
-                control: .managed(controller: _controller),
-                prefixBuilder: (context, style, variants) => Padding(
-                  padding: .directional(start: 8),
-                  child: Opacity(opacity: 0.5, child: Icon(FIcons.search)),
+            Row(
+              children: [
+                Expanded(
+                  child: FTextField(
+                    control: .managed(controller: _controller),
+                    prefixBuilder: (context, style, variants) => Padding(
+                      padding: .directional(start: 8),
+                      child: Opacity(opacity: 0.5, child: Icon(FIcons.search)),
+                    ),
+                    hint: 'Tag name ...',
+                    clearable: (value) => value.text.isNotEmpty,
+                  ),
                 ),
-                hint: 'Tag name ...',
-                clearable: (value) => value.text.isNotEmpty,
-              ),
-            ),
-            ValueListenableBuilder(
-              valueListenable: _controller,
-              builder: (context, _, _) {
-                final showButton = _controller.text.isNotEmpty;
-                return AnimatedSize(
+                AnimatedSize(
                   duration: const Duration(milliseconds: 250),
                   curve: Curves.easeOut,
                   alignment: Alignment.centerRight, // grows left → right
@@ -69,36 +64,45 @@ class _TagsPageState extends State<TagsPage> {
                       ),
                     ),
                   ),
-                );
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Expanded(
-          child: filteredTags.isEmpty
-              ? const Center(child: Text('No tags found'))
-              : FTileGroup(
-                  divider: .full,
-                  children: filteredTags
-                      .map(
-                        (tag) => FTile(
-                          prefix: CircleAvatar(
-                            backgroundColor:
-                                tag.color ?? context.theme.colors.foreground,
-                            radius: 6,
-                          ),
-                          style: const .delta(margin: .value(.zero)),
-                          title: Text(tag.name),
-                          suffix: const Icon(FIcons.chevronRight),
-                          onPress: () => showTagEdit(context, tag),
-                        ),
-                      )
-                      .toList(),
                 ),
-        ),
-        const SizedBox(height: 4),
-      ],
+              ],
+            ),
+            const SizedBox(height: 4),
+            Expanded(
+              child: Consumer<TagsService>(
+                builder: (context, service, child) {
+                  final filteredTags = _controller.text.isEmpty
+                      ? service.tags
+                      : service.search(_controller.text);
+
+                  return filteredTags.isEmpty
+                      ? const Center(child: Text('No tags found'))
+                      : FTileGroup(
+                          divider: .full,
+                          children: filteredTags
+                              .map(
+                                (tag) => FTile(
+                                  prefix: CircleAvatar(
+                                    backgroundColor:
+                                        tag.color ??
+                                        context.theme.colors.foreground,
+                                    radius: 6,
+                                  ),
+                                  style: const .delta(margin: .value(.zero)),
+                                  title: Text(tag.name),
+                                  suffix: const Icon(FIcons.chevronRight),
+                                  onPress: () => showTagEdit(context, tag),
+                                ),
+                              )
+                              .toList(),
+                        );
+                },
+              ),
+            ),
+            const SizedBox(height: 4),
+          ],
+        );
+      },
     );
   }
 }

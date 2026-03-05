@@ -23,7 +23,7 @@ Start an emulator, `Ctrl+Shift+P` :
 >flutter: launch emulator
 ```
 
-
 # Inspiration
+
 https://www.macstories.net/reviews/nudget-review-budgeting-made-simple/
 https://www.nudgetapp.com/

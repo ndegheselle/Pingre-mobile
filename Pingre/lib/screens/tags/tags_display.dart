@@ -24,7 +24,7 @@ class TagsDisplay extends StatelessWidget {
         }
 
         return Wrap(
-          alignment: WrapAlignment.start,
+          alignment: WrapAlignment.center,
           spacing: 2,
           runSpacing: 4,
           children: tags.map((tag) {
