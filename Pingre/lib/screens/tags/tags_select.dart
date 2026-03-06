@@ -20,12 +20,13 @@ class TagsSelect extends StatefulWidget {
   final TagsSelection? initialSelection;
 
   const TagsSelect({super.key, this.initialSelection});
+
   @override
   State<TagsSelect> createState() => _TagsSelectState();
 }
 
 class _TagsSelectState extends State<TagsSelect> {
-  late Tag? _primaryTag;
+  late String? _primaryTagId;
   late Set<String> _secondariesIds;
 
   final TextEditingController _controller = TextEditingController();
@@ -33,25 +34,35 @@ class _TagsSelectState extends State<TagsSelect> {
   @override
   void initState() {
     super.initState();
-    _primaryTag = widget.initialSelection?.primary;
+    _primaryTagId = widget.initialSelection?.primary.id;
     _secondariesIds =
         widget.initialSelection?.secondaries.map((t) => t.id).toSet() ?? {};
   }
 
-  void _toggleTag(Tag tag) {
+  void _toggleTag(String id) {
     setState(() {
-      if (_primaryTag == null) {
-        _primaryTag = tag;
+      // If selected
+      if (id == _primaryTagId) {
+        _primaryTagId = null;
+        if (_secondariesIds.isEmpty == false) _primaryTagId = _secondariesIds.first;
+      }
+      else if (_secondariesIds.contains(id)) {
+        _secondariesIds.remove(id);
+      }
+      else if (_primaryTagId == null) {
+        _primaryTagId = id;
       } else {
-        _secondariesIds.add(tag.id);
+        _secondariesIds.add(id);
       }
     });
   }
 
-  void _setPrimaryTag(Tag tag) {
-    if (_primaryTag == tag) return;
+  void _setPrimaryTag(String id) {
+    if (_primaryTagId == id) return;
+    if (_secondariesIds.contains(id)) _secondariesIds.remove(id);
     setState(() {
-      _primaryTag = tag;
+      if (_primaryTagId != null) _secondariesIds.add(_primaryTagId!);
+      _primaryTagId = id;
     });
   }
 
@@ -61,17 +72,12 @@ class _TagsSelectState extends State<TagsSelect> {
       listen: false,
     ).getOrCreate(_controller.text.trim());
 
-    _toggleTag(tag);
+    _toggleTag(tag.id);
     _controller.clear();
   }
 
-  bool _isSelected(String id) {
-    if (id == _primaryTag?.id) return true;
-    return _secondariesIds.contains(id);
-  }
-
   void _confirm() {
-    if (_primaryTag == null) return Navigator.of(context).pop();
+    if (_primaryTagId == null) return Navigator.of(context).pop();
 
     var service = Provider.of<TagsService>(context, listen: false);
     var secondaries = _secondariesIds
@@ -79,7 +85,7 @@ class _TagsSelectState extends State<TagsSelect> {
         .toList();
     return Navigator.of(
       context,
-    ).pop(TagsSelection(primary: _primaryTag!, secondaries: secondaries));
+    ).pop(TagsSelection(primary: service.tagsMap[_primaryTagId]!, secondaries: secondaries));
   }
 
   @override
@@ -104,7 +110,7 @@ class _TagsSelectState extends State<TagsSelect> {
               "Select tags",
               style: context.theme.typography.xl.copyWith(fontWeight: .bold),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Row(
               children: [
                 Expanded(
@@ -132,7 +138,7 @@ class _TagsSelectState extends State<TagsSelect> {
                           widthFactor: showButton ? 1.0 : 0.0,
                           child: Row(
                             children: [
-                              SizedBox(width: 4),
+                              const SizedBox(width: 4),
                               FButton.icon(
                                 variant: .outline,
                                 onPress: _addTag,
@@ -147,7 +153,9 @@ class _TagsSelectState extends State<TagsSelect> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
+            Center(child: Opacity(opacity: 0.5, child: Text("Long press to set primary tag", style: context.theme.typography.sm))),
+            const SizedBox(height: 4),
             Expanded(
               child: SizedBox(
                 width: double.infinity,
@@ -155,88 +163,19 @@ class _TagsSelectState extends State<TagsSelect> {
                   child: ValueListenableBuilder(
                     valueListenable: _controller,
                     builder: (context, _, _) {
-                      final search = _controller.text.trim();
-                      return Consumer<TagsService>(
-                        builder: (context, service, child) {
-                          final filtered =
-                              (search.isEmpty
-                                      ? service.tags
-                                      : service.search(search))
-                                  .toList();
-                          filtered.sort((a, b) {
-                            if (a == _primaryTag) return -1;
-                            if (b == _primaryTag) return 1;
-
-                            final aSelected = _secondariesIds.contains(a.id);
-                            final bSelected = _secondariesIds.contains(b.id);
-
-                            if (aSelected != bSelected) return aSelected ? -1 : 1;
-
-                            return b.updatedAt.compareTo(
-                              a.updatedAt,
-                            ); // newest first
-                          });
-
-                          return service.tags.isEmpty
-                              ? const Center(
-                                  child: Opacity(
-                                    opacity: 0.5,
-                                    child: Text("No existing tag"),
-                                  ),
-                                )
-                              : Wrap(
-                                  alignment: WrapAlignment.start,
-                                  spacing: 4,
-                                  runSpacing: 4,
-                                  children: filtered.map((tag) {
-                                    final isSelected = _isSelected(tag.id);
-                                    final isPrimary = tag.id == _primaryTag?.id;
-                                    return GestureDetector(
-                                      onLongPress: () => _setPrimaryTag(tag),
-                                      onTap: () => _toggleTag(tag),
-                                      child: FBadge(
-                                        style: .delta(
-                                          contentStyle: .delta(
-                                            labelTextStyle: .delta(
-                                              fontSize: context
-                                                  .theme
-                                                  .typography
-                                                  .lg
-                                                  .fontSize,
-                                            ),
-                                          ),
-                                        ),
-                                        variant: isSelected
-                                            ? (isPrimary
-                                                  ? .android
-                                                  : .secondary)
-                                            : .outline,
-                                        child: Row(
-                                          children: [
-                                            if (isSelected)
-                                              Icon(
-                                                FIcons.check,
-                                                color: context
-                                                    .theme
-                                                    .colors
-                                                    .background,
-                                                fontWeight: .bold,
-                                              ),
-                                            SizedBox(width: 4),
-                                            Text(tag.name),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                );
-                        },
+                      return TagsWrap(
+                        primaryTagId: _primaryTagId,
+                        secondariesIds: _secondariesIds,
+                        search: _controller.text.trim(),
+                        onTap: _toggleTag,
+                        onLongPress: _setPrimaryTag,
                       );
                     },
                   ),
                 ),
               ),
             ),
+            SizedBox(height: 4),
             FButton(
               onPress: _confirm,
               prefix: const Icon(FIcons.check),
@@ -245,6 +184,97 @@ class _TagsSelectState extends State<TagsSelect> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class TagsWrap extends StatelessWidget {
+  final String? primaryTagId;
+  final Set<String> secondariesIds;
+  final String search;
+  final void Function(String id) onTap;
+  final void Function(String id) onLongPress;
+
+  const TagsWrap({
+    super.key,
+    required this.primaryTagId,
+    required this.secondariesIds,
+    required this.search,
+    required this.onTap,
+    required this.onLongPress,
+  });
+
+  bool _isSelected(String id) {
+    if (id == primaryTagId) return true;
+    return secondariesIds.contains(id);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<TagsService>(
+      builder: (context, service, child) {
+        if (service.tags.isEmpty) {
+          return const Center(
+            child: Opacity(
+              opacity: 0.5,
+              child: Text("No existing tag"),
+            ),
+          );
+        }
+
+        final filtered =
+            (search.isEmpty ? service.tags : service.search(search)).toList();
+
+        filtered.sort((a, b) {
+          if (a.id == primaryTagId) return -1;
+          if (b.id == primaryTagId) return 1;
+
+          final aSelected = secondariesIds.contains(a.id);
+          final bSelected = secondariesIds.contains(b.id);
+
+          if (aSelected != bSelected) return aSelected ? -1 : 1;
+
+          return b.updatedAt.compareTo(a.updatedAt); // newest first
+        });
+
+        return Wrap(
+          alignment: WrapAlignment.start,
+          spacing: 4,
+          runSpacing: 4,
+          children: filtered.map((tag) {
+            final isSelected = _isSelected(tag.id);
+            final isPrimary = tag.id == primaryTagId;
+            return GestureDetector(
+              onLongPress: () => onLongPress(tag.id),
+              onTap: () => onTap(tag.id),
+              child: FBadge(
+                style: .delta(
+                  contentStyle: .delta(
+                    labelTextStyle: .delta(
+                      fontSize: context.theme.typography.lg.fontSize,
+                    ),
+                  ),
+                ),
+                variant: isSelected
+                    ? (isPrimary ? .android : .secondary)
+                    : .outline,
+                child: Row(
+                  children: [
+                    if (isSelected)
+                      Icon(
+                        FIcons.check,
+                        color: isPrimary ? context.theme.colors.background : context.theme.colors.foreground,
+                        fontWeight: .bold,
+                      ),
+                    SizedBox(width: 4),
+                    Text(tag.name),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }

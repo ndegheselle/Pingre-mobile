@@ -49,7 +49,7 @@ class _AccountsPageState extends State<AccountsPage> {
           ),
         ],
       ),
-      TimeRange(value: EnumTimeRange.month),
+      TimeRange(value: TimeRangeUnit.month),
     ],
   );
 }

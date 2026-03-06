@@ -1,28 +1,104 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
-enum EnumTimeRange { day, week, twoWeeks, month, threeMonths, year }
+enum TimeRangeUnit { day, week, twoWeeks, month, threeMonths, year }
 
-class TimeRange extends StatefulWidget {
-  final EnumTimeRange value;
-  const TimeRange({super.key, required this.value});
+class TimeRange {
+  final DateTime start;
+  final DateTime end;
 
-  @override
-  State<TimeRange> createState() => _TimeRangeState();
+  TimeRange({required this.start, required this.end});
+
+  /// Returns the NEXT range (older data = going back in time)
+  TimeRange previous(TimeRangeUnit unit) {
+    switch (unit) {
+      case TimeRangeUnit.day:
+        return TimeRange(
+          start: start.subtract(const Duration(days: 1)),
+          end: start.subtract(const Duration(microseconds: 1)),
+        );
+      case TimeRangeUnit.week:
+        return TimeRange(
+          start: start.subtract(const Duration(days: 7)),
+          end: start.subtract(const Duration(microseconds: 1)),
+        );
+      case TimeRangeUnit.month:
+        final newMonth = start.month == 1 ? 12 : start.month - 1;
+        final newYear = start.month == 1 ? start.year - 1 : start.year;
+        return TimeRange(
+          start: DateTime(newYear, newMonth, 1),
+          end: start.subtract(const Duration(microseconds: 1)),
+        );
+      case TimeRangeUnit.year:
+        return TimeRange(
+          start: DateTime(start.year - 1, 1, 1),
+          end: start.subtract(const Duration(microseconds: 1)),
+        );
+    }
+  }
+
+  /// Factory: build the CURRENT range containing [now]
+  static TimeRange current(TimeRangeUnit unit, [DateTime? now]) {
+    final base = now ?? DateTime.now();
+    switch (unit) {
+      case TimeRangeUnit.day:
+        final start = DateTime(base.year, base.month, base.day);
+        return TimeRange(start: start, end: start.add(const Duration(days: 1, microseconds: -1)));
+      case TimeRangeUnit.week:
+        final start = base.subtract(Duration(days: base.weekday - 1));
+        final s = DateTime(start.year, start.month, start.day);
+        return TimeRange(start: s, end: s.add(const Duration(days: 7, microseconds: -1)));
+      case TimeRangeUnit.month:
+        final start = DateTime(base.year, base.month, 1);
+        return TimeRange(
+          start: start,
+          end: DateTime(base.year, base.month + 1, 1).subtract(const Duration(microseconds: 1)),
+        );
+      case TimeRangeUnit.year:
+        final start = DateTime(base.year, 1, 1);
+        return TimeRange(
+          start: start,
+          end: DateTime(base.year + 1, 1, 1).subtract(const Duration(microseconds: 1)),
+        );
+    }
+  }
+
+  String label(TimeRangeUnit unit) {
+    switch (unit) {
+      case TimeRangeUnit.day:
+        return '${start.day}/${start.month}/${start.year}';
+      case TimeRangeUnit.week:
+        return 'Week of ${start.day}/${start.month}';
+      case TimeRangeUnit.month:
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return '${months[start.month - 1]} ${start.year}';
+      case TimeRangeUnit.year:
+        return '${start.year}';
+    }
+  }
 }
 
-class _TimeRangeState extends State<TimeRange> {
-  static const _items = <(EnumTimeRange, String)>[
-    (EnumTimeRange.day, 'D'),
-    (EnumTimeRange.week, 'W'),
-    (EnumTimeRange.twoWeeks, '2W'),
-    (EnumTimeRange.month, 'M'),
-    (EnumTimeRange.threeMonths, '3M'),
-    (EnumTimeRange.year, 'Y'),
+
+class TimeRangeSelector extends StatefulWidget {
+  final TimeRangeUnit value;
+  const TimeRangeSelector({super.key, required this.value});
+
+  @override
+  State<TimeRangeSelector> createState() => _TimeRangeSelectorState();
+}
+
+class _TimeRangeSelectorState extends State<TimeRangeSelector> {
+  static const _items = <(TimeRangeUnit, String)>[
+    (TimeRangeUnit.day, 'D'),
+    (TimeRangeUnit.week, 'W'),
+    (TimeRangeUnit.twoWeeks, '2W'),
+    (TimeRangeUnit.month, 'M'),
+    (TimeRangeUnit.threeMonths, '3M'),
+    (TimeRangeUnit.year, 'Y'),
   ];
   static const padding = EdgeInsets.symmetric(horizontal: 3.0, vertical: 2.0);
 
-  late EnumTimeRange _selectedValue;
+  late TimeRangeUnit _selectedValue;
   int _selectedIndex = 0;
   final List<GlobalKey> _itemKeys = List.generate(
     _items.length,

@@ -105,11 +105,7 @@ class _TransactionEditState extends State<TransactionEdit> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _tagsId.isEmpty
-                      ? const Center(
-                          child: Opacity(opacity: 0.5, child: Text("No tags")),
-                        )
-                      : TagsDisplay(tagIds: _tagsId),
+                  TagsDisplay(selection: _tagsSelection),
                   SizedBox(height: 4),
                   Center(
                     child: SizedBox(
@@ -128,7 +124,7 @@ class _TransactionEditState extends State<TransactionEdit> {
             ),
 
             SizedBox(height: 4),
-            FTextField.multiline(hint: 'Notes ...', control: _noteControl),
+            FTextField.multiline(hint: 'Notes', control: _noteControl),
             SizedBox(height: 4),
             Row(
               children: [
