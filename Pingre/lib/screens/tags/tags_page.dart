@@ -88,7 +88,6 @@ class _TagsPageState extends State<TagsPage> {
                                         context.theme.colors.foreground,
                                     radius: 6,
                                   ),
-                                  style: const .delta(margin: .value(.zero)),
                                   title: Text(tag.name),
                                   suffix: const Icon(FIcons.chevronRight),
                                   onPress: () => showTagEdit(context, tag),

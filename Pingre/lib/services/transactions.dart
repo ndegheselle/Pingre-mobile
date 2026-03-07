@@ -1,22 +1,28 @@
 import 'dart:math';
-
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:pingre/models/time_range.dart';
 import 'package:pingre/services/tags.dart';
 import 'package:uuid/uuid.dart';
 
-class TagsSelection
-{
+/// A selection of tags, a [primary] tag act like a category and is used to group and create reports
+class TagsSelection {
+  /// Main tag of the selection
   final Tag primary;
+
+  /// Secondaries tags
   final List<Tag> secondaries;
   List<Tag> get all => [primary, ...secondaries];
 
-  TagsSelection({required this.primary, List<Tag>? secondaries}) : secondaries = secondaries ?? [];
+  TagsSelection({required this.primary, List<Tag>? secondaries})
+    : secondaries = secondaries ?? [];
 }
 
+/// One line of transaction
 class Transaction {
   final String id;
-  final double value;
-  
+  final Decimal value;
+
   final TagsSelection tags;
 
   final DateTime date;
@@ -31,38 +37,46 @@ class Transaction {
   }) : id = id ?? const Uuid().v4();
 }
 
+/// A group of transactions
+class TransactionsGroup {
+  final TimeRange range;
+  final String name;
+  final Decimal total;
+  final List<Transaction> transactions;
+
+  TransactionsGroup({required this.range, required this.name, required this.transactions})
+    : total = transactions.fold(.zero, (a, b) => a + b.value);
+}
+
 class TransactionsService extends ChangeNotifier {
-
-final List<Transaction> _allTransactions = _generateFakeData();
-
-  Future<List<Transaction>> fetchByRange(TimeRange range) async {
-    await Future.delayed(const Duration(milliseconds: 600)); // simulate network
-    return _allTransactions
-        .where((t) => !t.date.isBefore(range.start) && !t.date.isAfter(range.end))
-        .toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
-  }
-
+  final List<Transaction> _allTransactions = _generateFakeData();
   static List<Transaction> _generateFakeData() {
     final rng = Random();
     return List.generate(200, (i) {
       final daysAgo = rng.nextInt(365);
       return Transaction(
-        value: (rng.nextDouble() * 500).roundToDouble(),
+        value: Decimal.parse((rng.nextDouble() * 500).roundToDouble().toString()),
         date: DateTime.now().subtract(Duration(days: daysAgo)),
-        tags: TagsSelection.none(), // replace with your tags
+        tags: TagsSelection(
+          primary: Tag(name: "Test 😊"),
+          secondaries: [
+            Tag(name: "Small 🏐"),
+            Tag(name: "Big 🚀"),
+          ],
+        ),
         notes: 'Transaction $i',
       );
     });
   }
 
-  void create(Transaction transaction)
-  {
-
+  Future<List<Transaction>> getByRange(TimeRange range) async {
+    return _allTransactions
+        .where((t) => t.date.isBefore(range.from) && t.date.isAfter(range.to))
+        .toList()
+      ..sort((a, b) => b.date.compareTo(a.date));
   }
-  
-  void update(Transaction transaction)
-  {
 
-  }
+  void create(Transaction transaction) {}
+
+  void update(Transaction transaction) {}
 }

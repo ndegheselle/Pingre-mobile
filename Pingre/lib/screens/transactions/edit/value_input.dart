@@ -1,19 +1,20 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/theme_extensions.dart';
 
-class NumberValueController extends ValueNotifier<double> {
-  NumberValueController([super.initialValue = 0]);
+class NumberValueController extends ValueNotifier<Decimal> {
+  NumberValueController([Decimal? initialValue]) : super(initialValue ?? Decimal.zero);
 
-  bool get isNegative => value <= 0;
-  double get absolute => value.abs();
+  bool get isNegative => value <= .zero;
+  Decimal get absolute => value.abs();
   String get formatted => absolute.toStringAsFixed(2);
 
-  void setValue(double newValue) {
+  void setValue(Decimal newValue) {
     value = newValue;
   }
 
-  void setAbsolute(double newValue) {
+  void setAbsolute(Decimal newValue) {
     value = isNegative ? -newValue : newValue;
   }
 
@@ -39,7 +40,7 @@ class _ValueInputState extends State<ValueInput> {
   late TextEditingController _textController;
 
   void _onTextChanged() {
-    final value = double.tryParse(_textController.text);
+    final value = Decimal.tryParse(_textController.text);
     if (value != null) {
       widget.controller.setAbsolute(value);
     } else {

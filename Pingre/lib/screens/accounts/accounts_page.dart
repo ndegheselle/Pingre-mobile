@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/widgets/time_range.dart';
+import 'package:pingre/models/time_range.dart';
+import 'package:pingre/widgets/time_range_select.dart';
 
 class AccountsPage extends StatefulWidget {
   const AccountsPage({super.key});
@@ -49,7 +50,7 @@ class _AccountsPageState extends State<AccountsPage> {
           ),
         ],
       ),
-      TimeRange(value: TimeRangeUnit.month),
+      TimeRangeSelect(value: TimeRangeUnit.month),
     ],
   );
 }

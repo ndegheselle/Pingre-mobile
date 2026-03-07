@@ -2,10 +2,12 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
+/// A transaction tag.
 class Tag {
   final String id;
   final String name;
   final Color? color;
+  /// When is the last time the tag has been used.
   DateTime updatedAt;
 
   Tag({required this.name, this.color, String? id})
@@ -61,6 +63,7 @@ class TagsService extends ChangeNotifier {
     return tag;
   }
 
+  /// Create the tag if no tag of the [name] exist, return the existing or created tag.
   Tag getOrCreate(String name) {
     String cleanedName = name.trim();
     var tag = tags.firstWhereOrNull(
@@ -70,6 +73,7 @@ class TagsService extends ChangeNotifier {
     return tag ?? _addTag(Tag(name: cleanedName));
   }
 
+  /// Create a tag if it doesn't exist.
   void createIfMissing(String name) {
     getOrCreate(name);
   }

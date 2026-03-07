@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/screens/tags/tags_display.dart';
@@ -40,7 +41,7 @@ class _TransactionEditState extends State<TransactionEdit> {
 
     final initialDate = widget.transaction?.date ?? DateTime.now();
     _tagsSelection = widget.transaction?.tags;
-    _valueController = NumberValueController(widget.transaction?.value ?? -1);
+    _valueController = NumberValueController(widget.transaction?.value ?? -1 as Decimal);
     _dateControl = FDateFieldControl.managed(initial: initialDate);
     _timeControl = FTimeFieldControl.managed(
       initial: FTime(initialDate.hour, initialDate.minute),
