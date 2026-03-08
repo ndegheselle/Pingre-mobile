@@ -4,6 +4,7 @@ import 'package:pingre/services/tags.dart';
 import 'package:pingre/widgets/color_picker.dart';
 import 'package:provider/provider.dart';
 
+/// Show the tag edit page in a sheet
 Future<dynamic> showTagEdit(BuildContext context, Tag tag) {
   return showFSheet(
     context: context,
@@ -39,38 +40,60 @@ class _TagEditState extends State<TagEdit> {
     _nameController.dispose();
     super.dispose();
   }
-  
+
+  /// Update the tag
   void _save() {
-    Provider.of<TagsService>(context, listen: false).updateTag(
+    Provider.of<TagsService>(context, listen: false).update(
       widget.tag.id,
       name: _nameController.text.trim(),
       color: _selectedColor,
     );
+    _onSaved();
+  }
+
+  void _onSaved() {
+    showFToast(
+      context: context,
+      alignment: .topCenter,
+      title: const Row(
+        mainAxisSize: .min,
+        children: [Icon(FIcons.check), SizedBox(width: 4), Text('Saved')],
+      ),
+      description: const Text("The tag has been edited"),
+      suffixBuilder: (context, entry) => IntrinsicHeight(
+        child: FButton.icon(
+          variant: .ghost,
+          onPress: entry.dismiss,
+          child: const Icon(FIcons.x),
+        ),
+      ),
+    );
     Navigator.of(context).pop();
   }
 
+  /// Show a dialog to ask if the user want to remove the tag and then remove it
   void _remove() {
     showFDialog(
       context: context,
       builder: (context, style, animation) => FDialog(
         style: style,
         animation: animation,
-        title: const Text('Delete tag'),
+        title: const Text('Remove tag'),
         body: const Text(
-          'Are you sure you want to delete this tag? This action cannot be undone.',
+          'Are you sure you want to remove this tag? This action cannot be undone.',
         ),
         actions: [
           FButton(
             variant: .destructive,
             size: .sm,
-            child: const Text('Delete'),
+            child: const Text('Remove'),
             onPress: () {
               Provider.of<TagsService>(
                 context,
                 listen: false,
-              ).removeTag(widget.tag.id);
+              ).remove(widget.tag.id);
 
-              Navigator.of(context).pop();
+              _onRemoved();
               Navigator.of(context).pop();
             },
           ),
@@ -83,6 +106,26 @@ class _TagEditState extends State<TagEdit> {
         ],
       ),
     );
+  }
+
+  void _onRemoved() {
+    showFToast(
+      context: context,
+      alignment: .topCenter,
+      title: const Row(
+        mainAxisSize: .min,
+        children: [Icon(FIcons.check), SizedBox(width: 4), Text('Removed')],
+      ),
+      description: const Text('The tag has been removed'),
+      suffixBuilder: (context, entry) => IntrinsicHeight(
+        child: FButton.icon(
+          variant: .ghost,
+          onPress: entry.dismiss,
+          child: const Icon(FIcons.x),
+        ),
+      ),
+    );
+    Navigator.of(context).pop();
   }
 
   @override
@@ -102,7 +145,10 @@ class _TagEditState extends State<TagEdit> {
         padding: const .only(left: 8, right: 8, bottom: 8),
         child: Column(
           children: [
-            Text("Edit tag", style: context.theme.typography.xl.copyWith(fontWeight: .bold)),
+            Text(
+              "Edit tag",
+              style: context.theme.typography.xl.copyWith(fontWeight: .bold),
+            ),
             const SizedBox(height: 4),
             ColorPicker(
               initialColor: _selectedColor,

@@ -35,6 +35,21 @@ class Transaction {
     this.notes = "",
     String? id,
   }) : id = id ?? const Uuid().v4();
+
+  Transaction copyWith({
+    Decimal? value,
+    TagsSelection? tags,
+    DateTime? date,
+    String? notes,
+  }) {
+    return Transaction(
+      id: id,
+      value: value ?? this.value,
+      tags: tags ?? this.tags,
+      date: date ?? this.date,
+      notes: notes ?? this.notes,
+    );
+  }
 }
 
 /// A group of transactions
@@ -44,18 +59,24 @@ class TransactionsGroup {
   final Decimal total;
   final List<Transaction> transactions;
 
-  TransactionsGroup({required this.range, required this.name, required this.transactions})
-    : total = transactions.fold(.zero, (a, b) => a + b.value);
+  TransactionsGroup({
+    required this.range,
+    required this.name,
+    required this.transactions,
+  }) : total = transactions.fold(.zero, (a, b) => a + b.value);
 }
 
 class TransactionsService extends ChangeNotifier {
-  final List<Transaction> _allTransactions = _generateFakeData();
-  static List<Transaction> _generateFakeData() {
+  final Map<String, Transaction> _transactionsMap = _generateFakeData();
+
+  static Map<String, Transaction> _generateFakeData() {
     final rng = Random();
-    return List.generate(200, (i) {
+    var list = List.generate(200, (i) {
       final daysAgo = rng.nextInt(365);
       return Transaction(
-        value: Decimal.parse((rng.nextDouble() * 500).roundToDouble().toString()),
+        value: Decimal.parse(
+          (rng.nextDouble() * 500).roundToDouble().toString(),
+        ),
         date: DateTime.now().subtract(Duration(days: daysAgo)),
         tags: TagsSelection(
           primary: Tag(name: "Test 😊"),
@@ -67,16 +88,42 @@ class TransactionsService extends ChangeNotifier {
         notes: 'Transaction $i',
       );
     });
+    return {for (var e in list) e.id: e};
   }
 
   Future<List<Transaction>> getByRange(TimeRange range) async {
-    return _allTransactions
+    return _transactionsMap.values
         .where((t) => t.date.isBefore(range.from) && t.date.isAfter(range.to))
         .toList()
       ..sort((a, b) => b.date.compareTo(a.date));
   }
 
-  void create(Transaction transaction) {}
+  Transaction create(Transaction transaction) {
+    _transactionsMap[transaction.id] = transaction;
+    notifyListeners();
+    return transaction;
+  }
 
-  void update(Transaction transaction) {}
+  void update(
+    String id, {
+    Decimal? value,
+    TagsSelection? tags,
+    DateTime? date,
+    String? notes,
+  }) {
+    if (!_transactionsMap.containsKey(id)) return;
+
+    _transactionsMap[id] = _transactionsMap[id]!.copyWith(
+      value: value,
+      tags: tags,
+      date: date,
+      notes: notes,
+    );
+    notifyListeners();
+  }
+
+  void remove(String id) {
+    _transactionsMap.remove(id);
+    notifyListeners();
+  }
 }

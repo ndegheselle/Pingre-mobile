@@ -27,6 +27,7 @@ class NumberValueController extends ValueNotifier<Decimal> {
   }
 }
 
+/// Decimal value input for a transaction
 class ValueInput extends StatefulWidget {
   final NumberValueController controller;
 

@@ -86,14 +86,14 @@ class TagsService extends ChangeNotifier {
     return tagsMap[id];
   }
 
-  void updateTag(String id, {String? name, Color? color}) {
+  void update(String id, {String? name, Color? color}) {
     if (!tagsMap.containsKey(id)) return;
 
     tagsMap[id] = tagsMap[id]!.copyWith(name: name, color: color);
     notifyListeners();
   }
 
-  void removeTag(String id) {
+  void remove(String id) {
     tagsMap.remove(id);
     notifyListeners();
   }

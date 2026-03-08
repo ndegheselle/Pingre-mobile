@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
                 width: 64,
                 height: 64,
                 child: ElevatedButton(
-                  onPressed: () => showTagEdit(context),
+                  onPressed: () => showTransactionEdit(context),
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),
                     padding: EdgeInsets.zero,
