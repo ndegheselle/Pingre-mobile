@@ -3,37 +3,90 @@ import 'package:pingre/models/time_range.dart';
 import 'package:pingre/services/transactions.dart';
 
 class TransactionGroup {
+  late final String name;
+  final TimeRangeUnit unit;
   final TimeRange range;
-  final String name;
   final List<Transaction> transactions;
   Decimal total;
 
   TransactionGroup({
+    required this.unit,
     required this.range,
-    required this.name,
     List<Transaction>? items,
-  }) : transactions = items ?? [], total = .zero;
+  }) : transactions = items ?? [],
+       total = .zero {
+    name = getName(unit, range);
+  }
 
-  void add(Transaction transaction)
-  {
+  TransactionGroup.fromDate({
+    required this.unit,
+    DateTime? now,
+    List<Transaction>? items,
+  }) : transactions = items ?? [],
+       total = .zero,
+       range = .fromUnit(unit, now) {
+    name = getName(unit, range);
+  }
+
+  /// Create the previous transaction group
+  TransactionGroup previous() {
+    return TransactionGroup(unit: unit, range: range.previous(unit));
+  }
+
+  void add(Transaction transaction) {
     transactions.add(transaction);
     total += transaction.value;
   }
 
-  /// Number of ranges to create for each unit to time.
-  static const Map<TimeRangeUnit, int> numberOfRanges = {
-    TimeRangeUnit.day: 10,
-    TimeRangeUnit.week: 4,
-    TimeRangeUnit.twoWeeks: 2,
-    TimeRangeUnit.month: 3,
-    TimeRangeUnit.quarter: 2,
-    TimeRangeUnit.year: 1,
-  };
+  /// Get the name of the group based on the [unit] and the time [range]
+  static String getName(TimeRangeUnit unit, TimeRange range) {
+    final now = DateTime.now();
 
-  /// Get the name of the group based on the [unit], the time [range] and the [index] of the group?
-  static String getName(TimeRangeUnit unit, TimeRange range, int index) {
-    if (index == 0) return 'Current ${unit.label}';
-    if (index == 1) return 'Last ${unit.label}';
+    // Helper to check if the range is current
+    bool isCurrent(TimeRangeUnit unit, TimeRange range) {
+      switch (unit) {
+        case TimeRangeUnit.day:
+          return range.start.day == now.day &&
+              range.start.month == now.month &&
+              range.start.year == now.year;
+        case TimeRangeUnit.week:
+        case TimeRangeUnit.twoWeeks:
+          // Check if the range includes today
+          return now.isBefore(range.start) && now.isAfter(range.end);
+        case TimeRangeUnit.month:
+        case TimeRangeUnit.quarter:
+          return range.start.month == now.month && range.start.year == now.year;
+        case TimeRangeUnit.year:
+          return range.start.year == now.year;
+      }
+    }
+
+    // Helper to check if the range is last
+    bool isLast(TimeRangeUnit unit, TimeRange range) {
+      switch (unit) {
+        case TimeRangeUnit.day:
+          final yesterday = now.subtract(const Duration(days: 1));
+          return range.start.day == yesterday.day &&
+              range.start.month == yesterday.month &&
+              range.start.year == yesterday.year;
+        case TimeRangeUnit.week:
+        case TimeRangeUnit.twoWeeks:
+          // Check if the range is the previous week
+          final lastWeekStart = now.subtract(
+            Duration(days: now.weekday - 1 + 7),
+          );
+          final lastWeekEnd = now.subtract(Duration(days: now.weekday - 1 + 1));
+          return lastWeekStart.isBefore(range.start) && lastWeekEnd.isAfter(range.end);
+        case TimeRangeUnit.month:
+        case TimeRangeUnit.quarter:
+          final lastMonth = now.month == 1 ? 12 : now.month - 1;
+          final lastMonthYear = now.month == 1 ? now.year - 1 : now.year;
+          return range.start.month == lastMonth &&
+              range.start.year == lastMonthYear;
+        case TimeRangeUnit.year:
+          return range.start.year == now.year - 1;
+      }
+    }
 
     // Format helper
     String formatDate(DateTime d) {
@@ -54,19 +107,21 @@ class TransactionGroup {
       return '${months[d.month - 1]} ${d.day}';
     }
 
+    if (isCurrent(unit, range)) {
+      return 'Current ${unit.label}';
+    } else if (isLast(unit, range)) {
+      return 'Last ${unit.label}';
+    }
+
+    // Original logic for other cases
     switch (unit) {
       case TimeRangeUnit.day:
-        // e.g. "Mar 5"
-        return formatDate(range.from);
-
+        return formatDate(range.start);
       case TimeRangeUnit.week:
       case TimeRangeUnit.twoWeeks:
-        // e.g. "Feb 6 - Feb 13"
-        return '${formatDate(range.from)} - ${formatDate(range.to)}';
-
+        return '${formatDate(range.start)} - ${formatDate(range.end)}';
       case TimeRangeUnit.month:
       case TimeRangeUnit.quarter:
-        // e.g. "Feb 2025" or just "Feb" if same year
         const months = [
           'January',
           'February',
@@ -81,40 +136,21 @@ class TransactionGroup {
           'November',
           'December',
         ];
-        final now = DateTime.now();
-        final label = months[range.from.month - 1];
-        return range.from.year != now.year
-            ? '$label ${range.from.year}'
+        final label = months[range.start.month - 1];
+        return range.start.year != now.year
+            ? '$label ${range.start.year}'
             : label;
-
       case TimeRangeUnit.year:
-        return '${range.from.year}';
+        return '${range.start.year}';
     }
-  }
-
-  /// Create empty groupes based on the [unit] and the [numberOfRanges].
-  static List<TransactionGroup> empty(TimeRangeUnit unit, [DateTime? now]) {
-    int number = numberOfRanges[unit]!;
-
-    var range = TimeRange.fromUnit(unit, now);
-    List<TransactionGroup> groupes = [];
-    for (int i = 0; i < number; i++) {
-      groupes.add(
-        TransactionGroup(range: range, name: getName(unit, range, i)),
-      );
-      range = range.previous(unit);
-    }
-    return groupes;
   }
 }
 
 extension TransactionGroupExtension on Iterable<TransactionGroup> {
-
   /// Get the whole range of the list of group.
-  TimeRange range()
-  {
-    if (isEmpty) return TimeRange(from: DateTime.now(), to: DateTime.now());
-    return TimeRange(from: first.range.from, to: last.range.to);
+  TimeRange range() {
+    if (isEmpty) return TimeRange(start: DateTime.now(), end: DateTime.now());
+    return TimeRange(start: first.range.start, end: last.range.end);
   }
 
   /// Fill the transactions of a list of transactions group.
@@ -124,14 +160,35 @@ extension TransactionGroupExtension on Iterable<TransactionGroup> {
       // Find the group whose range contains the transaction date
       for (var group in this) {
         if (transactionDate.isBefore(
-              group.range.from.add(const Duration(days: 1)),
-            ) && transactionDate.isAfter(
-              group.range.to.subtract(const Duration(days: 1)),
+              group.range.start.add(const Duration(days: 1)),
+            ) &&
+            transactionDate.isAfter(
+              group.range.end.subtract(const Duration(days: 1)),
             )) {
           group.add(transaction);
           break; // No need to check other groups
         }
       }
     }
+  }
+}
+
+extension TransactionsExtension on List<Transaction> {
+  /// Group transactions in transactions groups with empty group between transactions, [this] must me sorted by date.
+  List<TransactionGroup> groupByUnit(TimeRangeUnit unit, [DateTime? now]) {
+    if (isEmpty) return [];
+
+    List<TransactionGroup> groups = [];
+    TransactionGroup currentGroup = .fromDate(unit: unit, now: now);
+    for (var transaction in this) {
+      while (transaction.date.isBefore(currentGroup.range.end)) {
+        groups.add(currentGroup);
+        currentGroup = currentGroup.previous();
+      }
+      currentGroup.add(transaction);
+    }
+
+    groups.add(currentGroup);
+    return groups;
   }
 }

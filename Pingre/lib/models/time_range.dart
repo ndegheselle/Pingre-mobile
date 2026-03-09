@@ -1,45 +1,53 @@
 /// Represent a range of time
 enum TimeRangeUnit { day, week, twoWeeks, month, quarter, year }
 
-/// Represent a range of time to [to] one date in the past [from] a date in the future (to today)
+/// Represent a range of time [start] a date in the past [end] today (inclusive)
 class TimeRange {
-  final DateTime from;
-  final DateTime to;
+  final DateTime start;
+  final DateTime end;
 
-  TimeRange({required this.from, required this.to});
+  TimeRange({required this.start, required this.end});
 
-  /// Returns the previous range
+  /// Returns the previous range of the same unit
   TimeRange previous(TimeRangeUnit unit) =>
-      TimeRange.fromUnit(unit, to.subtract(Duration(days: 1)));
+      TimeRange.fromUnit(unit, start.subtract(const Duration(days: 1)));
 
-  /// Create a time range from an [unit]
+  /// Create a time range from a [unit], anchored to the current period.
   static TimeRange fromUnit(TimeRangeUnit unit, [DateTime? now]) {
     final base = now ?? DateTime.now();
-    final today = DateTime(base.year, base.month, base.day);
+
+    final endOfToday = DateTime(base.year, base.month, base.day + 1)
+        .subtract(const Duration(microseconds: 1));
+    final startOfToday = DateTime(base.year, base.month, base.day);
+
     switch (unit) {
       case TimeRangeUnit.day:
-        return TimeRange(
-          from: today,
-          to: today.subtract(const Duration(days: 1)),
-        );
+        return TimeRange(start: endOfToday, end: startOfToday);
+
       case TimeRangeUnit.week:
-        return TimeRange(
-          from: today,
-          to: today.subtract(Duration(days: base.weekday - 1)),
+        final startOfWeek = startOfToday.subtract(
+          Duration(days: base.weekday - 1),
         );
+        return TimeRange(start: endOfToday, end: startOfWeek);
+
       case TimeRangeUnit.twoWeeks:
-        return TimeRange(
-          from: today,
-          to: today.subtract(Duration(days: base.weekday - 1 + 7)),
+        final startOfTwoWeeks = startOfToday.subtract(
+          Duration(days: base.weekday - 1 + 7),
         );
+        return TimeRange(start: endOfToday, end: startOfTwoWeeks);
+
       case TimeRangeUnit.month:
-        return TimeRange(from: today, to: today.substractMonths(1));
+        final startOfMonth = DateTime(base.year, base.month, 1);
+        return TimeRange(start: endOfToday, end: startOfMonth);
+
       case TimeRangeUnit.quarter:
-        // Two last quarters
-        return TimeRange(from: today, to: today.substractMonths(3));
+        final quarterStartMonth = ((base.month - 1) ~/ 3) * 3 + 1;
+        final startOfQuarter = DateTime(base.year, quarterStartMonth, 1);
+        return TimeRange(start: endOfToday, end: startOfQuarter);
+
       case TimeRangeUnit.year:
-        // Current year
-        return TimeRange(from: today, to: DateTime(today.year - 1, 1, 1));
+        final startOfYear = DateTime(base.year, 1, 1);
+        return TimeRange(start: endOfToday, end: startOfYear);
     }
   }
 }
@@ -47,12 +55,12 @@ class TimeRange {
 extension TimeRangeUnitLabel on TimeRangeUnit {
   String get label {
     switch (this) {
-      case TimeRangeUnit.day:       return 'day';
-      case TimeRangeUnit.week:      return 'week';
-      case TimeRangeUnit.twoWeeks:  return '2 weeks';
-      case TimeRangeUnit.month:     return 'month';
-      case TimeRangeUnit.quarter:   return 'quarter';
-      case TimeRangeUnit.year:      return 'year';
+      case TimeRangeUnit.day:      return 'day';
+      case TimeRangeUnit.week:     return 'week';
+      case TimeRangeUnit.twoWeeks: return '2 weeks';
+      case TimeRangeUnit.month:    return 'month';
+      case TimeRangeUnit.quarter:  return 'quarter';
+      case TimeRangeUnit.year:     return 'year';
     }
   }
 }

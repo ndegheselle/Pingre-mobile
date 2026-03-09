@@ -25,7 +25,7 @@ class ValueDisplay extends StatelessWidget {
         ),
         SizedBox(width: 2),
         Text(
-          value.toStringAsFixed(2),
+          value.abs().toStringAsFixed(2),
           style: context.theme.typography.base.copyWith(
             color: color,
             fontWeight: isHeader ? .bold : .normal,

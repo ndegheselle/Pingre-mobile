@@ -5,6 +5,7 @@ import 'package:pingre/screens/tags/tags_display.dart';
 import 'package:pingre/screens/tags/tags_select.dart';
 import 'package:pingre/screens/transactions/edit/value_input.dart';
 import 'package:pingre/services/transactions.dart';
+import 'package:pingre/widgets/error_display.dart';
 import 'package:provider/provider.dart';
 
 /// Show the transaction edit page as a sheet
@@ -196,16 +197,8 @@ class _TransactionEditState extends State<TransactionEdit> {
             ValueInput(controller: _valueController),
             SizedBox(height: 4),
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: _errors.containsKey("tags")
-                      ? Border.all(
-                          color: context.theme.colors.error,
-                          width: 1,
-                        )
-                      : null,
-                  borderRadius: context.theme.style.borderRadius,
-                ),
+              child: ErrorDisplay(
+                error: _errors["tags"],
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -227,21 +220,6 @@ class _TransactionEditState extends State<TransactionEdit> {
                 ),
               ),
             ),
-            if (_errors.containsKey("tags"))
-              Row(
-                children: [
-                  Icon(
-                    FIcons.triangleAlert,
-                    color: context.theme.colors.error,
-                  ),
-                  SizedBox(width: 4),
-                  Text(
-                    _errors["tags"]!,
-                    style: .new(color: context.theme.colors.error),
-                  ),
-                ],
-              ),
-
             SizedBox(height: 4),
             FTextField.multiline(
               hint: 'Notes',
@@ -249,6 +227,7 @@ class _TransactionEditState extends State<TransactionEdit> {
             ),
             SizedBox(height: 4),
             Row(
+              crossAxisAlignment: .start,
               children: [
                 Expanded(
                   child: FDateField(

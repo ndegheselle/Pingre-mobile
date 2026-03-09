@@ -42,12 +42,12 @@ class _TransactionssPageState extends State<TransactionsPage> {
   }
 
   Future<List<Object>> _loadTransactions(
-    TimeRangeUnit range,
+    TimeRangeUnit unit,
     TransactionsService service,
   ) async {
-    var groups = TransactionGroup.empty(range);
-    var transactions = await service.getByRange(groups.range());
-    groups.fill(transactions);
+    // Get a month of transactions
+    var transactions = await service.getByRange(.fromUnit(.month));
+    var groups = transactions.groupByUnit(unit);
     return _flatenGroups(groups);
   }
 
@@ -113,7 +113,7 @@ class _TransactionssPageState extends State<TransactionsPage> {
                         FItem(
                           style: .delta(margin: .value(.all(0))),
                           title: Text(item.tags.primary.name),
-                          subtitle: Text(
+                          subtitle: item.tags.secondaries.isEmpty ? null : Text(
                             item.tags.secondaries.map((t) => t.name).join(", "),
                           ),
                           suffix: ValueDisplay(value: item.value),
