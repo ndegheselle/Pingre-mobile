@@ -43,7 +43,7 @@ class _TagEditState extends State<TagEdit> {
 
   /// Update the tag
   void _save() {
-    Provider.of<TagsService>(context, listen: false).update(
+   context.read<TagsService>().update(
       widget.tag.id,
       name: _nameController.text.trim(),
       color: _selectedColor,
@@ -55,18 +55,9 @@ class _TagEditState extends State<TagEdit> {
     showFToast(
       context: context,
       alignment: .topCenter,
-      title: const Row(
-        mainAxisSize: .min,
-        children: [Icon(FIcons.check), SizedBox(width: 4), Text('Saved')],
-      ),
+      icon: const Icon(FIcons.check),
+      title: const Text("Saved"),
       description: const Text("The tag has been edited"),
-      suffixBuilder: (context, entry) => IntrinsicHeight(
-        child: FButton.icon(
-          variant: .ghost,
-          onPress: entry.dismiss,
-          child: const Icon(FIcons.x),
-        ),
-      ),
     );
     Navigator.of(context).pop();
   }
@@ -88,11 +79,7 @@ class _TagEditState extends State<TagEdit> {
             size: .sm,
             child: const Text('Remove'),
             onPress: () {
-              Provider.of<TagsService>(
-                context,
-                listen: false,
-              ).remove(widget.tag.id);
-
+              context.read<TagsService>().remove(widget.tag.id);
               _onRemoved();
               Navigator.of(context).pop();
             },
@@ -112,18 +99,9 @@ class _TagEditState extends State<TagEdit> {
     showFToast(
       context: context,
       alignment: .topCenter,
-      title: const Row(
-        mainAxisSize: .min,
-        children: [Icon(FIcons.check), SizedBox(width: 4), Text('Removed')],
-      ),
-      description: const Text('The tag has been removed'),
-      suffixBuilder: (context, entry) => IntrinsicHeight(
-        child: FButton.icon(
-          variant: .ghost,
-          onPress: entry.dismiss,
-          child: const Icon(FIcons.x),
-        ),
-      ),
+      icon: const Icon(FIcons.check),
+      title: const Text("Removed"),
+      description: const Text("The tag has been removed"),
     );
     Navigator.of(context).pop();
   }

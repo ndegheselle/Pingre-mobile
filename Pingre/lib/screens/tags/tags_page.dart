@@ -15,10 +15,7 @@ class _TagsPageState extends State<TagsPage> {
   final TextEditingController _controller = TextEditingController();
 
   void _addTag() {
-    Provider.of<TagsService>(
-      context,
-      listen: false,
-    ).createIfMissing(_controller.text.trim());
+    context.read<TagsService>().createIfMissing(_controller.text.trim());
 
     _controller.clear();
   }

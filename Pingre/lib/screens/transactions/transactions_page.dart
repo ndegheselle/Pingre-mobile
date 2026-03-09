@@ -17,15 +17,47 @@ class TransactionsPage extends StatefulWidget {
 
 class _TransactionssPageState extends State<TransactionsPage> {
   TimeRangeUnit _selectedTimeRange = TimeRangeUnit.month;
+  late Future<List<Object>> _future;
 
-  Future<List<TransactionGroup>> _loadTransactions(
+  @override
+  void initState() {
+    super.initState();
+    final service = context.read<TransactionsService>();
+    _future = _loadTransactions(_selectedTimeRange, service);
+
+    service.addListener(_reload);
+  }
+
+  @override
+  void dispose() {
+    context.read<TransactionsService>().removeListener(_reload);
+    super.dispose();
+  }
+
+  void _reload() {
+    final service = context.read<TransactionsService>();
+    setState(() {
+      _future = _loadTransactions(_selectedTimeRange, service);
+    });
+  }
+
+  Future<List<Object>> _loadTransactions(
     TimeRangeUnit range,
     TransactionsService service,
   ) async {
     var groups = TransactionGroup.empty(range);
     var transactions = await service.getByRange(groups.range());
     groups.fill(transactions);
-    return groups;
+    return _flatenGroups(groups);
+  }
+
+  List<Object> _flatenGroups(List<TransactionGroup> groups) {
+    List<Object> flatItems = [];
+    for (final group in groups) {
+      flatItems.add(group); // header
+      flatItems.addAll(group.transactions); // individual rows
+    }
+    return flatItems;
   }
 
   @override
@@ -35,23 +67,18 @@ class _TransactionssPageState extends State<TransactionsPage> {
       children: [
         TimeRangeSelect(
           value: _selectedTimeRange,
-          onChanged: (range) => setState(() {
+          onChanged: (range) {
             _selectedTimeRange = range;
-          }),
+            _reload();
+          },
         ),
         SizedBox(height: 4),
         Expanded(
-          child: Consumer<TransactionsService>(
-            builder: (context, transactions, child) {
-              List<TransactionGroup> groups = _loadTransactions(
-                _selectedTimeRange,
-                transactions,
-              );
-              List<Object> flatItems = [];
-              for (final group in groups) {
-                flatItems.add(group); // header
-                flatItems.addAll(group.transactions); // individual rows
-              }
+          child: FutureBuilder(
+            future: _future,
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return FCircularProgress();
+              final flatItems = snapshot.data!;
 
               return ListView.builder(
                 itemCount: flatItems.length,

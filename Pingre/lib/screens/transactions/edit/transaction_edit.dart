@@ -31,6 +31,7 @@ class TransactionEdit extends StatefulWidget {
 
 class _TransactionEditState extends State<TransactionEdit> {
   late bool _isEditing;
+  final Map<String, String> _errors = {};
 
   TagsSelection? _tagsSelection;
   late TextEditingController _noteController;
@@ -74,7 +75,16 @@ class _TransactionEditState extends State<TransactionEdit> {
 
   /// Either save or update the transaction if already existing
   void _save() {
-    var service = Provider.of<TransactionsService>(context, listen: false);
+    var service = context.read<TransactionsService>();
+
+    if (_dateController.value == null) return;
+    if (_timeController.value == null) return;
+    if (_tagsSelection == null) {
+      return setState(() {
+        _errors["tags"] = "At least one tag should be selected.";
+      });
+    }
+
     DateTime date = DateTime(
       _dateController.value!.year,
       _dateController.value!.month,
@@ -107,18 +117,9 @@ class _TransactionEditState extends State<TransactionEdit> {
     showFToast(
       context: context,
       alignment: .topCenter,
-      title: const Row(
-        mainAxisSize: .min,
-        children: [Icon(FIcons.check), SizedBox(width: 4), Text('Saved')],
-      ),
+      icon: const Icon(FIcons.check),
+      title: const Text("Saved"),
       description: const Text("The transaction has been edited"),
-      suffixBuilder: (context, entry) => IntrinsicHeight(
-        child: FButton.icon(
-          variant: .ghost,
-          onPress: entry.dismiss,
-          child: const Icon(FIcons.x),
-        ),
-      ),
     );
     Navigator.of(context).pop();
   }
@@ -140,10 +141,9 @@ class _TransactionEditState extends State<TransactionEdit> {
             size: .sm,
             child: const Text('Remove'),
             onPress: () {
-              Provider.of<TransactionsService>(
-                context,
-                listen: false,
-              ).remove(widget.transaction!.id);
+              context.read<TransactionsService>().remove(
+                widget.transaction!.id,
+              );
 
               _onRemove();
               Navigator.of(context).pop();
@@ -164,18 +164,9 @@ class _TransactionEditState extends State<TransactionEdit> {
     showFToast(
       context: context,
       alignment: .topCenter,
-      title: const Row(
-        mainAxisSize: .min,
-        children: [Icon(FIcons.check), SizedBox(width: 4), Text('Removed')],
-      ),
+      icon: const Icon(FIcons.check),
+      title: const Text("Removed"),
       description: const Text("The transaction has been removed"),
-      suffixBuilder: (context, entry) => IntrinsicHeight(
-        child: FButton.icon(
-          variant: .ghost,
-          onPress: entry.dismiss,
-          child: const Icon(FIcons.x),
-        ),
-      ),
     );
     Navigator.of(context).pop();
   }
@@ -205,26 +196,51 @@ class _TransactionEditState extends State<TransactionEdit> {
             ValueInput(controller: _valueController),
             SizedBox(height: 4),
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TagsDisplay(selection: _tagsSelection),
-                  SizedBox(height: 4),
-                  Center(
-                    child: SizedBox(
-                      width: 150,
-                      child: FButton(
-                        size: .sm,
-                        variant: .secondary,
-                        onPress: _selectTags,
-                        prefix: const Icon(FIcons.tag),
-                        child: const Text("Select tags"),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: _errors.containsKey("tags")
+                      ? Border.all(
+                          color: context.theme.colors.error,
+                          width: 1,
+                        )
+                      : null,
+                  borderRadius: context.theme.style.borderRadius,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TagsDisplay(selection: _tagsSelection),
+                    SizedBox(height: 4),
+                    Center(
+                      child: SizedBox(
+                        width: 150,
+                        child: FButton(
+                          size: .sm,
+                          variant: .secondary,
+                          onPress: _selectTags,
+                          prefix: const Icon(FIcons.tag),
+                          child: const Text("Select tags"),
+                        ),
                       ),
                     ),
+                  ],
+                ),
+              ),
+            ),
+            if (_errors.containsKey("tags"))
+              Row(
+                children: [
+                  Icon(
+                    FIcons.triangleAlert,
+                    color: context.theme.colors.error,
+                  ),
+                  SizedBox(width: 4),
+                  Text(
+                    _errors["tags"]!,
+                    style: .new(color: context.theme.colors.error),
                   ),
                 ],
               ),
-            ),
 
             SizedBox(height: 4),
             FTextField.multiline(
@@ -241,7 +257,7 @@ class _TransactionEditState extends State<TransactionEdit> {
                 ),
                 SizedBox(width: 4),
                 SizedBox(
-                  width: 100,
+                  width: 110,
                   child: FTimeField(
                     control: .managed(controller: _timeController),
                     hour24: true,

@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:pingre/models/time_range.dart';

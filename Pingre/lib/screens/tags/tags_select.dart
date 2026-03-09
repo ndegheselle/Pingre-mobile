@@ -67,10 +67,7 @@ class _TagsSelectState extends State<TagsSelect> {
   }
 
   void _addTag() {
-    var tag = Provider.of<TagsService>(
-      context,
-      listen: false,
-    ).getOrCreate(_controller.text.trim());
+    var tag = context.read<TagsService>().getOrCreate(_controller.text.trim());
 
     _toggleTag(tag.id);
     _controller.clear();
@@ -79,7 +76,7 @@ class _TagsSelectState extends State<TagsSelect> {
   void _confirm() {
     if (_primaryTagId == null) return Navigator.of(context).pop();
 
-    var service = Provider.of<TagsService>(context, listen: false);
+    var service = context.read<TagsService>();
     var secondaries = _secondariesIds
         .map((id) => service.tagsMap[id]!)
         .toList();
