@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
         ),
 
         Positioned(
-          bottom: 40,
+          bottom: 35,
           left: 0,
           right: 0,
           child: Center(

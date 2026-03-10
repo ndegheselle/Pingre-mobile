@@ -18,36 +18,33 @@ class TransactionsPage extends StatefulWidget {
 class _TransactionssPageState extends State<TransactionsPage> {
   TimeRangeUnit _selectedTimeRange = TimeRangeUnit.month;
   late Future<List<Object>> _future;
+  late TransactionsService _transactions;
 
   @override
   void initState() {
     super.initState();
-    final service = context.read<TransactionsService>();
-    _future = _loadTransactions(_selectedTimeRange, service);
+    _transactions = context.read<TransactionsService>();
+    _future = _loadTransactions(_selectedTimeRange);
 
-    service.addListener(_reload);
+    _transactions.addListener(_reload);
   }
 
   @override
   void dispose() {
-    context.read<TransactionsService>().removeListener(_reload);
+    _transactions.removeListener(_reload);
     super.dispose();
   }
 
   void _reload() {
-    final service = context.read<TransactionsService>();
     setState(() {
-      _future = _loadTransactions(_selectedTimeRange, service);
+      _future = _loadTransactions(_selectedTimeRange);
     });
   }
 
-  Future<List<Object>> _loadTransactions(
-    TimeRangeUnit unit,
-    TransactionsService service,
-  ) async {
+  Future<List<Object>> _loadTransactions(TimeRangeUnit unit) async {
     // Get a month of transactions
-    var transactions = await service.getByRange(.fromUnit(.month));
-    var groups = transactions.groupByUnit(unit);
+    var transactions = await _transactions.getByRange(.elapsed(.month));
+    var groups = transactions.groupByUnit(unit, withEmpty: false);
     return _flatenGroups(groups);
   }
 
@@ -124,7 +121,6 @@ class _TransactionssPageState extends State<TransactionsPage> {
                       ],
                     );
                   }
-
                   return SizedBox.shrink();
                 },
               );

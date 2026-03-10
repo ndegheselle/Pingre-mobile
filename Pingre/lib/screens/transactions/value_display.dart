@@ -20,7 +20,7 @@ class ValueDisplay extends StatelessWidget {
         Icon(
           value < .zero ? FIcons.minus : FIcons.plus,
           color: color,
-          size: 12,
+          size: 14,
           fontWeight: isHeader ? .bold : .normal,
         ),
         SizedBox(width: 2),
@@ -29,6 +29,7 @@ class ValueDisplay extends StatelessWidget {
           style: context.theme.typography.base.copyWith(
             color: color,
             fontWeight: isHeader ? .bold : .normal,
+            height: 1.3 
           ),
         ),
         SizedBox(width: 2),

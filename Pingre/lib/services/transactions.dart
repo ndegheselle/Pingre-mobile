@@ -94,7 +94,7 @@ class TransactionsService extends ChangeNotifier {
 
   Future<List<Transaction>> getByRange(TimeRange range) async {
     return _transactionsMap.values
-        .where((t) => t.date.isBefore(range.start) && t.date.isAfter(range.end))
+        .where((t) => t.date.isBefore(range.end) && t.date.isAfter(range.start))
         .toList()
       ..sort((a, b) => b.date.compareTo(a.date));
   }
