@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/screens/accounts/accounts_page.dart';
 import 'package:pingre/screens/app_settings_page.dart';
 import 'package:pingre/screens/tags/tags_page.dart';
 import 'package:pingre/screens/transactions/edit/transaction_edit.dart';
@@ -7,10 +8,7 @@ import 'package:pingre/screens/transactions/transactions_page.dart';
 
 final contents = [
   const TransactionsPage(),
-  const Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [Text('Categories Placeholder')],
-  ),
+  const AccountsPage(),
   const Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [Text('Search Placeholder')],
@@ -82,7 +80,14 @@ class _HomePageState extends State<HomePage> {
           header: headers[_index],
           footer: FBottomNavigationBar(
             index: _index,
-            onChange: (index) => setState(() => _index = index),
+            onChange: (index) => setState(() {
+              if (index == 2) return;
+              if (index > 2) {
+                _index = index - 1;
+              } else {
+                _index = index;
+              }
+            }),
             children: const [
               FBottomNavigationBarItem(
                 icon: Icon(FIcons.coins),
@@ -92,6 +97,8 @@ class _HomePageState extends State<HomePage> {
                 icon: Icon(FIcons.piggyBank),
                 label: Text('Accounts'),
               ),
+              // Spacing for the add transaction button
+              SizedBox(),
               FBottomNavigationBarItem(
                 icon: Icon(FIcons.chartNoAxesCombined),
                 label: Text('Report'),
@@ -106,7 +113,7 @@ class _HomePageState extends State<HomePage> {
         ),
 
         Positioned(
-          bottom: 35,
+          bottom: 16,
           left: 0,
           right: 0,
           child: Center(
