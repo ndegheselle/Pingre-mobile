@@ -8,13 +8,13 @@ class TransactionGroup {
   final List<Transaction> transactions;
   Decimal total;
 
-  TransactionGroup({
-    required this.range,
-    List<Transaction>? items,
-  }) : transactions = items ?? [],
-       total = .zero {
+  TransactionGroup({required this.range, List<Transaction>? items})
+    : transactions = items ?? [],
+      total = .zero {
     name = range.getName();
   }
+
+  bool get isEmpty => transactions.isEmpty;
 
   /// Create the previous transaction group
   TransactionGroup previous() => TransactionGroup(range: range.previous());
@@ -46,18 +46,42 @@ extension TransactionGroupExtension on Iterable<TransactionGroup> {
   }
 }
 
+/// Convenience methods for grouping and processing lists of [Transaction]s, the list must be sorted by date.
 extension TransactionsExtension on List<Transaction> {
-  /// Group transactions in transactions groups with empty group between transactions, [this] must me sorted by date.
-  List<TransactionGroup> groupByUnit(TimeRangeUnit unit, {DateTime? now, bool withEmpty = true}) {
+  /// Group transactions in transactions groups with empty group between transactions.
+  List<TransactionGroup> groupByUnit(TimeRangeUnit unit, {DateTime? now}) {
     if (isEmpty) return [];
 
     List<TransactionGroup> groups = [];
-    TransactionGroup currentGroup = TransactionGroup(range: .current(unit, now));
+    TransactionGroup currentGroup = TransactionGroup(
+      range: .current(unit, now),
+    );
     for (var transaction in this) {
       while (transaction.date.isBefore(currentGroup.range.start)) {
         groups.add(currentGroup);
         currentGroup = currentGroup.previous();
-        if (withEmpty == false) break;
+        // if (withEmpty == false) break;
+      }
+      currentGroup.add(transaction);
+    }
+
+    groups.add(currentGroup);
+    return groups;
+  }
+
+  /// Adds a transaction to the given [existingGroup] and creates new groups if needed.
+  ///
+  /// Returns the newly created [TransactionGroup]s. The provided [existingGroup]
+  /// is updated but is **not included** in the returned list.
+  List<TransactionGroup> continueToGroupFrom(TransactionGroup existingGroup) {
+    if (isEmpty) return [];
+
+    List<TransactionGroup> groups = [];
+    TransactionGroup currentGroup = existingGroup;
+    for (var transaction in this) {
+      while (transaction.date.isBefore(currentGroup.range.start)) {
+        groups.add(currentGroup);
+        currentGroup = currentGroup.previous();
       }
       currentGroup.add(transaction);
     }

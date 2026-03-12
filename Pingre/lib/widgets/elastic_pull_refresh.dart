@@ -1,15 +1,16 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
 class ElasticPullToRefresh extends StatefulWidget {
   final Widget child;
-  final Future<void> Function() onRefresh;
+  final ScrollController scrollController;
+  final void Function() onRefresh;
 
   const ElasticPullToRefresh({
     super.key,
     required this.child,
     required this.onRefresh,
+    required this.scrollController,
   });
 
   @override
@@ -19,14 +20,17 @@ class ElasticPullToRefresh extends StatefulWidget {
 class _ElasticPullToRefreshState extends State<ElasticPullToRefresh>
     with SingleTickerProviderStateMixin {
   double _drag = 0;
+  bool get _canRefresh => _drag > maxDrag;
+  bool get _startedDragging => _drag != 0;
+
   late AnimationController _controller;
   late Animation<double> _returnAnimation;
   static const double maxDrag = 100.0;
-  static const double dragScale = 200.0;
+  static const double dragScale = 300.0;
 
   double _applyResistance(double value) {
-  final t = (value / dragScale).clamp(0.0, 1.0);
-  return Curves.easeOut.transform(t) * maxDrag;
+    final t = (value / dragScale).clamp(0.0, 1.0);
+    return Curves.decelerate.transform(t) * maxDrag;
   }
 
   @override
@@ -66,19 +70,29 @@ class _ElasticPullToRefreshState extends State<ElasticPullToRefresh>
         });
       },
       onVerticalDragEnd: (_) async {
-        if (_drag > maxDrag) {
-          await widget.onRefresh();
-        }
+        if (_canRefresh) widget.onRefresh();
         _animateBack();
       },
       child: Stack(
         children: [
           widget.child,
           Positioned(
-            bottom: offset - 20,
+            bottom: offset,
             left: 0,
             right: 0,
-            child: const Center(child: FCircularProgress(style: .delta(iconStyle: .delta(size: 32)), icon: FIcons.refreshCw,)),
+            child: AnimatedOpacity(
+              opacity: _startedDragging ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 100),
+              child: Center(
+                child: Column(
+                  children: [
+                    Icon(_canRefresh ? FIcons.check : FIcons.arrowUp),
+                    SizedBox(height: 4),
+                    Text(_canRefresh ? "Release to load more" : "Pull up for more", style: context.theme.typography.sm,),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),

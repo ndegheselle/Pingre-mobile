@@ -19,8 +19,11 @@ class TransactionsPage extends StatefulWidget {
 class _TransactionssPageState extends State<TransactionsPage> {
   TimeRangeUnit _selectedTimeRange = TimeRangeUnit.month;
   late Future<List<Object>> _future;
+  late List<TransactionGroup> _groups;
   late TransactionsService _transactions;
-  String test = "Pull up";
+  late TimeRange _lastTimeRange;
+  late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
@@ -28,6 +31,7 @@ class _TransactionssPageState extends State<TransactionsPage> {
     _future = _loadTransactions(_selectedTimeRange);
 
     _transactions.addListener(_reload);
+    _scrollController = ScrollController();
   }
 
   @override
@@ -42,11 +46,28 @@ class _TransactionssPageState extends State<TransactionsPage> {
     });
   }
 
+  void _loadMore() {
+    setState(() {
+      _future = _loadPreviousTransactions(_selectedTimeRange);
+    });
+  }
+
+  /// Load transactions, reset the current [_groups] if previous transactions where manually loaded by the user.
   Future<List<Object>> _loadTransactions(TimeRangeUnit unit) async {
+    _lastTimeRange = .elapsed(.month);
     // Get a month of transactions
-    var transactions = await _transactions.getByRange(.elapsed(.month));
-    var groups = transactions.groupByUnit(unit, withEmpty: false);
-    return _flatenGroups(groups);
+    var transactions = await _transactions.getByRange(_lastTimeRange);
+    _groups = transactions.groupByUnit(unit);
+    return _flatenGroups(_groups);
+  }
+
+  Future<List<Object>> _loadPreviousTransactions(TimeRangeUnit unit) async {
+    _lastTimeRange = .elapsed(.month, _lastTimeRange.start);
+    // Get a month of transactions
+    var transactions = await _transactions.getByRange(_lastTimeRange);
+    var groups = transactions.continueToGroupFrom(_groups.last);
+    _groups.addAll(groups);
+    return _flatenGroups(_groups);
   }
 
   List<Object> _flatenGroups(List<TransactionGroup> groups) {
@@ -71,17 +92,10 @@ class _TransactionssPageState extends State<TransactionsPage> {
           },
         ),
         SizedBox(height: 4),
-        ElasticPullToRefresh(
-          onRefresh: () async {
-            setState(() {
-              test = "Pulled";
-            });
-            await Future.delayed(const Duration(seconds: 2));
-            setState(() {
-              test = "Pull up";
-            });
-          },
-          child: Expanded(
+        Expanded(
+          child: ElasticPullToRefresh(
+            scrollController: _scrollController,
+            onRefresh: _loadMore,
             child: FutureBuilder(
               future: _future,
               builder: (context, snapshot) {
@@ -89,6 +103,7 @@ class _TransactionssPageState extends State<TransactionsPage> {
                 final flatItems = snapshot.data!;
 
                 return ListView.builder(
+                  controller: _scrollController,
                   itemCount: flatItems.length,
                   itemBuilder: (context, index) {
                     final item = flatItems[index];
