@@ -104,7 +104,6 @@ class _ValueInputState extends State<ValueInput> {
           child: IntrinsicWidth(
             child: FTextField(
               control: .managed(controller: _textController),
-              autofocus: true,
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
               maxLines: 1,

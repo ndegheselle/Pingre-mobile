@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:forui/forui.dart';
+import 'package:forui/assets.dart';
 
 class ElasticPullToRefresh extends StatefulWidget {
-  final Widget child;
-  final ScrollController scrollController;
   final void Function() onRefresh;
 
-  const ElasticPullToRefresh({
-    super.key,
-    required this.child,
-    required this.onRefresh,
-    required this.scrollController,
-  });
+  const ElasticPullToRefresh({super.key, required this.onRefresh});
 
   @override
   State<ElasticPullToRefresh> createState() => _ElasticPullToRefreshState();
@@ -21,16 +14,16 @@ class _ElasticPullToRefreshState extends State<ElasticPullToRefresh>
     with SingleTickerProviderStateMixin {
   double _drag = 0;
   bool get _canRefresh => _drag > maxDrag;
-  bool get _startedDragging => _drag != 0;
 
   late AnimationController _controller;
   late Animation<double> _returnAnimation;
-  static const double maxDrag = 100.0;
+  static const double maxDrag = 120.0;
+  static const double minHeiht = 80.0;
   static const double dragScale = 300.0;
 
   double _applyResistance(double value) {
     final t = (value / dragScale).clamp(0.0, 1.0);
-    return Curves.decelerate.transform(t) * maxDrag;
+    return minHeiht + Curves.decelerate.transform(t) * maxDrag;
   }
 
   @override
@@ -61,40 +54,37 @@ class _ElasticPullToRefreshState extends State<ElasticPullToRefresh>
 
   @override
   Widget build(BuildContext context) {
-    final offset = _applyResistance(_drag);
+    final height = _applyResistance(_drag);
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onVerticalDragStart: (_) {},
       onVerticalDragUpdate: (details) {
         setState(() {
           _drag -= details.delta.dy;
         });
       },
-      onVerticalDragEnd: (_) async {
+      onVerticalDragEnd: (_) {
         if (_canRefresh) widget.onRefresh();
         _animateBack();
       },
-      child: Stack(
-        children: [
-          widget.child,
-          Positioned(
-            bottom: offset,
-            left: 0,
-            right: 0,
-            child: AnimatedOpacity(
-              opacity: _startedDragging ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 100),
-              child: Center(
-                child: Column(
-                  children: [
-                    Icon(_canRefresh ? FIcons.check : FIcons.arrowUp),
-                    SizedBox(height: 4),
-                    Text(_canRefresh ? "Release to load more" : "Pull up for more", style: context.theme.typography.sm,),
-                  ],
-                ),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 0),
+        height: height,
+        width: double.infinity,
+        child: Column(
+          children: [
+            SizedBox(height: 8),
+            const Icon(FIcons.moveUp),
+            Spacer(flex: 1),
+            Center(
+              child: Text(
+                _canRefresh ? "Release to refresh" : "Pull to refresh",
               ),
             ),
-          ),
-        ],
+            Spacer(flex: 3),
+          ],
+        ),
       ),
     );
   }

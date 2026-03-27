@@ -3,9 +3,9 @@ import 'package:forui/forui.dart';
 import 'package:pingre/models/time_range.dart';
 import 'package:pingre/models/transaction_group.dart';
 import 'package:pingre/screens/transactions/edit/transaction_edit.dart';
-import 'package:pingre/widgets/elastic_pull_refresh.dart';
 import 'package:pingre/screens/transactions/value_display.dart';
 import 'package:pingre/services/transactions.dart';
+import 'package:pingre/widgets/elastic_pull_refresh.dart';
 import 'package:pingre/widgets/time_range_select.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +23,8 @@ class _TransactionssPageState extends State<TransactionsPage> {
   late TransactionsService _transactions;
   late TimeRange _lastTimeRange;
   late ScrollController _scrollController;
+
+  bool _lockScroll = false;
 
   @override
   void initState() {
@@ -93,70 +95,75 @@ class _TransactionssPageState extends State<TransactionsPage> {
         ),
         SizedBox(height: 4),
         Expanded(
-          child: ElasticPullToRefresh(
-            scrollController: _scrollController,
-            onRefresh: _loadMore,
-            child: FutureBuilder(
-              future: _future,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) return FCircularProgress();
-                final flatItems = snapshot.data!;
+          child: FutureBuilder(
+            future: _future,
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return FCircularProgress();
+              final flatItems = snapshot.data!;
 
-                return ListView.builder(
-                  controller: _scrollController,
-                  itemCount: flatItems.length,
-                  itemBuilder: (context, index) {
-                    final item = flatItems[index];
+              return ListView.builder(
+                controller: _scrollController,
+                itemCount: flatItems.length + 1,
+                reverse: true,
+                itemBuilder: (context, index) {
+                  // Footer case
+                  if (index == 0) {
+                    return ElasticPullToRefresh(
+                      onRefresh: _loadMore,
+                    );
+                  }
 
-                    if (item is TransactionGroup) {
-                      return Column(
-                        children: [
-                          FTile(
-                            style: .delta(
-                              contentStyle: .delta(padding: .value(.all(8))),
-                            ),
-                            prefix: const Icon(FIcons.calendar),
-                            title: Text(item.name),
-                            suffix: ValueDisplay(
-                              value: item.total,
-                              isHeader: true,
-                            ),
+                  final item = flatItems[flatItems.length - index];
+
+                  if (item is TransactionGroup) {
+                    return Column(
+                      children: [
+                        FTile(
+                          style: .delta(
+                            contentStyle: .delta(padding: .value(.all(8))),
                           ),
-                          SizedBox(height: 4),
-                        ],
-                      );
-                    }
-
-                    if (item is Transaction) {
-                      final isLast =
-                          index == flatItems.length - 1 ||
-                          flatItems[index + 1] is TransactionGroup;
-                      return Column(
-                        children: [
-                          FItem(
-                            style: .delta(margin: .value(.all(0))),
-                            title: Text(item.tags.primary.name),
-                            subtitle: item.tags.secondaries.isEmpty
-                                ? null
-                                : Text(
-                                    item.tags.secondaries
-                                        .map((t) => t.name)
-                                        .join(", "),
-                                  ),
-                            suffix: ValueDisplay(value: item.value),
-                            onPress: () =>
-                                showTransactionEdit(context, transaction: item),
+                          prefix: const Icon(FIcons.calendar),
+                          title: Text(item.name),
+                          suffix: ValueDisplay(
+                            value: item.total,
+                            isHeader: true,
                           ),
-                          if (isLast) SizedBox(height: 4),
-                        ],
-                      );
-                    }
+                        ),
+                        SizedBox(height: 4),
+                      ],
+                    );
+                  }
 
-                    return SizedBox.shrink();
-                  },
-                );
-              },
-            ),
+                  if (item is Transaction) {
+                    final isLast =
+                        index == 1 || // 👈 was: index == flatItems.length - 1
+                        flatItems[flatItems.length - index - 1]
+                            is TransactionGroup;
+                    return Column(
+                      children: [
+                        FItem(
+                          style: .delta(margin: .value(.all(0))),
+                          title: Text(item.tags.primary.name),
+                          subtitle: item.tags.secondaries.isEmpty
+                              ? null
+                              : Text(
+                                  item.tags.secondaries
+                                      .map((t) => t.name)
+                                      .join(", "),
+                                ),
+                          suffix: ValueDisplay(value: item.value),
+                          onPress: () =>
+                              showTransactionEdit(context, transaction: item),
+                        ),
+                        if (isLast) SizedBox(height: 4),
+                      ],
+                    );
+                  }
+
+                  return SizedBox.shrink();
+                },
+              );
+            },
           ),
         ),
       ],
