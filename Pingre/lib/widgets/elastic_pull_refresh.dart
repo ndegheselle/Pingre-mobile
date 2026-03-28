@@ -3,8 +3,13 @@ import 'package:forui/assets.dart';
 
 class ElasticPullToRefresh extends StatefulWidget {
   final void Function() onRefresh;
+  final void Function() onDrag;
 
-  const ElasticPullToRefresh({super.key, required this.onRefresh});
+  const ElasticPullToRefresh({
+    super.key,
+    required this.onRefresh,
+    required this.onDrag,
+  });
 
   @override
   State<ElasticPullToRefresh> createState() => _ElasticPullToRefreshState();
@@ -43,6 +48,12 @@ class _ElasticPullToRefreshState extends State<ElasticPullToRefresh>
       });
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   void _animateBack() {
     _returnAnimation = Tween<double>(
       begin: _drag,
@@ -62,6 +73,7 @@ class _ElasticPullToRefreshState extends State<ElasticPullToRefresh>
       onVerticalDragUpdate: (details) {
         setState(() {
           _drag -= details.delta.dy;
+          widget.onDrag();
         });
       },
       onVerticalDragEnd: (_) {
@@ -78,9 +90,16 @@ class _ElasticPullToRefreshState extends State<ElasticPullToRefresh>
             const Icon(FIcons.moveUp),
             Spacer(flex: 1),
             Center(
-              child: Text(
-                _canRefresh ? "Release to refresh" : "Pull to refresh",
-              ),
+              child: _canRefresh
+                  ? Row(
+                    mainAxisAlignment: .center,
+                      children: [
+                        const Icon(FIcons.check),
+                        SizedBox(width: 8),
+                        Text("Release to refresh"),
+                      ],
+                    )
+                  : Text("Pull to refresh"),
             ),
             Spacer(flex: 3),
           ],

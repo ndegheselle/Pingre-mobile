@@ -74,8 +74,8 @@ class TagsService extends ChangeNotifier {
   }
 
   /// Create a tag if it doesn't exist.
-  void createIfMissing(String name) {
-    getOrCreate(name);
+  Tag createIfMissing(String name) {
+    return getOrCreate(name);
   }
 
   Iterable<Tag> search(String name) {

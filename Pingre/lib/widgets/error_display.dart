@@ -10,9 +10,9 @@ class ErrorDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Expanded(
-          child: Container(
+        Container(
             decoration: BoxDecoration(
               border: error?.isNotEmpty == true
                   ? Border.all(color: context.theme.colors.error, width: 1)
@@ -21,7 +21,6 @@ class ErrorDisplay extends StatelessWidget {
             ),
             child: child,
           ),
-        ),
 
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 100),

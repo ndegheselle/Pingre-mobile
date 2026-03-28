@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/screens/tags/tags_page.dart';
 
 class AppSettingsPage extends StatelessWidget {
   const AppSettingsPage({super.key});
@@ -10,6 +11,20 @@ class AppSettingsPage extends StatelessWidget {
       title: const Text('Settings'),
       prefixes: [FHeaderAction.back(onPress: () => Navigator.pop(context))],
     ),
-    child: const Text("Some content"),
+    child: FItemGroup(
+      children: [
+        FItem(
+          prefix: const Icon(FIcons.tags),
+          title: const Text('Tags'),
+          suffix: const Icon(FIcons.chevronRight),
+          details: const Text('Edit, create and delete'),
+          onPress: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (context) => const TagsPage()),
+            );
+          },
+        ),
+      ],
+    ),
   );
 }

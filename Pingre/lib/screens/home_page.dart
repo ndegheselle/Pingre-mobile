@@ -45,6 +45,15 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       FHeader(
+        title: const Text('Recurring'),
+        suffixes: [
+          FHeaderAction(
+            icon: const Icon(FIcons.settings),
+            onPress: openSettings,
+          ),
+        ],
+      ),
+      FHeader(
         title: const Text('Accounts'),
         suffixes: [
           FHeaderAction(
@@ -55,15 +64,6 @@ class _HomePageState extends State<HomePage> {
       ),
       FHeader(
         title: const Text('Report'),
-        suffixes: [
-          FHeaderAction(
-            icon: const Icon(FIcons.settings),
-            onPress: openSettings,
-          ),
-        ],
-      ),
-      FHeader(
-        title: const Text('Tags'),
         suffixes: [
           FHeaderAction(
             icon: const Icon(FIcons.settings),
@@ -94,18 +94,18 @@ class _HomePageState extends State<HomePage> {
                 label: Text('Transactions'),
               ),
               FBottomNavigationBarItem(
-                icon: Icon(FIcons.piggyBank),
-                label: Text('Accounts'),
+                icon: Icon(FIcons.calendarSync),
+                label: Text('Recurring'),
               ),
               // Spacing for the add transaction button
               SizedBox(),
               FBottomNavigationBarItem(
-                icon: Icon(FIcons.chartNoAxesCombined),
-                label: Text('Report'),
+                icon: Icon(FIcons.piggyBank),
+                label: Text('Accounts'),
               ),
               FBottomNavigationBarItem(
-                icon: Icon(FIcons.tags),
-                label: Text('Tags'),
+                icon: Icon(FIcons.chartNoAxesCombined),
+                label: Text('Report'),
               ),
             ],
           ),

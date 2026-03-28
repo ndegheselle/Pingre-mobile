@@ -22,18 +22,18 @@ class _TransactionssPageState extends State<TransactionsPage> {
   late List<TransactionGroup> _groups;
   late TransactionsService _transactions;
   late TimeRange _lastTimeRange;
-  late ScrollController _scrollController;
 
-  bool _lockScroll = false;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _transactions = context.read<TransactionsService>();
-    _future = _loadTransactions(_selectedTimeRange);
 
+    _future = _loadTransactions(_selectedTimeRange);
     _transactions.addListener(_reload);
     _scrollController = ScrollController();
+    // _scrollController = ScrollController(initialScrollOffset: 999999);
   }
 
   @override
@@ -101,67 +101,75 @@ class _TransactionssPageState extends State<TransactionsPage> {
               if (!snapshot.hasData) return FCircularProgress();
               final flatItems = snapshot.data!;
 
-              return ListView.builder(
-                controller: _scrollController,
-                itemCount: flatItems.length + 1,
-                reverse: true,
-                itemBuilder: (context, index) {
-                  // Footer case
-                  if (index == 0) {
-                    return ElasticPullToRefresh(
+              return CustomScrollView(
+                controller:
+                    _scrollController, // 👈 this sliver is the scroll anchor (position 0)
+                slivers: [
+                  // Content grows UPWARD from the anchor
+                  SliverList.builder(
+                    itemCount: flatItems.length,
+                    itemBuilder: (context, index) {
+                      final item = flatItems[index];
+
+                      if (item is TransactionGroup) {
+                        return Column(
+                          children: [
+                            FTile(
+                              style: .delta(
+                                contentStyle: .delta(padding: .value(.all(8))),
+                              ),
+                              prefix: const Icon(FIcons.calendar),
+                              title: Text(item.name),
+                              suffix: ValueDisplay(
+                                value: item.total,
+                                isHeader: true,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                          ],
+                        );
+                      }
+
+                      if (item is Transaction) {
+                        final isLast =
+                            index ==
+                                1 || // 👈 was: index == flatItems.length - 1
+                            flatItems[flatItems.length - index - 1]
+                                is TransactionGroup;
+                        return Column(
+                          children: [
+                            FItem(
+                              style: .delta(margin: .value(.all(0))),
+                              title: Text(item.tags.primary.name),
+                              subtitle: item.tags.secondaries.isEmpty
+                                  ? null
+                                  : Text(
+                                      item.tags.secondaries
+                                          .map((t) => t.name)
+                                          .join(", "),
+                                    ),
+                              suffix: ValueDisplay(value: item.value),
+                              onPress: () => showTransactionEdit(
+                                context,
+                                transaction: item,
+                              ),
+                            ),
+                            if (isLast) SizedBox(height: 4),
+                          ],
+                        );
+                      }
+
+                      return SizedBox.shrink();
+                    },
+                  ),
+                  // Footer sits AT the anchor point (visually at the bottom)
+                  SliverToBoxAdapter(
+                    child: ElasticPullToRefresh(
                       onRefresh: _loadMore,
-                    );
-                  }
-
-                  final item = flatItems[flatItems.length - index];
-
-                  if (item is TransactionGroup) {
-                    return Column(
-                      children: [
-                        FTile(
-                          style: .delta(
-                            contentStyle: .delta(padding: .value(.all(8))),
-                          ),
-                          prefix: const Icon(FIcons.calendar),
-                          title: Text(item.name),
-                          suffix: ValueDisplay(
-                            value: item.total,
-                            isHeader: true,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                      ],
-                    );
-                  }
-
-                  if (item is Transaction) {
-                    final isLast =
-                        index == 1 || // 👈 was: index == flatItems.length - 1
-                        flatItems[flatItems.length - index - 1]
-                            is TransactionGroup;
-                    return Column(
-                      children: [
-                        FItem(
-                          style: .delta(margin: .value(.all(0))),
-                          title: Text(item.tags.primary.name),
-                          subtitle: item.tags.secondaries.isEmpty
-                              ? null
-                              : Text(
-                                  item.tags.secondaries
-                                      .map((t) => t.name)
-                                      .join(", "),
-                                ),
-                          suffix: ValueDisplay(value: item.value),
-                          onPress: () =>
-                              showTransactionEdit(context, transaction: item),
-                        ),
-                        if (isLast) SizedBox(height: 4),
-                      ],
-                    );
-                  }
-
-                  return SizedBox.shrink();
-                },
+                      onDrag: () => _scrollController.jumpTo(_scrollController.position.maxScrollExtent),
+                    ),
+                  ),
+                ],
               );
             },
           ),
