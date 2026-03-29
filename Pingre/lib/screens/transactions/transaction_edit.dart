@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/screens/tags/tags_display.dart';
 import 'package:pingre/screens/tags/tags_select.dart';
-import 'package:pingre/screens/transactions/edit/value_input.dart';
 import 'package:pingre/services/transactions.dart';
-import 'package:pingre/widgets/error_display.dart';
+import 'package:pingre/widgets/data/error_display.dart';
+import 'package:pingre/widgets/inputs/value_input.dart';
 import 'package:provider/provider.dart';
 
 /// Show the transaction edit page as a sheet

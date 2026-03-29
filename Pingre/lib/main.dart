@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/services/accounts.dart';
 import 'package:pingre/services/tags.dart';
 import 'package:pingre/services/transactions.dart';
 import 'package:pingre/theme_extensions.dart';
@@ -10,6 +11,7 @@ import 'screens/home_page.dart';
 void main() {
   runApp(MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => AccountsService()),
         ChangeNotifierProvider(create: (_) => TagsService()),
         ChangeNotifierProvider(create: (_) => TransactionsService()),
         // add more services here

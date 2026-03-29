@@ -3,16 +3,16 @@ import 'package:forui/forui.dart';
 import 'package:pingre/screens/accounts/accounts_page.dart';
 import 'package:pingre/screens/app_settings_page.dart';
 import 'package:pingre/screens/tags/tags_page.dart';
-import 'package:pingre/screens/transactions/edit/transaction_edit.dart';
+import 'package:pingre/screens/transactions/transaction_edit.dart';
 import 'package:pingre/screens/transactions/transactions_page.dart';
 
 final contents = [
   const TransactionsPage(),
-  const AccountsPage(),
   const Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [Text('Search Placeholder')],
   ),
+  const AccountsPage(),
   const TagsPage(),
 ];
 

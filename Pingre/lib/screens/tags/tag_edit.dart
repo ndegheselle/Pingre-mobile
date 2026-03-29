@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/services/tags.dart';
-import 'package:pingre/widgets/color_picker.dart';
+import 'package:pingre/widgets/inputs/color_picker.dart';
 import 'package:provider/provider.dart';
 
 /// Show the tag edit page in a sheet

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/models/time_range.dart';
 import 'package:pingre/models/transaction_group.dart';
-import 'package:pingre/screens/transactions/edit/transaction_edit.dart';
-import 'package:pingre/screens/transactions/value_display.dart';
+import 'package:pingre/screens/transactions/transaction_edit.dart';
+import 'package:pingre/widgets/data/value_display.dart';
 import 'package:pingre/services/transactions.dart';
-import 'package:pingre/widgets/elastic_pull_refresh.dart';
-import 'package:pingre/widgets/time_range_select.dart';
+import 'package:pingre/widgets/data/elastic_pull_refresh.dart';
+import 'package:pingre/widgets/inputs/time_range_select.dart';
 import 'package:provider/provider.dart';
 
 class TransactionsPage extends StatefulWidget {

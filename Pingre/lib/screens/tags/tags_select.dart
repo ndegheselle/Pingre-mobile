@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/services/tags.dart';
 import 'package:pingre/services/transactions.dart';
+import 'package:pingre/widgets/inputs/search_add.dart';
 import 'package:provider/provider.dart';
 
 Future<TagsSelection?> showTagsSelect(
@@ -66,11 +67,9 @@ class _TagsSelectState extends State<TagsSelect> {
     });
   }
 
-  void _addTag() {
-    var tag = context.read<TagsService>().getOrCreate(_controller.text.trim());
-
+  void _addTag(String name) {
+    var tag = context.read<TagsService>().getOrCreate(name);
     _toggleTag(tag.id);
-    _controller.clear();
   }
 
   void _confirm() {
@@ -108,48 +107,7 @@ class _TagsSelectState extends State<TagsSelect> {
               style: context.theme.typography.xl.copyWith(fontWeight: .bold),
             ),
             const SizedBox(height: 4),
-            Row(
-              children: [
-                Expanded(
-                  child: FTextField(
-                    control: .managed(controller: _controller),
-                    prefixBuilder: (context, style, variants) => Padding(
-                      padding: .directional(start: 8),
-                      child: Opacity(opacity: 0.5, child: Icon(FIcons.search)),
-                    ),
-                    hint: 'Tag name ...',
-                    clearable: (value) => value.text.isNotEmpty,
-                  ),
-                ),
-                ValueListenableBuilder(
-                  valueListenable: _controller,
-                  builder: (context, _, _) {
-                    final showButton = _controller.text.isNotEmpty;
-                    return AnimatedSize(
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeOut,
-                      alignment: Alignment.centerRight,
-                      child: ClipRect(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          widthFactor: showButton ? 1.0 : 0.0,
-                          child: Row(
-                            children: [
-                              const SizedBox(width: 4),
-                              FButton.icon(
-                                variant: .outline,
-                                onPress: _addTag,
-                                child: const Icon(FIcons.plus),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
+            SearchWithAdd(controller: _controller, onAdd: _addTag, hint: "Tag name ..."),
             const SizedBox(height: 4),
             Center(child: Opacity(opacity: 0.5, child: Text("Long press to set primary tag", style: context.theme.typography.sm))),
             const SizedBox(height: 4),

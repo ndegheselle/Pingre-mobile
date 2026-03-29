@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/screens/tags/tag_edit.dart';
 import 'package:pingre/services/tags.dart';
+import 'package:pingre/widgets/inputs/search_add.dart';
 import 'package:provider/provider.dart';
 
 class TagsPage extends StatefulWidget {
@@ -14,11 +15,8 @@ class TagsPage extends StatefulWidget {
 class _TagsPageState extends State<TagsPage> {
   final TextEditingController _controller = TextEditingController();
 
-  void _addTag() {
-    var tag = context.read<TagsService>().createIfMissing(
-      _controller.text.trim(),
-    );
-    _controller.clear();
+  void _addTag(String name) {
+    var tag = context.read<TagsService>().createIfMissing(name);
     showTagEdit(context, tag);
   }
 
@@ -29,53 +27,14 @@ class _TagsPageState extends State<TagsPage> {
         title: const Text('Tags'),
         prefixes: [FHeaderAction.back(onPress: () => Navigator.pop(context))],
       ),
-      child: ValueListenableBuilder(
-        valueListenable: _controller,
-        builder: (context, _, _) {
-          final showButton = _controller.text.isNotEmpty;
-          return Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: FTextField(
-                      control: .managed(controller: _controller),
-                      prefixBuilder: (context, style, variants) => Padding(
-                        padding: .directional(start: 8),
-                        child: Opacity(
-                          opacity: 0.5,
-                          child: Icon(FIcons.search),
-                        ),
-                      ),
-                      hint: 'Tag name ...',
-                      clearable: (value) => value.text.isNotEmpty,
-                    ),
-                  ),
-                  AnimatedSize(
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeOut,
-                    alignment: Alignment.centerRight, // grows left → right
-                    child: ClipRect(
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        widthFactor: showButton ? 1.0 : 0.0,
-                        child: Row(
-                          children: [
-                            SizedBox(width: 4),
-                            FButton.icon(
-                              variant: .outline,
-                              onPress: _addTag,
-                              child: const Icon(FIcons.plus),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Expanded(
+      child: Column(
+        children: [
+          SearchWithAdd(controller: _controller, onAdd: _addTag),
+          const SizedBox(height: 4),
+          ValueListenableBuilder(
+            valueListenable: _controller,
+            builder: (context, _, _) {
+              return Expanded(
                 child: Consumer<TagsService>(
                   builder: (context, service, child) {
                     final filteredTags = _controller.text.isEmpty
@@ -104,11 +63,11 @@ class _TagsPageState extends State<TagsPage> {
                           );
                   },
                 ),
-              ),
-              const SizedBox(height: 4),
-            ],
-          );
-        },
+              );
+            },
+          ),
+          const SizedBox(height: 4),
+        ],
       ),
     );
   }

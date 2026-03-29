@@ -13,14 +13,14 @@ class ErrorDisplay extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-            decoration: BoxDecoration(
-              border: error?.isNotEmpty == true
-                  ? Border.all(color: context.theme.colors.error, width: 1)
-                  : null,
-              borderRadius: context.theme.style.borderRadius,
-            ),
-            child: child,
+          decoration: BoxDecoration(
+            border: error?.isNotEmpty == true
+                ? Border.all(color: context.theme.colors.error, width: 1)
+                : null,
+            borderRadius: context.theme.style.borderRadius,
           ),
+          child: child,
+        ),
 
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 100),
@@ -35,13 +35,16 @@ class ErrorDisplay extends StatelessWidget {
             );
           },
           child: error != null
-              ? Padding(padding: .directional(top: 4), child: Text(
-                  error!,
-                  style: context.theme.typography.sm.copyWith(
-                    color: context.theme.colors.error,
-                    fontWeight: .w600,
+              ? Padding(
+                  padding: .directional(top: 4),
+                  child: Text(
+                    error!,
+                    style: context.theme.typography.sm.copyWith(
+                      color: context.theme.colors.error,
+                      fontWeight: .w600,
+                    ),
                   ),
-                ))
+                )
               : const SizedBox.shrink(),
         ),
       ],
