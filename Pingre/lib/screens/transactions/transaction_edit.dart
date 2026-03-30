@@ -102,7 +102,7 @@ class _TransactionEditState extends State<TransactionEdit> {
                   .read<TransactionsService>()
                   .remove(widget.transaction!.id);
 
-              Navigator.of(context).pop();
+              _onRemove();
               Navigator.of(context).pop();
             },
           ),
@@ -115,6 +115,17 @@ class _TransactionEditState extends State<TransactionEdit> {
         ],
       ),
     );
+  }
+
+  void _onRemove() {
+    showFToast(
+      context: context,
+      alignment: .topCenter,
+      icon: const Icon(FIcons.check),
+      title: const Text("Removed"),
+      description: const Text("The transaction has been removed"),
+    );
+    Navigator.of(context).pop();
   }
 
   @override
@@ -139,10 +150,7 @@ class _TransactionEditState extends State<TransactionEdit> {
             /// Reusable form
             Expanded(
               child: TransactionFormFields(
-                formData: _formData,
-                onTagsError: (err) {
-                  setState(() => _errors["tags"] = err ?? "");
-                },
+                formData: _formData
               ),
             ),
 

@@ -5,8 +5,8 @@ class SearchWithAdd extends StatefulWidget {
   final void Function(String) onAdd;
   final TextEditingController controller;
   final String? hint;
-
-  const SearchWithAdd({super.key, required this.controller, required this.onAdd, this.hint});
+  final bool alwaysShowAdd;
+  const SearchWithAdd({super.key, required this.controller, required this.onAdd, this.hint, this.alwaysShowAdd = true});
 
   @override
   State<SearchWithAdd> createState() => _SearchWithAddState();
@@ -29,14 +29,14 @@ class _SearchWithAddState extends State<SearchWithAdd> {
               padding: .directional(start: 8),
               child: Opacity(opacity: 0.5, child: Icon(FIcons.search)),
             ),
-            hint: widget.hint ?? 'Search or add ...',
+            hint: widget.hint ?? 'Search ...',
             clearable: (value) => value.text.isNotEmpty,
           ),
         ),
         ValueListenableBuilder(
           valueListenable: widget.controller,
           builder: (context, _, _) {
-            final showButton = widget.controller.text.isNotEmpty;
+            final showButton = widget.alwaysShowAdd || widget.controller.text.isNotEmpty;
             return AnimatedSize(
               duration: const Duration(milliseconds: 250),
               curve: Curves.easeOut,

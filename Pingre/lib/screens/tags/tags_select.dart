@@ -107,7 +107,7 @@ class _TagsSelectState extends State<TagsSelect> {
               style: context.theme.typography.xl.copyWith(fontWeight: .bold),
             ),
             const SizedBox(height: 4),
-            SearchWithAdd(controller: _controller, onAdd: _addTag, hint: "Tag name ..."),
+            SearchWithAdd(controller: _controller, onAdd: _addTag, hint: "Tag name ...", alwaysShowAdd: false),
             const SizedBox(height: 4),
             Center(child: Opacity(opacity: 0.5, child: Text("Long press to set primary tag", style: context.theme.typography.sm))),
             const SizedBox(height: 4),

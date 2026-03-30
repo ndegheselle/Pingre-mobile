@@ -35,17 +35,14 @@ class TransactionFormData {
 
 class TransactionFormFields extends StatefulWidget {
   final TransactionFormData formData;
-  final void Function(String? error)? onTagsError;
 
   const TransactionFormFields({
     super.key,
-    required this.formData,
-    this.onTagsError,
+    required this.formData
   });
 
   @override
-  State<TransactionFormFields> createState() =>
-      _TransactionFormFieldsState();
+  State<TransactionFormFields> createState() => _TransactionFormFieldsState();
 }
 
 class _TransactionFormFieldsState extends State<TransactionFormFields> {
@@ -62,9 +59,7 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
 
     _valueController = NumberValueController(widget.formData.value);
     _dateController = FDateFieldController(date: d);
-    _timeController = FTimeFieldController(
-      time: FTime(d.hour, d.minute),
-    );
+    _timeController = FTimeFieldController(time: FTime(d.hour, d.minute));
     _noteController = TextEditingController(text: widget.formData.notes);
   }
 
@@ -78,7 +73,6 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
       setState(() {
         widget.formData.tags = selection;
       });
-      widget.onTagsError?.call(null);
     }
   }
 
@@ -109,26 +103,27 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
         ValueInput(controller: _valueController),
         const SizedBox(height: 4),
         Expanded(
-          child: ErrorDisplay(
-            error: widget.formData.tags == null
-                ? "At least one tag should be selected."
-                : null,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TagsDisplay(selection: widget.formData.tags),
-                const SizedBox(height: 4),
-                SizedBox(
-                  width: 150,
-                  child: FButton(
-                    size: .sm,
-                    variant: .secondary,
-                    onPress: _selectTags,
-                    prefix: const Icon(FIcons.tag),
-                    child: const Text("Select tags"),
+          child: Center(
+            child: ErrorDisplay(
+              error: widget.formData.tags == null
+                  ? "At least one tag should be selected."
+                  : null,
+              child: Column(
+                children: [
+                  TagsDisplay(selection: widget.formData.tags),
+                  const SizedBox(height: 4),
+                  SizedBox(
+                    width: 150,
+                    child: FButton(
+                      size: .sm,
+                      variant: .secondary,
+                      onPress: _selectTags,
+                      prefix: const Icon(FIcons.tag),
+                      child: const Text("Select tags"),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -141,9 +136,7 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
         Row(
           children: [
             Expanded(
-              child: FDateField(
-                control: .managed(controller: _dateController),
-              ),
+              child: FDateField(control: .managed(controller: _dateController)),
             ),
             const SizedBox(width: 4),
             SizedBox(

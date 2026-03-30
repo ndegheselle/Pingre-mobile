@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/services/accounts.dart';
+import 'package:pingre/services/recurring.dart';
 import 'package:pingre/services/tags.dart';
 import 'package:pingre/services/transactions.dart';
 import 'package:pingre/theme_extensions.dart';
@@ -14,6 +15,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => AccountsService()),
         ChangeNotifierProvider(create: (_) => TagsService()),
         ChangeNotifierProvider(create: (_) => TransactionsService()),
+        ChangeNotifierProvider(create: (_) => RecurringTransactionsService()),
         // add more services here
       ],
       child: const Application(),
