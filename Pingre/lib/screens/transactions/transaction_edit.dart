@@ -1,11 +1,7 @@
-import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/screens/tags/tags_display.dart';
-import 'package:pingre/screens/tags/tags_select.dart';
+import 'package:pingre/screens/transactions/transaction_form_fields.dart';
 import 'package:pingre/services/transactions.dart';
-import 'package:pingre/widgets/data/error_display.dart';
-import 'package:pingre/widgets/inputs/value_input.dart';
 import 'package:provider/provider.dart';
 
 /// Show the transaction edit page as a sheet
@@ -33,82 +29,43 @@ class TransactionEdit extends StatefulWidget {
 class _TransactionEditState extends State<TransactionEdit> {
   late bool _isEditing;
   final Map<String, String> _errors = {};
-
-  TagsSelection? _tagsSelection;
-  late TextEditingController _noteController;
-  late FTimeFieldController _timeController;
-  late FDateFieldController _dateController;
-  late NumberValueController _valueController;
+  late TransactionFormData _formData;
 
   @override
   void initState() {
     super.initState();
 
     _isEditing = widget.transaction != null;
-
-    final initialDate = widget.transaction?.date ?? DateTime.now();
-    _tagsSelection = widget.transaction?.tags;
-    _valueController = NumberValueController(
-      widget.transaction?.value ?? Decimal.fromInt(-1),
-    );
-
-    _dateController = FDateFieldController(date: initialDate);
-    _timeController = FTimeFieldController(
-      time: FTime(initialDate.hour, initialDate.minute),
-    );
-    _noteController = TextEditingController(
-      text: widget.transaction?.notes ?? "",
-    );
+    _formData = TransactionFormData.fromTransaction(widget.transaction);
   }
 
-  /// Show the tag select page
-  void _selectTags() async {
-    final selection = await showTagsSelect(
-      context,
-      initialSelection: _tagsSelection,
-    );
-    if (selection != null) {
-      setState(() {
-        _tagsSelection = selection;
-      });
-    }
-  }
-
-  /// Either save or update the transaction if already existing
   void _save() {
-    var service = context.read<TransactionsService>();
-
-    if (_dateController.value == null) return;
-    if (_timeController.value == null) return;
-    if (_tagsSelection == null) {
-      return setState(() {
+    if (!_formData.isValid) {
+      setState(() {
         _errors["tags"] = "At least one tag should be selected.";
       });
+      return;
     }
 
-    DateTime date = DateTime(
-      _dateController.value!.year,
-      _dateController.value!.month,
-      _dateController.value!.day,
-      _timeController.value!.hour,
-      _timeController.value!.minute,
-    );
+    final service = context.read<TransactionsService>();
+
     if (_isEditing) {
       service.update(
         widget.transaction!.id,
-        value: _valueController.value,
-        tags: _tagsSelection,
-        date: date,
-        notes: _noteController.text,
+        value: _formData.value,
+        tags: _formData.tags,
+        date: _formData.date,
+        notes: _formData.notes,
       );
     } else {
-      Transaction transaction = Transaction(
-        value: _valueController.value,
-        date: date,
-        tags: _tagsSelection!,
-        notes: _noteController.text,
+      service.create(
+        Transaction(
+          value: _formData.value,
+          date: _formData.date,
+          tags: _formData.tags!,
+          notes: _formData.notes,
+        ),
       );
-      service.create(transaction);
     }
 
     _onSaved();
@@ -125,7 +82,6 @@ class _TransactionEditState extends State<TransactionEdit> {
     Navigator.of(context).pop();
   }
 
-  /// Show a dialog to ask if the user want to remove the transaction and then remove it
   void _remove() {
     showFDialog(
       context: context,
@@ -134,7 +90,7 @@ class _TransactionEditState extends State<TransactionEdit> {
         animation: animation,
         title: const Text('Removed transaction'),
         body: const Text(
-          'Are you sure you want to remove this transaction? This action cannot be undone.',
+          'Are you sure you want to remove this transaction?',
         ),
         actions: [
           FButton(
@@ -142,11 +98,11 @@ class _TransactionEditState extends State<TransactionEdit> {
             size: .sm,
             child: const Text('Remove'),
             onPress: () {
-              context.read<TransactionsService>().remove(
-                widget.transaction!.id,
-              );
+              context
+                  .read<TransactionsService>()
+                  .remove(widget.transaction!.id);
 
-              _onRemove();
+              Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
           ),
@@ -161,17 +117,6 @@ class _TransactionEditState extends State<TransactionEdit> {
     );
   }
 
-  void _onRemove() {
-    showFToast(
-      context: context,
-      alignment: .topCenter,
-      icon: const Icon(FIcons.check),
-      title: const Text("Removed"),
-      description: const Text("The transaction has been removed"),
-    );
-    Navigator.of(context).pop();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -179,11 +124,6 @@ class _TransactionEditState extends State<TransactionEdit> {
       width: .infinity,
       decoration: BoxDecoration(
         color: context.theme.colors.background,
-        border: Border(top: BorderSide(color: context.theme.colors.border)),
-        borderRadius: BorderRadius.only(
-          topLeft: context.theme.style.borderRadius.topLeft,
-          topRight: context.theme.style.borderRadius.topRight,
-        ),
       ),
       child: Padding(
         padding: const .only(left: 8, right: 8, bottom: 8),
@@ -191,62 +131,24 @@ class _TransactionEditState extends State<TransactionEdit> {
           children: [
             Text(
               _isEditing ? "Edit transaction" : "New transaction",
-              style: context.theme.typography.xl.copyWith(fontWeight: .bold),
+              style: context.theme.typography.xl
+                  .copyWith(fontWeight: .bold),
             ),
-            SizedBox(height: 4),
-            ValueInput(controller: _valueController),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
+
+            /// Reusable form
             Expanded(
-              child: ErrorDisplay(
-                error: _errors["tags"],
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TagsDisplay(selection: _tagsSelection),
-                    SizedBox(height: 4),
-                    Center(
-                      child: SizedBox(
-                        width: 150,
-                        child: FButton(
-                          size: .sm,
-                          variant: .secondary,
-                          onPress: _selectTags,
-                          prefix: const Icon(FIcons.tag),
-                          child: const Text("Select tags"),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              child: TransactionFormFields(
+                formData: _formData,
+                onTagsError: (err) {
+                  setState(() => _errors["tags"] = err ?? "");
+                },
               ),
             ),
-            SizedBox(height: 4),
-            FTextField.multiline(
-              hint: 'Notes',
-              control: .managed(controller: _noteController),
-            ),
-            SizedBox(height: 4),
-            Row(
-              crossAxisAlignment: .start,
-              children: [
-                Expanded(
-                  child: FDateField(
-                    control: .managed(controller: _dateController),
-                  ),
-                ),
-                SizedBox(width: 4),
-                SizedBox(
-                  width: 110,
-                  child: FTimeField(
-                    control: .managed(controller: _timeController),
-                    hour24: true,
-                  ),
-                ),
-              ],
-            ),
+
             if (_isEditing)
               Padding(
-                padding: .directional(top: 8),
+                padding: const .only(top: 8),
                 child: FButton(
                   variant: .destructive,
                   onPress: _remove,
@@ -254,10 +156,11 @@ class _TransactionEditState extends State<TransactionEdit> {
                   child: const Text("Remove"),
                 ),
               ),
+
             const SizedBox(height: 8),
             FButton(
               onPress: _save,
-              prefix: Icon(FIcons.save),
+              prefix: const Icon(FIcons.save),
               child: const Text("Save"),
             ),
           ],
