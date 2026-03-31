@@ -3,7 +3,7 @@ import 'package:forui/forui.dart';
 import 'package:pingre/screens/accounts/accounts_page.dart';
 import 'package:pingre/screens/app_settings_page.dart';
 import 'package:pingre/screens/recurring/recurring_page.dart';
-import 'package:pingre/screens/tags/tags_page.dart';
+import 'package:pingre/screens/reports/report_page.dart';
 import 'package:pingre/screens/transactions/transaction_edit.dart';
 import 'package:pingre/screens/transactions/transactions_page.dart';
 
@@ -11,7 +11,7 @@ final contents = [
   const TransactionsPage(),
   const RecurringPage(),
   const AccountsPage(),
-  const TagsPage(),
+  const ReportsPage(),
 ];
 
 class HomePage extends StatefulWidget {

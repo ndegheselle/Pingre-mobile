@@ -29,8 +29,6 @@ class TransactionFormData {
       notes: tx?.notes ?? "",
     );
   }
-
-  bool get isValid => tags != null;
 }
 
 class TransactionFormFields extends StatefulWidget {
@@ -38,7 +36,7 @@ class TransactionFormFields extends StatefulWidget {
 
   const TransactionFormFields({
     super.key,
-    required this.formData
+    required this.formData,
   });
 
   @override
@@ -63,92 +61,93 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
     _noteController = TextEditingController(text: widget.formData.notes);
   }
 
-  void _selectTags() async {
-    final selection = await showTagsSelect(
-      context,
-      initialSelection: widget.formData.tags,
-    );
-
-    if (selection != null) {
-      setState(() {
-        widget.formData.tags = selection;
-      });
-    }
-  }
-
-  void _syncToModel() {
-    final date = _dateController.value;
-    final time = _timeController.value;
-
-    if (date != null && time != null) {
-      widget.formData.date = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        time.hour,
-        time.minute,
-      );
-    }
-
-    widget.formData.value = _valueController.value;
-    widget.formData.notes = _noteController.text;
-  }
-
   @override
   Widget build(BuildContext context) {
-    _syncToModel(); // keep model in sync
-
     return Column(
-      children: [
-        ValueInput(controller: _valueController),
-        const SizedBox(height: 4),
-        Expanded(
-          child: Center(
-            child: ErrorDisplay(
-              error: widget.formData.tags == null
-                  ? "At least one tag should be selected."
-                  : null,
-              child: Column(
-                children: [
-                  TagsDisplay(selection: widget.formData.tags),
-                  const SizedBox(height: 4),
-                  SizedBox(
-                    width: 150,
-                    child: FButton(
-                      size: .sm,
-                      variant: .secondary,
-                      onPress: _selectTags,
-                      prefix: const Icon(FIcons.tag),
-                      child: const Text("Select tags"),
-                    ),
+        children: [
+          ValueInput(controller: _valueController),
+          const SizedBox(height: 4),
+          Expanded(
+            child: Center(
+              child: FormField<TagsSelection?>(
+                initialValue: widget.formData.tags,
+                validator: (value) => value == null
+                    ? "At least one tag should be selected."
+                    : null,
+                onSaved: (value) {
+                  if (value != null) widget.formData.tags = value;
+                },
+                builder: (state) => ErrorDisplay(
+                  error: state.errorText,
+                  child: Column(
+                    children: [
+                      TagsDisplay(selection: state.value),
+                      const SizedBox(height: 4),
+                      SizedBox(
+                        width: 150,
+                        child: FButton(
+                          size: .sm,
+                          variant: .secondary,
+                          onPress: () async {
+                            final selection = await showTagsSelect(
+                              context,
+                              initialSelection: state.value,
+                            );
+                            if (selection != null) {
+                              state.didChange(selection);
+                            }
+                          },
+                          prefix: const Icon(FIcons.tag),
+                          child: const Text("Select tags"),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(height: 4),
-        FTextField.multiline(
-          hint: 'Notes',
-          control: .managed(controller: _noteController),
-        ),
-        const SizedBox(height: 4),
-        Row(
-          children: [
-            Expanded(
-              child: FDateField(control: .managed(controller: _dateController)),
-            ),
-            const SizedBox(width: 4),
-            SizedBox(
-              width: 110,
-              child: FTimeField(
-                control: .managed(controller: _timeController),
-                hour24: true,
+          const SizedBox(height: 4),
+          FTextField.multiline(
+            hint: 'Notes',
+            control: .managed(controller: _noteController),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Expanded(
+                child: FDateField(control: .managed(controller: _dateController)),
               ),
-            ),
-          ],
-        ),
-      ],
+              const SizedBox(width: 4),
+              SizedBox(
+                width: 110,
+                child: FTimeField(
+                  control: .managed(controller: _timeController),
+                  hour24: true,
+                ),
+              ),
+            ],
+          ),
+          // Hidden FormField to sync remaining controllers on save
+          FormField<void>(
+            onSaved: (_) {
+              final date = _dateController.value;
+              final time = _timeController.value;
+              if (date != null && time != null) {
+                widget.formData.date = DateTime(
+                  date.year,
+                  date.month,
+                  date.day,
+                  time.hour,
+                  time.minute,
+                );
+              }
+              widget.formData.value = _valueController.value;
+              widget.formData.notes = _noteController.text;
+            },
+            builder: (state) => const SizedBox.shrink(),
+          ),
+        ],
     );
   }
 }

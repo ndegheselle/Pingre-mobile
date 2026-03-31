@@ -4,7 +4,6 @@ import 'package:pingre/models/time_range.dart';
 import 'package:pingre/screens/transactions/transaction_form_fields.dart';
 import 'package:pingre/services/recurring.dart';
 import 'package:pingre/services/transactions.dart';
-import 'package:pingre/widgets/data/error_display.dart';
 import 'package:pingre/widgets/inputs/time_range_select.dart';
 import 'package:provider/provider.dart';
 
@@ -42,10 +41,10 @@ class RecurringTransactionEdit extends StatefulWidget {
 
 class _RecurringTransactionEditState extends State<RecurringTransactionEdit> {
   late bool _isEditing;
-  final Map<String, String> _errors = {};
   late TransactionFormData _formData;
   late TextEditingController _nameController;
   late TimeRangeUnit _range;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -68,20 +67,10 @@ class _RecurringTransactionEditState extends State<RecurringTransactionEdit> {
   }
 
   void _save() {
+    if (!_formKey.currentState!.validate()) return;
+    _formKey.currentState!.save();
+
     final name = _nameController.text.trim();
-
-    if (name.isEmpty) {
-      setState(() => _errors["name"] = "A name is required.");
-      return;
-    }
-
-    if (!_formData.isValid) {
-      setState(() {
-        _errors["tags"] = "At least one tag should be selected.";
-      });
-      return;
-    }
-
     final service = context.read<RecurringTransactionsService>();
 
     if (_isEditing) {
@@ -179,7 +168,9 @@ class _RecurringTransactionEditState extends State<RecurringTransactionEdit> {
       decoration: BoxDecoration(color: context.theme.colors.background),
       child: Padding(
         padding: const .only(left: 8, right: 8, bottom: 8),
-        child: Column(
+        child: Form(
+          key: _formKey,
+          child: Column(
           children: [
             Text(
               _isEditing
@@ -193,20 +184,21 @@ class _RecurringTransactionEditState extends State<RecurringTransactionEdit> {
               onChanged: (unit) => setState(() => _range = unit),
             ),
             const SizedBox(height: 4),
-            ErrorDisplay(
-              error: _errors["name"],
-              child: FTextField(
-                hint: 'Name',
-                control: .managed(controller: _nameController),
-              ),
+            FormField<String>(
+              validator: (_) => _nameController.text.trim().isEmpty
+                  ? "A name is required."
+                  : null,
+              builder: (state) => FTextField(
+                  error: state.errorText == null ? null : Text(state.errorText!),
+                  hint: 'Name',
+                  control: .managed(controller: _nameController),
+                ),
             ),
             const SizedBox(height: 4),
 
 
             Expanded(
-              child: TransactionFormFields(
-                formData: _formData
-              ),
+              child: TransactionFormFields(formData: _formData),
             ),
 
             if (_isEditing)
@@ -227,6 +219,7 @@ class _RecurringTransactionEditState extends State<RecurringTransactionEdit> {
               child: const Text("Save"),
             ),
           ],
+          ),
         ),
       ),
     );

@@ -6,6 +6,7 @@ import 'package:pingre/services/accounts.dart';
 import 'package:pingre/widgets/data/value_display.dart';
 import 'package:pingre/widgets/inputs/search_add.dart';
 import 'package:provider/provider.dart';
+
 class AccountsPage extends StatefulWidget {
   const AccountsPage({super.key});
 

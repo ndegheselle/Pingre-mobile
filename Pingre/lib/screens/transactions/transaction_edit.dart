@@ -28,8 +28,8 @@ class TransactionEdit extends StatefulWidget {
 
 class _TransactionEditState extends State<TransactionEdit> {
   late bool _isEditing;
-  final Map<String, String> _errors = {};
   late TransactionFormData _formData;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -40,12 +40,8 @@ class _TransactionEditState extends State<TransactionEdit> {
   }
 
   void _save() {
-    if (!_formData.isValid) {
-      setState(() {
-        _errors["tags"] = "At least one tag should be selected.";
-      });
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
+    _formKey.currentState!.save();
 
     final service = context.read<TransactionsService>();
 
@@ -149,8 +145,9 @@ class _TransactionEditState extends State<TransactionEdit> {
 
             /// Reusable form
             Expanded(
-              child: TransactionFormFields(
-                formData: _formData
+              child: Form(
+                key: _formKey,
+                child: TransactionFormFields(formData: _formData),
               ),
             ),
 
