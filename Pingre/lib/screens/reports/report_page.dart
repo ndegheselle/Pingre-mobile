@@ -2,13 +2,12 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/models/time_range.dart';
+import 'package:pingre/screens/reports/report_filter_sheet.dart';
 import 'package:pingre/services/tags.dart';
 import 'package:pingre/services/transactions.dart';
 import 'package:pingre/widgets/data/value_display.dart';
 import 'package:pingre/widgets/inputs/time_range_select.dart';
 import 'package:provider/provider.dart';
-
-enum _TransactionFilter { both, expenses, income }
 
 class _TagTotal {
   final Tag tag;
@@ -31,7 +30,7 @@ class _ReportsPageState extends State<ReportsPage> {
   late TransactionsService _transactions;
   int? _hoveredIndex;
   final ScrollController _scrollController = ScrollController();
-  _TransactionFilter _filter = _TransactionFilter.both;
+  ReportFilter _filter = const ReportFilter();
 
   static const List<Color> _palette = [
     Color(0xFF6366F1),
@@ -72,12 +71,17 @@ class _ReportsPageState extends State<ReportsPage> {
 
     final Map<String, _TagTotal> groups = {};
     for (var transaction in transactions) {
-      if (_filter == _TransactionFilter.expenses &&
+      if (_filter.transactionType == TransactionFilter.expenses &&
           transaction.value > Decimal.zero)
         continue;
-      if (_filter == _TransactionFilter.income &&
+      if (_filter.transactionType == TransactionFilter.income &&
           transaction.value < Decimal.zero)
         continue;
+      if (_filter.tagIds.isNotEmpty) {
+        final transactionTagIds =
+            transaction.tags.all.map((t) => t.id).toSet();
+        if (transactionTagIds.intersection(_filter.tagIds).isEmpty) continue;
+      }
       final tag = transaction.tags.primary;
       tag.color = tag.color ?? _palette[groups.length % _palette.length];
       final current = groups[tag.id];
@@ -93,38 +97,41 @@ class _ReportsPageState extends State<ReportsPage> {
     return sorted;
   }
 
+  Future<void> _openFilterSheet() async {
+    final result = await showReportFilterSheet(
+      context,
+      current: _filter,
+    );
+    if (result != null) {
+      setState(() {
+        _filter = result;
+        _future = _load();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TimeRangeSelect(
-          value: _selectedTimeRange,
-          onChanged: (unit) {
-            _selectedTimeRange = unit;
-            _range = TimeRange.elapsed(unit);
-            _reload();
-          },
-        ),
-        const SizedBox(height: 4),
-        SegmentedButton<_TransactionFilter>(
-          segments: const [
-            ButtonSegment(
-              value: _TransactionFilter.expenses,
-              label: Text('Expenses'),
+        Row(
+          children: [
+            Expanded(
+              child: TimeRangeSelect(
+                value: _selectedTimeRange,
+                onChanged: (unit) {
+                  _selectedTimeRange = unit;
+                  _range = TimeRange.elapsed(unit);
+                  _reload();
+                },
+              ),
             ),
-            ButtonSegment(value: _TransactionFilter.both, label: Text('Both')),
-            ButtonSegment(
-              value: _TransactionFilter.income,
-              label: Text('Income'),
+            FButton(
+              variant: _filter.isActive ? .primary : .ghost,
+              onPress: _openFilterSheet,
+              child: Icon(FIcons.slidersHorizontal),
             ),
           ],
-          selected: {_filter},
-          onSelectionChanged: (selection) {
-            setState(() {
-              _filter = selection.first;
-              _future = _load();
-            });
-          },
         ),
         const SizedBox(height: 4),
         Expanded(
