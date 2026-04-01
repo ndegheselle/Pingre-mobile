@@ -5,6 +5,7 @@ import 'package:pingre/screens/accounts/account_type_icon.dart';
 import 'package:pingre/services/accounts.dart';
 import 'package:pingre/widgets/data/error_display.dart';
 import 'package:pingre/widgets/inputs/value_input.dart';
+import 'package:pingre/widgets/layout/sheet_container.dart';
 import 'package:provider/provider.dart';
 
 /// Show the account edit page in a sheet
@@ -152,77 +153,61 @@ class _AccountEditState extends State<AccountEdit> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: .infinity,
-      width: .infinity,
-      decoration: BoxDecoration(
-        color: context.theme.colors.background,
-        border: Border(top: BorderSide(color: context.theme.colors.border)),
-        borderRadius: BorderRadius.only(
-          topLeft: context.theme.style.borderRadius.topLeft,
-          topRight: context.theme.style.borderRadius.topRight,
-        ),
-      ),
-      child: Padding(
-        padding: const .only(left: 8, right: 8, bottom: 8),
-        child: Column(
-          children: [
-            Text(
-              _isEditing ? "Edit account" : "New account",
-              style: context.theme.typography.xl.copyWith(fontWeight: .bold),
+    return SheetContainer(
+      title: _isEditing ? "Edit account" : "New account",
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          ValueInput(controller: _balanceController),
+          const SizedBox(height: 4),
+          FSelect<AccountType>.rich(
+            hint: 'Type',
+            format: (type) => type.name,
+            control: .lifted(
+              value: _selectedType,
+              onChange: (value) => setState(() => _selectedType = value!),
             ),
-            const SizedBox(height: 8),
-            ValueInput(controller: _balanceController),
-            const SizedBox(height: 4),
-            FSelect<AccountType>.rich(
-              hint: 'Type',
-              format: (type) => type.name,
-              control: .lifted(
-                value: _selectedType,
-                onChange: (value) => setState(() => _selectedType = value!),
-              ),
-              children: [
-                for (final type in AccountType.values)
-                  .item(
-                    prefix: AccountTypeIcon(type: type),
-                    title: Text(type.name),
-                    subtitle: Text(type.description),
-                    value: type,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            ErrorDisplay(
-              error: _errors["name"],
-              child: FTextField(
-                hint: 'Name',
-                control: .managed(controller: _nameController),
-              ),
-            ),
-            const SizedBox(height: 4),
-            FTextField.multiline(
-              hint: 'Description',
-              control: .managed(controller: _descriptionController),
-            ),
-            const Spacer(),
-            if (_isEditing)
-              Padding(
-                padding: const .directional(top: 8),
-                child: FButton(
-                  variant: .destructive,
-                  onPress: _remove,
-                  prefix: const Icon(FIcons.trash),
-                  child: const Text("Remove"),
+            children: [
+              for (final type in AccountType.values)
+                .item(
+                  prefix: AccountTypeIcon(type: type),
+                  title: Text(type.name),
+                  subtitle: Text(type.description),
+                  value: type,
                 ),
-              ),
-            const SizedBox(height: 8),
-            FButton(
-              onPress: _save,
-              prefix: const Icon(FIcons.save),
-              child: const Text("Save"),
+            ],
+          ),
+          const SizedBox(height: 4),
+          ErrorDisplay(
+            error: _errors["name"],
+            child: FTextField(
+              hint: 'Name',
+              control: .managed(controller: _nameController),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 4),
+          FTextField.multiline(
+            hint: 'Description',
+            control: .managed(controller: _descriptionController),
+          ),
+          const Spacer(),
+          if (_isEditing)
+            Padding(
+              padding: const .directional(top: 8),
+              child: FButton(
+                variant: .destructive,
+                onPress: _remove,
+                prefix: const Icon(FIcons.trash),
+                child: const Text("Remove"),
+              ),
+            ),
+          const SizedBox(height: 8),
+          FButton(
+            onPress: _save,
+            prefix: const Icon(FIcons.save),
+            child: const Text("Save"),
+          ),
+        ],
       ),
     );
   }

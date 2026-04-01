@@ -5,6 +5,7 @@ import 'package:pingre/screens/transactions/transaction_form_fields.dart';
 import 'package:pingre/services/recurring.dart';
 import 'package:pingre/services/transactions.dart';
 import 'package:pingre/widgets/inputs/time_range_select.dart';
+import 'package:pingre/widgets/layout/sheet_container.dart';
 import 'package:provider/provider.dart';
 
 /// Show the recurring transaction edit page as a sheet
@@ -162,22 +163,14 @@ class _RecurringTransactionEditState extends State<RecurringTransactionEdit> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: .infinity,
-      width: .infinity,
-      decoration: BoxDecoration(color: context.theme.colors.background),
-      child: Padding(
-        padding: const .only(left: 8, right: 8, bottom: 8),
-        child: Form(
-          key: _formKey,
-          child: Column(
+    return SheetContainer(
+      title: _isEditing
+          ? "Edit recurring transaction"
+          : "New recurring transaction",
+      child: Form(
+        key: _formKey,
+        child: Column(
           children: [
-            Text(
-              _isEditing
-                  ? "Edit recurring transaction"
-                  : "New recurring transaction",
-              style: context.theme.typography.xl.copyWith(fontWeight: .bold),
-            ),
             const SizedBox(height: 4),
             TimeRangeSelect(
               value: _range,
@@ -189,18 +182,15 @@ class _RecurringTransactionEditState extends State<RecurringTransactionEdit> {
                   ? "A name is required."
                   : null,
               builder: (state) => FTextField(
-                  error: state.errorText == null ? null : Text(state.errorText!),
-                  hint: 'Name',
-                  control: .managed(controller: _nameController),
-                ),
+                error: state.errorText == null ? null : Text(state.errorText!),
+                hint: 'Name',
+                control: .managed(controller: _nameController),
+              ),
             ),
             const SizedBox(height: 4),
-
-
             Expanded(
               child: TransactionFormFields(formData: _formData),
             ),
-
             if (_isEditing)
               Padding(
                 padding: const .only(top: 8),
@@ -211,7 +201,6 @@ class _RecurringTransactionEditState extends State<RecurringTransactionEdit> {
                   child: const Text("Remove"),
                 ),
               ),
-
             const SizedBox(height: 8),
             FButton(
               onPress: _save,
@@ -219,7 +208,6 @@ class _RecurringTransactionEditState extends State<RecurringTransactionEdit> {
               child: const Text("Save"),
             ),
           ],
-          ),
         ),
       ),
     );
