@@ -72,20 +72,26 @@ class TransactionsService extends ChangeNotifier {
 
   static Map<String, Transaction> _generateFakeData() {
     final rng = Random();
+
+    final primaryTags = [
+      Tag(name: 'Food'),
+      Tag(name: 'Transport'),
+      Tag(name: 'Shopping'),
+      Tag(name: 'Health'),
+      Tag(name: 'Entertainment'),
+      Tag(name: 'Housing'),
+      Tag(name: 'Travel'),
+    ];
+
     var list = List.generate(200, (i) {
       final daysAgo = rng.nextInt(365);
+      final primary = primaryTags[rng.nextInt(primaryTags.length)];
       return Transaction(
         value: Decimal.parse(
           (rng.nextDouble() * 500).roundToDouble().toString(),
         ),
         date: DateTime.now().subtract(Duration(days: daysAgo)),
-        tags: TagsSelection(
-          primary: Tag(name: "Test 😊"),
-          secondaries: [
-            Tag(name: "Small 🏐"),
-            Tag(name: "Big 🚀"),
-          ],
-        ),
+        tags: TagsSelection(primary: primary),
         notes: 'Transaction $i',
       );
     });
