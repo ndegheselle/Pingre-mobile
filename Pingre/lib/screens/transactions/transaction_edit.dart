@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/screens/transactions/transaction_form_fields.dart';
 import 'package:pingre/services/transactions.dart';
+import 'package:pingre/widgets/layout/sheet_container.dart';
 import 'package:provider/provider.dart';
 
 /// Show the transaction edit page as a sheet
@@ -126,50 +127,38 @@ class _TransactionEditState extends State<TransactionEdit> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: .infinity,
-      width: .infinity,
-      decoration: BoxDecoration(
-        color: context.theme.colors.background,
-      ),
-      child: Padding(
-        padding: const .only(left: 8, right: 8, bottom: 8),
-        child: Column(
-          children: [
-            Text(
-              _isEditing ? "Edit transaction" : "New transaction",
-              style: context.theme.typography.xl
-                  .copyWith(fontWeight: .bold),
-            ),
-            const SizedBox(height: 4),
+    return SheetContainer(
+      title: _isEditing ? "Edit transaction" : "New transaction",
+      child: Column(
+        children: [
+          const SizedBox(height: 4),
 
-            /// Reusable form
-            Expanded(
-              child: Form(
-                key: _formKey,
-                child: TransactionFormFields(formData: _formData),
+          /// Reusable form
+          Expanded(
+            child: Form(
+              key: _formKey,
+              child: TransactionFormFields(formData: _formData),
+            ),
+          ),
+
+          if (_isEditing)
+            Padding(
+              padding: const .only(top: 8),
+              child: FButton(
+                variant: .destructive,
+                onPress: _remove,
+                prefix: const Icon(FIcons.trash),
+                child: const Text("Remove"),
               ),
             ),
 
-            if (_isEditing)
-              Padding(
-                padding: const .only(top: 8),
-                child: FButton(
-                  variant: .destructive,
-                  onPress: _remove,
-                  prefix: const Icon(FIcons.trash),
-                  child: const Text("Remove"),
-                ),
-              ),
-
-            const SizedBox(height: 8),
-            FButton(
-              onPress: _save,
-              prefix: const Icon(FIcons.save),
-              child: const Text("Save"),
-            ),
-          ],
-        ),
+          const SizedBox(height: 8),
+          FButton(
+            onPress: _save,
+            prefix: const Icon(FIcons.save),
+            child: const Text("Save"),
+          ),
+        ],
       ),
     );
   }

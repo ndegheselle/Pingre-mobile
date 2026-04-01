@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/services/tags.dart';
 import 'package:pingre/widgets/inputs/color_picker.dart';
+import 'package:pingre/widgets/layout/sheet_container.dart';
 import 'package:provider/provider.dart';
 
 /// Show the tag edit page in a sheet
@@ -108,51 +109,34 @@ class _TagEditState extends State<TagEdit> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: .infinity,
-      width: .infinity,
-      decoration: BoxDecoration(
-        color: context.theme.colors.background,
-        border: Border(top: BorderSide(color: context.theme.colors.border)),
-        borderRadius: BorderRadius.only(
-          topLeft: context.theme.style.borderRadius.topLeft,
-          topRight: context.theme.style.borderRadius.topRight,
-        ),
-      ),
-      child: Padding(
-        padding: const .only(left: 8, right: 8, bottom: 8),
-        child: Column(
-          children: [
-            Text(
-              "Edit tag",
-              style: context.theme.typography.xl.copyWith(fontWeight: .bold),
-            ),
-            const SizedBox(height: 4),
-            ColorPicker(
-              initialColor: _selectedColor,
-              onChanged: (color) => setState(() => _selectedColor = color),
-            ),
-            const SizedBox(height: 4),
-            FTextField(
-              label: const Text("Name"),
-              control: .managed(controller: _nameController),
-            ),
-            const Spacer(),
-
-            FButton(
-              variant: .destructive,
-              onPress: _remove,
-              prefix: const Icon(FIcons.trash),
-              child: const Text("Remove"),
-            ),
-            const SizedBox(height: 8),
-            FButton(
-              onPress: _save,
-              prefix: const Icon(FIcons.save),
-              child: const Text("Save"),
-            ),
-          ],
-        ),
+    return SheetContainer(
+      title: "Edit tag",
+      child: Column(
+        children: [
+          const SizedBox(height: 4),
+          ColorPicker(
+            initialColor: _selectedColor,
+            onChanged: (color) => setState(() => _selectedColor = color),
+          ),
+          const SizedBox(height: 4),
+          FTextField(
+            label: const Text("Name"),
+            control: .managed(controller: _nameController),
+          ),
+          const Spacer(),
+          FButton(
+            variant: .destructive,
+            onPress: _remove,
+            prefix: const Icon(FIcons.trash),
+            child: const Text("Remove"),
+          ),
+          const SizedBox(height: 8),
+          FButton(
+            onPress: _save,
+            prefix: const Icon(FIcons.save),
+            child: const Text("Save"),
+          ),
+        ],
       ),
     );
   }

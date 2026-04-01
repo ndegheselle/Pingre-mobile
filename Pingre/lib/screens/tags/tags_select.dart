@@ -3,6 +3,7 @@ import 'package:forui/forui.dart';
 import 'package:pingre/services/tags.dart';
 import 'package:pingre/services/transactions.dart';
 import 'package:pingre/widgets/inputs/search_add.dart';
+import 'package:pingre/widgets/layout/sheet_container.dart';
 import 'package:provider/provider.dart';
 
 Future<TagsSelection?> showTagsSelect(
@@ -86,58 +87,41 @@ class _TagsSelectState extends State<TagsSelect> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: .infinity,
-      width: .infinity,
-      decoration: BoxDecoration(
-        color: context.theme.colors.background,
-        border: Border(top: BorderSide(color: context.theme.colors.border)),
-        borderRadius: BorderRadius.only(
-          topLeft: context.theme.style.borderRadius.topLeft,
-          topRight: context.theme.style.borderRadius.topRight,
-        ),
-      ),
-      child: Padding(
-        padding: const .only(left: 8, right: 8, bottom: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              "Select tags",
-              style: context.theme.typography.xl.copyWith(fontWeight: .bold),
-            ),
-            const SizedBox(height: 4),
-            SearchWithAdd(controller: _controller, onAdd: _addTag, hint: "Tag name ...", alwaysShowAdd: false),
-            const SizedBox(height: 4),
-            Center(child: Opacity(opacity: 0.5, child: Text("Long press to set primary tag", style: context.theme.typography.sm))),
-            const SizedBox(height: 4),
-            Expanded(
-              child: SizedBox(
-                width: double.infinity,
-                child: SingleChildScrollView(
-                  child: ValueListenableBuilder(
-                    valueListenable: _controller,
-                    builder: (context, _, _) {
-                      return TagsWrap(
-                        primaryTagId: _primaryTagId,
-                        secondariesIds: _secondariesIds,
-                        search: _controller.text.trim(),
-                        onTap: _toggleTag,
-                        onLongPress: _setPrimaryTag,
-                      );
-                    },
-                  ),
+    return SheetContainer(
+      title: "Select tags",
+      child: Column(
+        children: [
+          const SizedBox(height: 4),
+          SearchWithAdd(controller: _controller, onAdd: _addTag, hint: "Tag name ...", alwaysShowAdd: false),
+          const SizedBox(height: 4),
+          Center(child: Opacity(opacity: 0.5, child: Text("Long press to set primary tag", style: context.theme.typography.sm))),
+          const SizedBox(height: 4),
+          Expanded(
+            child: SizedBox(
+              width: double.infinity,
+              child: SingleChildScrollView(
+                child: ValueListenableBuilder(
+                  valueListenable: _controller,
+                  builder: (context, _, _) {
+                    return TagsWrap(
+                      primaryTagId: _primaryTagId,
+                      secondariesIds: _secondariesIds,
+                      search: _controller.text.trim(),
+                      onTap: _toggleTag,
+                      onLongPress: _setPrimaryTag,
+                    );
+                  },
                 ),
               ),
             ),
-            SizedBox(height: 4),
-            FButton(
-              onPress: _confirm,
-              prefix: const Icon(FIcons.check),
-              child: const Text("Confirm"),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 4),
+          FButton(
+            onPress: _confirm,
+            prefix: const Icon(FIcons.check),
+            child: const Text("Confirm"),
+          ),
+        ],
       ),
     );
   }
