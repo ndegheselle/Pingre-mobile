@@ -133,6 +133,7 @@ class _ReportsPageState extends State<ReportsPage> {
             ),
           ],
         ),
+        */
         const SizedBox(height: 4),
         Expanded(
           child: FutureBuilder<List<_TagTotal>>(
@@ -195,6 +196,7 @@ class _ReportsPageState extends State<ReportsPage> {
                             ),
                           ],
                         ),
+                        SizedBox(height: 2),
                         // Graph bar
                         ClipRRect(
                           borderRadius: context.theme.style.borderRadius,

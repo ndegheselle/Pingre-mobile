@@ -58,9 +58,10 @@ extension TransactionsExtension on List<Transaction> {
     );
     for (var transaction in this) {
       while (transaction.date.isBefore(currentGroup.range.start)) {
-        groups.add(currentGroup);
+        if (currentGroup.transactions.isNotEmpty) {
+          groups.add(currentGroup);
+        }
         currentGroup = currentGroup.previous();
-        // if (withEmpty == false) break;
       }
       currentGroup.add(transaction);
     }
@@ -80,7 +81,9 @@ extension TransactionsExtension on List<Transaction> {
     TransactionGroup currentGroup = existingGroup;
     for (var transaction in this) {
       while (transaction.date.isBefore(currentGroup.range.start)) {
-        groups.add(currentGroup);
+        if (currentGroup.transactions.isNotEmpty) {
+          groups.add(currentGroup);
+        }
         currentGroup = currentGroup.previous();
       }
       currentGroup.add(transaction);

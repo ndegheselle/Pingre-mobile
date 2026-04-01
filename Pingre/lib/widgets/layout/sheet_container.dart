@@ -23,12 +23,22 @@ class SheetContainer extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const .only(left: 8, right: 8, bottom: 8),
+        padding: const .all(4),
         child: Column(
           children: [
-            Row(
+            Center(
+              child: Container(
+                width: 40,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: context.theme.colors.border,
+                  borderRadius: context.theme.style.borderRadius,
+                ),
+              ),
+            ),
+            Stack(
               children: [
-                Expanded(
+                Center(
                   child: Text(
                     title,
                     style: context.theme.typography.xl.copyWith(
@@ -36,10 +46,14 @@ class SheetContainer extends StatelessWidget {
                     ),
                   ),
                 ),
-                IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: Icon(FIcons.x, color: context.theme.colors.foreground),
-                ),
+                Positioned(
+                  right: 4,
+                  child:
+                FButton.icon(
+                  variant: .ghost,
+                  onPress: () => Navigator.of(context).pop(),
+                  child: Icon(FIcons.x),
+                )),
               ],
             ),
             Expanded(child: child),
