@@ -6,7 +6,7 @@ import 'package:uuid/uuid.dart';
 class Tag {
   final String id;
   final String name;
-  final Color? color;
+  Color? color;
   /// When is the last time the tag has been used.
   DateTime updatedAt;
 

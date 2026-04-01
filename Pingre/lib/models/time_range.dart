@@ -133,10 +133,24 @@ class TimeRange {
     }
   }
 
+  bool get isLatest {
+    final now = DateTime.now();
+    return end.year == now.year &&
+        end.month == now.month &&
+        end.day == now.day;
+  }
+
   /// Returns the previous range of the same unit
   TimeRange previous() => isCurrent
       ? .current(unit, start.subtract(const Duration(days: 1)))
       : .elapsed(unit, start.subtract(const Duration(days: 1)));
+
+  /// Returns the next range of the same unit, or null if already at the latest
+  TimeRange? next() {
+    if (isLatest) return null;
+    final nextDay = end.add(const Duration(days: 1));
+    return .elapsed(unit, nextDay);
+  }
 
   /// Get the name of the group based on the [range]
   String getName() {
