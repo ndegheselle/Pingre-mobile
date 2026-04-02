@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/screens/tags/tags_page.dart';
+import 'package:pingre/widgets/inputs/theme_selector.dart';
 
 class AppSettingsPage extends StatelessWidget {
   const AppSettingsPage({super.key});
@@ -13,6 +14,11 @@ class AppSettingsPage extends StatelessWidget {
     ),
     child: FItemGroup(
       children: [
+        FItem(
+          prefix: const Icon(FIcons.sun),
+          title: const Text('Theme'),
+          suffix: const ThemeSelector(),
+        ),
         FItem(
           prefix: const Icon(FIcons.tags),
           title: const Text('Tags'),
