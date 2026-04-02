@@ -127,13 +127,12 @@ class _ReportsPageState extends State<ReportsPage> {
               ),
             ),
             FButton(
-              variant: _filter.isActive ? .primary : .ghost,
+              variant: _filter.isActive ? .android : .ghost,
               onPress: _openFilterSheet,
               child: Icon(FIcons.slidersHorizontal),
             ),
           ],
         ),
-        */
         const SizedBox(height: 4),
         Expanded(
           child: FutureBuilder<List<_TagTotal>>(

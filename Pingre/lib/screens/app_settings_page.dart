@@ -21,7 +21,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
         title: const Text('Settings'),
         prefixes: [FHeaderAction.back(onPress: () => Navigator.pop(context))],
       ),
-      child: FItemGroup(
+      child: Column(
         children: [
           FSelectMenuTile<ThemeMode>(
             prefix: const Icon(FIcons.sun),
@@ -75,26 +75,22 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
 class _ThemeSquare extends StatelessWidget {
   static const _lightColor = Color(0xFFfafafa);
   static const _darkColor = Color(0xFF18181b);
-  static const _size = 24.0;
-  static const _radius = 5.0;
+  static const _size = 20.0;
 
   final ThemeMode mode;
-
   const _ThemeSquare({required this.mode});
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = FTheme.of(context).colors.border;
-
     return Container(
       width: _size,
       height: _size,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(_radius),
-        border: Border.all(color: borderColor),
+        borderRadius: context.theme.style.borderRadius,
+        border: Border.all(color: context.theme.colors.border),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(_radius - 1),
+        borderRadius: context.theme.style.borderRadius,
         child: _buildFill(),
       ),
     );

@@ -93,7 +93,6 @@ class _TransactionssPageState extends State<TransactionsPage> {
             _reload();
           },
         ),
-        SizedBox(height: 4),
         Expanded(
           child: FutureBuilder(
             future: _future,
@@ -112,7 +111,7 @@ class _TransactionssPageState extends State<TransactionsPage> {
                       final item = flatItems[index];
 
                       if (item is TransactionGroup) {
-                        return Column(
+                        return Padding(padding: .symmetric(vertical: 4), child: Column(
                           children: [
                             FTile(
                               style: .delta(
@@ -125,9 +124,8 @@ class _TransactionssPageState extends State<TransactionsPage> {
                                 isHeader: true,
                               ),
                             ),
-                            SizedBox(height: 4),
                           ],
-                        );
+                        ));
                       }
 
                       if (item is Transaction) {
