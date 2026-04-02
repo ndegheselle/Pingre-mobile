@@ -3,6 +3,7 @@ import 'package:forui/forui.dart';
 import 'package:pingre/services/accounts.dart';
 import 'package:pingre/services/recurring.dart';
 import 'package:pingre/services/tags.dart';
+import 'package:pingre/services/settings_service.dart';
 import 'package:pingre/services/transactions.dart';
 import 'package:pingre/theme_extensions.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => TagsService()),
         ChangeNotifierProvider(create: (_) => TransactionsService()),
         ChangeNotifierProvider(create: (_) => RecurringTransactionsService()),
+        ChangeNotifierProvider(create: (_) => SettingsService()),
         // add more services here
       ],
       child: const Application(),
@@ -27,6 +29,8 @@ class Application extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = context.watch<SettingsService>().themeMode;
+
     final light = FThemes.zinc.light.copyWith(
       extensions: const [
         AppSemanticColors(
@@ -51,8 +55,7 @@ class Application extends StatelessWidget {
 
       theme: light.toApproximateMaterialTheme(),
       darkTheme: dark.toApproximateMaterialTheme(),
-      // Uses system brightness automatically
-      themeMode: ThemeMode.system,
+      themeMode: themeMode,
 
       builder: (context, child) {
         final brightness = Theme.of(context).brightness;
