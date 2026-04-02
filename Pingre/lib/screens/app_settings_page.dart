@@ -33,7 +33,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
               value: {settings.themeMode},
               onChange: (values) {
                 if (values.isNotEmpty) {
-                  context.read<SettingsService>().setThemeMode(values.first);
+                  context.read<SettingsService>().themeMode = values.first;
                 }
               },
             ),
