@@ -10,18 +10,14 @@ import 'package:provider/provider.dart';
 
 import 'screens/home_page.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final settingsService = SettingsService();
-  await settingsService.load();
-
+void main() {
   runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AccountsService()),
         ChangeNotifierProvider(create: (_) => TagsService()),
         ChangeNotifierProvider(create: (_) => TransactionsService()),
         ChangeNotifierProvider(create: (_) => RecurringTransactionsService()),
-        ChangeNotifierProvider.value(value: settingsService),
+        ChangeNotifierProvider(create: (_) => SettingsService()),
         // add more services here
       ],
       child: const Application(),
