@@ -100,4 +100,70 @@ class RecurringTransactionsService extends ChangeNotifier {
     _recurringTransactionsMap.remove(id);
     notifyListeners();
   }
+
+  /// Generates and adds all recurring transaction occurrences that should have
+  /// happened between [lastRun] and now. Safe to call non-blocking at app start.
+  /// A duplicate guard prevents adding a transaction that already exists on the
+  /// same calendar day with the same primary tag.
+  Future<void> applyMissedRecurring(
+    TransactionsService transactionsService,
+    DateTime? lastRun,
+  ) async {
+    final now = DateTime.now();
+    if (lastRun == null || !lastRun.isBefore(now)) return;
+
+    for (final recurring in recurringTransactions) {
+      for (final date in _getOccurrencesBetween(recurring, lastRun, now)) {
+        if (!transactionsService.existsByDateAndPrimaryTag(
+          date,
+          recurring.transaction.tags.primary,
+        )) {
+          transactionsService.create(recurring.transaction.copyWith(date: date));
+        }
+      }
+    }
+  }
+
+  /// Returns every occurrence of [recurring] that falls strictly after [from]
+  /// and on or before [to], based on the recurrence period.
+  List<DateTime> _getOccurrencesBetween(
+    RecurringTransaction recurring,
+    DateTime from,
+    DateTime to,
+  ) {
+    final occurrences = <DateTime>[];
+    var current = recurring.transaction.date;
+
+    // Advance anchor to the first occurrence strictly after `from`
+    while (!current.isAfter(from)) {
+      current = _addPeriod(current, recurring.range);
+    }
+
+    while (!current.isAfter(to)) {
+      occurrences.add(current);
+      current = _addPeriod(current, recurring.range);
+    }
+
+    return occurrences;
+  }
+
+  DateTime _addPeriod(DateTime date, TimeRangeUnit unit) {
+    switch (unit) {
+      case TimeRangeUnit.day:
+        return date.add(const Duration(days: 1));
+      case TimeRangeUnit.week:
+        return date.add(const Duration(days: 7));
+      case TimeRangeUnit.twoWeeks:
+        return date.add(const Duration(days: 14));
+      case TimeRangeUnit.month:
+        return DateTime(
+            date.year, date.month + 1, date.day, date.hour, date.minute, date.second);
+      case TimeRangeUnit.quarter:
+        return DateTime(
+            date.year, date.month + 3, date.day, date.hour, date.minute, date.second);
+      case TimeRangeUnit.year:
+        return DateTime(
+            date.year + 1, date.month, date.day, date.hour, date.minute, date.second);
+    }
+  }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/screens/tags/tags_page.dart';
-import 'package:pingre/services/settings_service.dart';
+import 'package:pingre/services/settings.dart';
 import 'package:provider/provider.dart';
 
 class AppSettingsPage extends StatefulWidget {

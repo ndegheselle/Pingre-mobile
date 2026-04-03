@@ -133,4 +133,14 @@ class TransactionsService extends ChangeNotifier {
     _transactionsMap.remove(id);
     notifyListeners();
   }
+
+  /// Returns true if a transaction already exists on the same calendar day
+  /// with the same primary tag — used to prevent duplicate recurring entries.
+  bool existsByDateAndPrimaryTag(DateTime date, Tag primaryTag) {
+    return _transactionsMap.values.any((t) =>
+        t.date.year == date.year &&
+        t.date.month == date.month &&
+        t.date.day == date.day &&
+        t.tags.primary.name == primaryTag.name);
+  }
 }

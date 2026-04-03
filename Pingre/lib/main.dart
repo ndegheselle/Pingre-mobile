@@ -3,7 +3,7 @@ import 'package:forui/forui.dart';
 import 'package:pingre/services/accounts.dart';
 import 'package:pingre/services/recurring.dart';
 import 'package:pingre/services/tags.dart';
-import 'package:pingre/services/settings_service.dart';
+import 'package:pingre/services/settings.dart';
 import 'package:pingre/services/transactions.dart';
 import 'package:pingre/theme_extensions.dart';
 import 'package:provider/provider.dart';
@@ -15,12 +15,21 @@ void main() async {
   final settingsService = SettingsService();
   await settingsService.load();
 
+  final transactionsService = TransactionsService();
+  final recurringTransactionsService = RecurringTransactionsService();
+
+  // Non-blocking: apply any recurring transactions missed since last open,
+  // then record the timestamp so the next launch can pick up from here.
+  recurringTransactionsService
+      .applyMissedRecurring(transactionsService, settingsService.lastRecurringSetup)
+      .then((_) => settingsService.lastRecurringSetup = DateTime.now());
+
   runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AccountsService()),
         ChangeNotifierProvider(create: (_) => TagsService()),
-        ChangeNotifierProvider(create: (_) => TransactionsService()),
-        ChangeNotifierProvider(create: (_) => RecurringTransactionsService()),
+        ChangeNotifierProvider.value(value: transactionsService),
+        ChangeNotifierProvider.value(value: recurringTransactionsService),
         ChangeNotifierProvider.value(value: settingsService),
         // add more services here
       ],
