@@ -78,8 +78,7 @@ class _ReportsPageState extends State<ReportsPage> {
           transaction.value < Decimal.zero)
         continue;
       if (_filter.tagIds.isNotEmpty) {
-        final transactionTagIds =
-            transaction.tags.all.map((t) => t.id).toSet();
+        final transactionTagIds = transaction.tags.all.map((t) => t.id).toSet();
         if (transactionTagIds.intersection(_filter.tagIds).isEmpty) continue;
       }
       final tag = transaction.tags.primary;
@@ -98,10 +97,7 @@ class _ReportsPageState extends State<ReportsPage> {
   }
 
   Future<void> _openFilterSheet() async {
-    final result = await showReportFilterSheet(
-      context,
-      current: _filter,
-    );
+    final result = await showReportFilterSheet(context, current: _filter);
     if (result != null) {
       setState(() {
         _filter = result;
@@ -126,10 +122,11 @@ class _ReportsPageState extends State<ReportsPage> {
                 },
               ),
             ),
-            FButton(
-              variant: _filter.isActive ? .android : .ghost,
+            SizedBox(width: 4),
+            FButton.icon(
+              variant: .ghost,
               onPress: _openFilterSheet,
-              child: Icon(FIcons.slidersHorizontal),
+              child: Icon(FIcons.funnel),
             ),
           ],
         ),

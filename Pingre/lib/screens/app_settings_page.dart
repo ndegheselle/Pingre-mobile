@@ -24,34 +24,31 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
       child: Column(
         children: [
           FSelectMenuTile<ThemeMode>(
-            prefix: const Icon(FIcons.sun),
-            title: const Text('Theme'),
-            detailsBuilder: (context, values, _) => _ThemeSquare(
-              mode: values.firstOrNull ?? ThemeMode.system,
-            ),
-            selectControl: FMultiValueControl.lifted(
-              value: {settings.themeMode},
+            selectControl: .managedRadio(
+              initial: settings.themeMode,
               onChange: (values) {
-                if (values.isNotEmpty) {
-                  context.read<SettingsService>().themeMode = values.first;
-                }
+                if (values.isNotEmpty) settings.themeMode = values.first;
               },
             ),
+            prefix: const Icon(FIcons.sunMoon),
+            title: const Text('Theme'),
+            detailsBuilder: (_, values, _) =>
+                _ThemeSquare(mode: values.firstOrNull ?? .system),
             menu: const [
-              FSelectTile.suffix(
-                value: ThemeMode.system,
+              .suffix(
+                prefix: _ThemeSquare(mode: .system),
                 title: Text('Auto'),
-                prefix: _ThemeSquare(mode: ThemeMode.system),
+                value: .system,
               ),
-              FSelectTile.suffix(
-                value: ThemeMode.light,
+              .suffix(
+                prefix: _ThemeSquare(mode: .light),
                 title: Text('Light'),
-                prefix: _ThemeSquare(mode: ThemeMode.light),
+                value: .light,
               ),
-              FSelectTile.suffix(
-                value: ThemeMode.dark,
+              .suffix(
+                prefix: _ThemeSquare(mode: .dark),
                 title: Text('Dark'),
-                prefix: _ThemeSquare(mode: ThemeMode.dark),
+                value: .dark,
               ),
             ],
           ),

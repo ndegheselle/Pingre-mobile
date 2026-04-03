@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/screens/tags/tags_select.dart';
 import 'package:pingre/services/tags.dart';
 import 'package:pingre/widgets/layout/sheet_container.dart';
 import 'package:provider/provider.dart';
 
-enum TransactionFilter { expenses, both, income }
+enum TransactionFilter { expenses, income }
 
 class ReportFilter {
-  final TransactionFilter transactionType;
+  final Set<TransactionFilter> transactionType;
   final Set<String> tagIds;
 
   const ReportFilter({
-    this.transactionType = TransactionFilter.both,
+    this.transactionType = const {
+      TransactionFilter.expenses,
+      TransactionFilter.income,
+    },
     this.tagIds = const {},
   });
 
-  bool get isActive =>
-      transactionType != TransactionFilter.both || tagIds.isNotEmpty;
-
   ReportFilter copyWith({
-    TransactionFilter? transactionType,
+    Set<TransactionFilter>? transactionType,
     Set<String>? tagIds,
   }) {
     return ReportFilter(
@@ -51,13 +52,15 @@ class ReportFilterSheet extends StatefulWidget {
 }
 
 class _ReportFilterSheetState extends State<ReportFilterSheet> {
-  late TransactionFilter _transactionType;
+  late Set<TransactionFilter> _transactionType;
   late Set<String> _selectedTagIds;
+
+  final TextEditingController _tagSearchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _transactionType = widget.current.transactionType;
+    _transactionType = Set.from(widget.current.transactionType);
     _selectedTagIds = Set.from(widget.current.tagIds);
   }
 
@@ -95,25 +98,35 @@ class _ReportFilterSheetState extends State<ReportFilterSheet> {
             ),
           ),
           const SizedBox(height: 4),
-          SegmentedButton<TransactionFilter>(
-            segments: const [
-              ButtonSegment(
-                value: TransactionFilter.expenses,
-                label: Text('Expenses'),
+          FSelectMenuTile<TransactionFilter>(
+            selectControl: .managed(
+              initial: _transactionType,
+              onChange: (values) {
+                setState(() {
+                  _transactionType = values;
+                });
+              },
+            ),
+            detailsBuilder: (context, values, child) => Text(
+              values.map((v) => switch (v) {
+                TransactionFilter.expenses => 'Expenses',
+                TransactionFilter.income => 'Income',
+              }).join(', '),
+            ),
+            prefix: const Icon(FIcons.banknote),
+            title: const Text('Transaction Type'),
+            menu: const [
+              .suffix(
+                prefix: Icon(FIcons.trendingDown),
+                title: Text('Expenses'),
+                value: .expenses,
               ),
-              ButtonSegment(
-                value: TransactionFilter.both,
-                label: Text('Both'),
-              ),
-              ButtonSegment(
-                value: TransactionFilter.income,
-                label: Text('Income'),
+              .suffix(
+                prefix: Icon(FIcons.trendingUp),
+                title: Text('Income'),
+                value: .income,
               ),
             ],
-            selected: {_transactionType},
-            onSelectionChanged: (selection) {
-              setState(() => _transactionType = selection.first);
-            },
           ),
           const SizedBox(height: 12),
           Text(
@@ -123,58 +136,25 @@ class _ReportFilterSheetState extends State<ReportFilterSheet> {
             ),
           ),
           const SizedBox(height: 4),
+          FTextField(
+            control: .managed(controller: _tagSearchController),
+            prefixBuilder: (context, style, variants) => Padding(
+              padding: .directional(start: 8),
+              child: Opacity(opacity: 0.5, child: Icon(FIcons.search)),
+            ),
+            hint: 'Search tags ...',
+            clearable: (value) => value.text.isNotEmpty,
+          ),
+          const SizedBox(height: 4),
           Expanded(
-            child: SingleChildScrollView(
-              child: Consumer<TagsService>(
-                builder: (context, service, _) {
-                  if (service.tags.isEmpty) {
-                    return Opacity(
-                      opacity: 0.5,
-                      child: Text(
-                        "No tags",
-                        style: context.theme.typography.base,
-                      ),
-                    );
-                  }
-
-                  final tags = service.tags.toList()
-                    ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-
-                  return Wrap(
-                    spacing: 4,
-                    runSpacing: 4,
-                    children: tags.map((tag) {
-                      final isSelected = _selectedTagIds.contains(tag.id);
-                      return GestureDetector(
-                        onTap: () => _toggleTag(tag.id),
-                        child: FBadge(
-                          style: .delta(
-                            contentStyle: .delta(
-                              labelTextStyle: .delta(
-                                fontSize:
-                                    context.theme.typography.lg.fontSize,
-                              ),
-                            ),
-                          ),
-                          variant: isSelected ? .android : .outline,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (isSelected) ...[
-                                Icon(
-                                  FIcons.check,
-                                  color: context.theme.colors.background,
-                                ),
-                                const SizedBox(width: 4),
-                              ],
-                              Text(tag.name),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  );
-                },
+            child: ValueListenableBuilder(
+              valueListenable: _tagSearchController,
+              builder: (context, _, _) => TagsWrap(
+                primaryTagId: null,
+                secondariesIds: _selectedTagIds,
+                search: _tagSearchController.text.trim(),
+                onTap: _toggleTag,
+                onLongPress: (_) {},
               ),
             ),
           ),

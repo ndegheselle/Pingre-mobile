@@ -22,43 +22,43 @@ class SheetContainer extends StatelessWidget {
           topRight: context.theme.style.borderRadius.topRight,
         ),
       ),
-      child: Padding(
-        padding: const .all(4),
-        child: Column(
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: context.theme.colors.border,
-                  borderRadius: context.theme.style.borderRadius,
-                ),
+      child: Column(
+        children: [
+          SizedBox(
+  width: double.infinity,
+  child: 
+          Stack(
+            alignment: .center,
+            children: [
+              Text(
+                title,
+                style: context.theme.typography.xl.copyWith(fontWeight: .bold),
               ),
-            ),
-            Stack(
-              children: [
-                Center(
-                  child: Text(
-                    title,
-                    style: context.theme.typography.xl.copyWith(
-                      fontWeight: .bold,
-                    ),
+              Positioned(
+                top: 4,
+                child: Container(
+                  width: 40,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: context.theme.colors.border,
+                    borderRadius: context.theme.style.borderRadius,
                   ),
                 ),
-                Positioned(
-                  right: 4,
-                  child:
-                FButton.icon(
+              ),
+              Positioned(
+                right: 0,
+                child: FButton.icon(
                   variant: .ghost,
                   onPress: () => Navigator.of(context).pop(),
                   child: Icon(FIcons.x),
-                )),
-              ],
-            ),
-            Expanded(child: child),
-          ],
-        ),
+                ),
+              ),
+            ],
+          )),
+          Expanded(
+            child: Padding(padding: const .all(4), child: child),
+          ),
+        ],
       ),
     );
   }
