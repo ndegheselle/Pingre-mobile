@@ -96,10 +96,10 @@ class _ElasticPullToRefreshState extends State<ElasticPullToRefresh>
                       children: [
                         const Icon(FIcons.check),
                         SizedBox(width: 8),
-                        Text("Release to refresh"),
+                        Text("Release for more"),
                       ],
                     )
-                  : Text("Pull to refresh"),
+                  : Text("Pull for more"),
             ),
             Spacer(flex: 3),
           ],

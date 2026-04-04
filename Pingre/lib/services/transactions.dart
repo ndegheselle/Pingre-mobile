@@ -91,7 +91,10 @@ class TransactionsService extends ChangeNotifier {
           (rng.nextDouble() * 500).roundToDouble().toString(),
         ),
         date: DateTime.now().subtract(Duration(days: daysAgo)),
-        tags: TagsSelection(primary: primary),
+        tags: TagsSelection(primary: primary, secondaries: [
+          primaryTags[rng.nextInt(primaryTags.length)],
+          primaryTags[rng.nextInt(primaryTags.length)],
+        ]),
         notes: 'Transaction $i',
       );
     });

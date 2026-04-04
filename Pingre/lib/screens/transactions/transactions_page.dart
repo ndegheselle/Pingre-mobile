@@ -111,21 +111,26 @@ class _TransactionssPageState extends State<TransactionsPage> {
                       final item = flatItems[index];
 
                       if (item is TransactionGroup) {
-                        return Padding(padding: .symmetric(vertical: 4), child: Column(
-                          children: [
-                            FTile(
-                              style: .delta(
-                                contentStyle: .delta(padding: .value(.all(8))),
+                        return Padding(
+                          padding: .symmetric(vertical: 4),
+                          child: Column(
+                            children: [
+                              FTile(
+                                style: .delta(
+                                  contentStyle: .delta(
+                                    padding: .value(.all(8)),
+                                  ),
+                                ),
+                                prefix: const Icon(FIcons.calendar),
+                                title: Text(item.name),
+                                suffix: ValueDisplay(
+                                  value: item.total,
+                                  isHeader: true,
+                                ),
                               ),
-                              prefix: const Icon(FIcons.calendar),
-                              title: Text(item.name),
-                              suffix: ValueDisplay(
-                                value: item.total,
-                                isHeader: true,
-                              ),
-                            ),
-                          ],
-                        ));
+                            ],
+                          ),
+                        );
                       }
 
                       if (item is Transaction) {
@@ -138,14 +143,21 @@ class _TransactionssPageState extends State<TransactionsPage> {
                           children: [
                             FItem(
                               style: .delta(margin: .value(.all(0))),
-                              title: Text(item.tags.primary.name),
-                              subtitle: item.tags.secondaries.isEmpty
-                                  ? null
-                                  : Text(
-                                      item.tags.secondaries
-                                          .map((t) => t.name)
-                                          .join(", "),
-                                    ),
+                              title: Row(
+                                children: [
+                                  Text(item.tags.primary.name),
+                                  SizedBox(width: 8),
+                                  Opacity(opacity: 0.5, child:
+                                  Text(
+                                    item.tags.secondaries
+                                        .map((t) => t.name)
+                                        .join(", "),
+                                  )),
+                                ],
+                              ),
+                              subtitle: item.notes.isEmpty == false
+                                  ? Text(item.notes)
+                                  : null,
                               suffix: ValueDisplay(value: item.value),
                               onPress: () => showTransactionEdit(
                                 context,
@@ -164,7 +176,9 @@ class _TransactionssPageState extends State<TransactionsPage> {
                   SliverToBoxAdapter(
                     child: ElasticPullToRefresh(
                       onRefresh: _loadMore,
-                      onDrag: () => _scrollController.jumpTo(_scrollController.position.maxScrollExtent),
+                      onDrag: () => _scrollController.jumpTo(
+                        _scrollController.position.maxScrollExtent,
+                      ),
                     ),
                   ),
                 ],

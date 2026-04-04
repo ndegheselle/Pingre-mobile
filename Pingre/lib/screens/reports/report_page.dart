@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
@@ -110,26 +112,32 @@ class _ReportsPageState extends State<ReportsPage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: TimeRangeSelect(
-                value: _selectedTimeRange,
-                onChanged: (unit) {
-                  _selectedTimeRange = unit;
-                  _range = TimeRange.elapsed(unit);
-                  _reload();
-                },
-              ),
-            ),
-            SizedBox(width: 4),
-            FButton.icon(
-              variant: .ghost,
-              onPress: _openFilterSheet,
-              child: Icon(FIcons.funnel),
-            ),
-          ],
+        TimeRangeSelect(
+          value: _selectedTimeRange,
+          onChanged: (unit) {
+            _selectedTimeRange = unit;
+            _range = TimeRange.elapsed(unit);
+            _reload();
+          },
         ),
+        const SizedBox(height: 4),
+        Row(children: [
+            FButton(
+              size: .xs,
+              variant: .secondary,
+              onPress: _openFilterSheet,
+              prefix: Icon(FIcons.funnel),
+              child: Text('Filters')
+            ),
+          Spacer(),          
+          FButton(
+              size: .xs,
+              variant: .secondary,
+              onPress: null,
+              prefix: Icon(FIcons.fileUp),
+              child: Text('Export')
+            ),
+        ],),
         const SizedBox(height: 4),
         Expanded(
           child: FutureBuilder<List<_TagTotal>>(
