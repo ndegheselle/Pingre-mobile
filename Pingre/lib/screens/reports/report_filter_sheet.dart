@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/screens/tags/tags_select.dart';
-import 'package:pingre/services/tags.dart';
 import 'package:pingre/widgets/layout/sheet_container.dart';
-import 'package:provider/provider.dart';
 
 enum TransactionFilter { expenses, income }
 
-class ReportFilter {
+class ReportFilters {
   final Set<TransactionFilter> transactionType;
   final Set<String> tagIds;
 
-  const ReportFilter({
+  const ReportFilters({
     this.transactionType = const {
       TransactionFilter.expenses,
       TransactionFilter.income,
@@ -19,22 +17,22 @@ class ReportFilter {
     this.tagIds = const {},
   });
 
-  ReportFilter copyWith({
+  ReportFilters copyWith({
     Set<TransactionFilter>? transactionType,
     Set<String>? tagIds,
   }) {
-    return ReportFilter(
+    return ReportFilters(
       transactionType: transactionType ?? this.transactionType,
       tagIds: tagIds ?? this.tagIds,
     );
   }
 }
 
-Future<ReportFilter?> showReportFilterSheet(
+Future<ReportFilters?> showReportFilterSheet(
   BuildContext context, {
-  required ReportFilter current,
+  required ReportFilters current,
 }) {
-  return showFSheet<ReportFilter>(
+  return showFSheet<ReportFilters>(
     mainAxisMaxRatio: 7 / 10,
     context: context,
     side: .btt,
@@ -43,7 +41,7 @@ Future<ReportFilter?> showReportFilterSheet(
 }
 
 class ReportFilterSheet extends StatefulWidget {
-  final ReportFilter current;
+  final ReportFilters current;
 
   const ReportFilterSheet({super.key, required this.current});
 
@@ -76,7 +74,7 @@ class _ReportFilterSheetState extends State<ReportFilterSheet> {
 
   void _apply() {
     Navigator.of(context).pop(
-      ReportFilter(
+      ReportFilters(
         transactionType: _transactionType,
         tagIds: Set.from(_selectedTagIds),
       ),
