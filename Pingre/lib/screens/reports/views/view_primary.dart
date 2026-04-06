@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/models/time_range.dart';
 import 'package:pingre/screens/reports/report_filter_sheet.dart';
+import 'package:pingre/screens/reports/tag_detail_sheet.dart';
 import 'package:pingre/screens/reports/views/view.dart';
 import 'package:pingre/services/transactions.dart';
 import 'package:pingre/widgets/data/value_display.dart';
@@ -190,6 +191,11 @@ class _ReportViewPrimaryState extends State<ReportViewPrimary> {
                           title: Text(t.tag.name),
                           subtitle: Text('${pct.toStringAsFixed(1)}%'),
                           suffix: ValueDisplay(value: t.total),
+                          onPress: () => showTagDetailSheet(
+                            context,
+                            tag: t.tag,
+                            range: _range,
+                          ),
                         );
                       }).toList(),
                     ),

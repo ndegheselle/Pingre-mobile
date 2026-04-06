@@ -3,11 +3,21 @@ import 'package:forui/forui.dart';
 
 /// A container widget for bottom sheets with a styled background,
 /// top border, title (top left), and close button (top right).
+///
+/// When [scrollController] is provided (e.g. from a DraggableScrollableSheet),
+/// the child is wrapped in a PrimaryScrollController so the inner list can
+/// use it without being passed explicitly.
 class SheetContainer extends StatelessWidget {
   final String title;
   final Widget child;
+  final ScrollController? scrollController;
 
-  const SheetContainer({super.key, required this.title, required this.child});
+  const SheetContainer({
+    super.key,
+    required this.title,
+    required this.child,
+    this.scrollController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +66,15 @@ class SheetContainer extends StatelessWidget {
             ],
           )),
           Expanded(
-            child: Padding(padding: const .all(4), child: child),
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: scrollController != null
+                  ? PrimaryScrollController(
+                      controller: scrollController!,
+                      child: child,
+                    )
+                  : child,
+            ),
           ),
         ],
       ),
