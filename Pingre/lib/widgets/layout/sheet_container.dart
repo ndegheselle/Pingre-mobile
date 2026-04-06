@@ -26,7 +26,7 @@ class SheetContainer extends StatelessWidget {
         children: [
           SizedBox(
   width: double.infinity,
-  child: 
+  child:
           Stack(
             alignment: .center,
             children: [
