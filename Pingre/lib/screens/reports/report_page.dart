@@ -34,7 +34,9 @@ class _ReportsPageState extends State<ReportsPage> {
         TimeRangeSelect(
           value: _selectedTimeRange,
           onChanged: (unit) {
-            _selectedTimeRange = unit;
+            setState(() {
+              _selectedTimeRange = unit;
+            });
           },
         ),
         const SizedBox(height: 4),

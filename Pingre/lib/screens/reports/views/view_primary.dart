@@ -33,6 +33,15 @@ class _ReportViewPrimaryState extends State<ReportViewPrimary> {
   }
 
   @override
+  void didUpdateWidget(ReportViewPrimary oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.filters != widget.filters || oldWidget.rangeUnit != widget.rangeUnit) {
+      _range = TimeRange.elapsed(widget.rangeUnit);
+      _reload();
+    }
+  }
+
+  @override
   void dispose() {
     _transactions.removeListener(_reload);
     super.dispose();
