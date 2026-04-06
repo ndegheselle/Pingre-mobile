@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/models/time_range.dart';
@@ -13,20 +14,20 @@ Future<void> showTagDetailSheet(
   required Tag tag,
   required TimeRange range,
 }) {
-  return showModalBottomSheet(
+  return showFSheet(
     context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
-    backgroundColor: Colors.transparent,
+    side: .btt,
+    mainAxisMaxRatio: null,
     builder: (context) => DraggableScrollableSheet(
+      expand: false,
       initialChildSize: 0.6,
       minChildSize: 0.3,
       maxChildSize: 0.95,
-      expand: false,
-      builder: (context, scrollController) => _TagDetailSheet(
-        tag: tag,
-        range: range,
-        scrollController: scrollController,
+      builder: (context, controller) => ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad},
+        ),
+        child: _TagDetailSheet(tag: tag, range: range, scrollController: controller),
       ),
     ),
   );
@@ -68,7 +69,6 @@ class _TagDetailSheetState extends State<_TagDetailSheet> {
   Widget build(BuildContext context) {
     return SheetContainer(
       title: widget.tag.name,
-      scrollController: widget.scrollController,
       child: FutureBuilder<List<Transaction>>(
         future: _future,
         builder: (context, snapshot) {
