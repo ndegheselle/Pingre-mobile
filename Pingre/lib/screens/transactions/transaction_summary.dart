@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/screens/transactions/transaction_detail.dart';
 import 'package:pingre/services/transactions.dart';
 import 'package:pingre/widgets/data/value_display.dart';
 
@@ -7,12 +8,10 @@ import 'package:pingre/widgets/data/value_display.dart';
 /// matching the style used in the transactions page.
 class TransactionSummary extends StatelessWidget {
   final Transaction transaction;
-  final VoidCallback? onPress;
 
   const TransactionSummary({
     super.key,
     required this.transaction,
-    this.onPress,
   });
 
   @override
@@ -24,7 +23,7 @@ class TransactionSummary extends StatelessWidget {
           ? Text(transaction.tags.secondaries.map((t) => t.name).join(', '))
           : null,
       suffix: ValueDisplay(value: transaction.value),
-      onPress: onPress,
+      onPress: () => showTransactionDetail(context, transaction: transaction),
     );
   }
 }

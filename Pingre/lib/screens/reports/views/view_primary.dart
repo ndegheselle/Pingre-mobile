@@ -13,7 +13,11 @@ class ReportViewPrimary extends StatefulWidget {
   final TimeRangeUnit rangeUnit;
   final ReportFilters filters;
 
-  const ReportViewPrimary({super.key, required this.rangeUnit, required this.filters});
+  const ReportViewPrimary({
+    super.key,
+    required this.rangeUnit,
+    required this.filters,
+  });
 
   @override
   State<ReportViewPrimary> createState() => _ReportViewPrimaryState();
@@ -36,7 +40,8 @@ class _ReportViewPrimaryState extends State<ReportViewPrimary> {
   @override
   void didUpdateWidget(ReportViewPrimary oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.filters != widget.filters || oldWidget.rangeUnit != widget.rangeUnit) {
+    if (oldWidget.filters != widget.filters ||
+        oldWidget.rangeUnit != widget.rangeUnit) {
       _range = TimeRange.elapsed(widget.rangeUnit);
       _reload();
     }
@@ -65,12 +70,14 @@ class _ReportViewPrimaryState extends State<ReportViewPrimary> {
         continue;
       }
       if (transaction.value > Decimal.zero &&
-          widget.filters.transactionType.contains(TransactionFilter.income) == false) {
+          widget.filters.transactionType.contains(TransactionFilter.income) ==
+              false) {
         continue;
       }
       if (widget.filters.tagIds.isNotEmpty) {
         final transactionTagIds = transaction.tags.all.map((t) => t.id).toSet();
-        if (transactionTagIds.intersection(widget.filters.tagIds).isEmpty) continue;
+        if (transactionTagIds.intersection(widget.filters.tagIds).isEmpty)
+          continue;
       }
       final tag = transaction.tags.primary;
       tag.color = tag.color ?? palette[groups.length % palette.length];
@@ -99,15 +106,6 @@ class _ReportViewPrimaryState extends State<ReportViewPrimary> {
                 return const Center(child: FCircularProgress());
               }
               final tagTotals = snapshot.data!;
-
-              if (tagTotals.isEmpty) {
-                return Center(
-                  child: Text(
-                    'No transactions in this period',
-                    style: context.theme.typography.base,
-                  ),
-                );
-              }
 
               final grandTotal = tagTotals.fold(
                 Decimal.zero,
@@ -152,64 +150,58 @@ class _ReportViewPrimaryState extends State<ReportViewPrimary> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 2),
-                        // Graph bar
-                        ClipRRect(
-                          borderRadius: context.theme.style.borderRadius,
-                          child: SizedBox(
-                            height: 24,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              spacing: 2,
-                              children: tagTotals.map((t) {
-                                final pct = grandTotal > Decimal.zero
-                                    ? t.total.toDouble() / grandTotal.toDouble()
-                                    : 0.0;
-                                return Flexible(
-                                  flex: (pct * 1000).round(),
-                                  child: Container(color: t.tag.color),
+                        const SizedBox(height: 2),
+                        TagGraphBar(
+                          tagTotals: tagTotals,
+                          grandTotal: grandTotal,
+                        ),
+                        const SizedBox(height: 4),
+                        ValueDisplay(value: grandTotal, isHeader: true),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  tagTotals.isEmpty
+                      ? Expanded(child: Center(
+                          child: Text(
+                            'No transactions in this period',
+                            style: context.theme.typography.base,
+                          ),
+                        ))
+                      : Expanded(
+                          child: Padding(
+                            padding: .only(bottom: 4),
+                            child: FTileGroup(
+                              divider: .full,
+                              children: tagTotals.asMap().entries.map((e) {
+                                final t = e.value;
+                                final pct =
+                                    t.total.abs().toDouble() /
+                                    grandTotal.abs().toDouble() *
+                                    100;
+
+                                return FTile(
+                                  prefix: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      color: t.tag.color,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  title: Text(t.tag.name),
+                                  subtitle: Text('${pct.toStringAsFixed(1)}%'),
+                                  suffix: ValueDisplay(value: t.total),
+                                  onPress: () => showTagDetailSheet(
+                                    context,
+                                    tag: t.tag,
+                                    range: _range,
+                                  ),
                                 );
                               }).toList(),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        ValueDisplay(value: grandTotal, isHeader: true),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Expanded(
-                    child: FTileGroup(
-                      divider: .full,
-                      children: tagTotals.asMap().entries.map((e) {
-                        final t = e.value;
-                        final pct = grandTotal > Decimal.zero
-                            ? t.total.toDouble() / grandTotal.toDouble() * 100
-                            : 0.0;
-
-                        return FTile(
-                          prefix: Container(
-                            width: 10,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              color: t.tag.color,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          title: Text(t.tag.name),
-                          subtitle: Text('${pct.toStringAsFixed(1)}%'),
-                          suffix: ValueDisplay(value: t.total),
-                          onPress: () => showTagDetailSheet(
-                            context,
-                            tag: t.tag,
-                            range: _range,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  SizedBox(height: 4),
                 ],
               );
             },

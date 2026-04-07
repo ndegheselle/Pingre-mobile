@@ -240,6 +240,16 @@ extension DateTimeExtension on DateTime {
     return '${months[month - 1]} $day';
   }
 
+  String formatWithHour() {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    final h = hour.toString().padLeft(2, '0');
+    final m = minute.toString().padLeft(2, '0');
+    return '$day ${months[month - 1]} $year - ${h}h$m';
+  }
+
   String formatShortMonth() {
     const months = [
       'January',

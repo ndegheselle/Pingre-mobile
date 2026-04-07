@@ -13,7 +13,11 @@ class ReportViewAll extends StatefulWidget {
   final TimeRangeUnit rangeUnit;
   final ReportFilters filters;
 
-  const ReportViewAll({super.key, required this.rangeUnit, required this.filters});
+  const ReportViewAll({
+    super.key,
+    required this.rangeUnit,
+    required this.filters,
+  });
 
   @override
   State<ReportViewAll> createState() => _ReportViewAllState();
@@ -56,12 +60,14 @@ class _ReportViewAllState extends State<ReportViewAll> {
         continue;
       }
       if (transaction.value < Decimal.zero &&
-          widget.filters.transactionType.contains(TransactionFilter.income) == false) {
+          widget.filters.transactionType.contains(TransactionFilter.income) ==
+              false) {
         continue;
       }
       if (widget.filters.tagIds.isNotEmpty) {
         final transactionTagIds = transaction.tags.all.map((t) => t.id).toSet();
-        if (transactionTagIds.intersection(widget.filters.tagIds).isEmpty) continue;
+        if (transactionTagIds.intersection(widget.filters.tagIds).isEmpty)
+          continue;
       }
 
       for (var tag in transaction.tags.all) {
@@ -92,15 +98,6 @@ class _ReportViewAllState extends State<ReportViewAll> {
                 return const Center(child: FCircularProgress());
               }
               final tagTotals = snapshot.data!;
-
-              if (tagTotals.isEmpty) {
-                return Center(
-                  child: Text(
-                    'No transactions in this period',
-                    style: context.theme.typography.base,
-                  ),
-                );
-              }
 
               final grandTotal = tagTotals.fold(
                 Decimal.zero,
@@ -146,25 +143,9 @@ class _ReportViewAllState extends State<ReportViewAll> {
                           ],
                         ),
                         SizedBox(height: 2),
-                        // Graph bar
-                        ClipRRect(
-                          borderRadius: context.theme.style.borderRadius,
-                          child: SizedBox(
-                            height: 24,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              spacing: 2,
-                              children: tagTotals.map((t) {
-                                final pct = grandTotal > Decimal.zero
-                                    ? t.total.toDouble() / grandTotal.toDouble()
-                                    : 0.0;
-                                return Flexible(
-                                  flex: (pct * 1000).round(),
-                                  child: Container(color: t.tag.color),
-                                );
-                              }).toList(),
-                            ),
-                          ),
+                        TagGraphBar(
+                          tagTotals: tagTotals,
+                          grandTotal: grandTotal,
                         ),
                         const SizedBox(height: 8),
                         ValueDisplay(value: grandTotal, isHeader: true),
@@ -172,33 +153,44 @@ class _ReportViewAllState extends State<ReportViewAll> {
                     ),
                   ),
                   SizedBox(height: 4),
-                  Expanded(
-                    child: FTileGroup(
-                      divider: .full,
-                      children: tagTotals.asMap().entries.map((e) {
-                        final t = e.value;
-
-                        return FTile(
-                          prefix: Container(
-                            width: 10,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              color: t.tag.color,
-                              shape: BoxShape.circle,
+                  tagTotals.isEmpty
+                      ? Expanded(
+                          child: Center(
+                            child: Text(
+                              'No transactions in this period',
+                              style: context.theme.typography.base,
                             ),
                           ),
-                          title: Text(t.tag.name),
-                          suffix: ValueDisplay(value: t.total),
-                          onPress: () => showTagDetailSheet(
-                            context,
-                            tag: t.tag,
-                            range: _range,
+                        )
+                      : Expanded(
+                          child: Padding(
+                            padding: .only(bottom: 4),
+                            child: FTileGroup(
+                              divider: .full,
+                              children: tagTotals.asMap().entries.map((e) {
+                                final t = e.value;
+
+                                return FTile(
+                                  prefix: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      color: t.tag.color,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  title: Text(t.tag.name),
+                                  suffix: ValueDisplay(value: t.total),
+                                  onPress: () => showTagDetailSheet(
+                                    context,
+                                    tag: t.tag,
+                                    range: _range,
+                                  ),
+                                );
+                              }).toList(),
+                            ),
                           ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  SizedBox(height: 4),
+                        ),
                 ],
               );
             },

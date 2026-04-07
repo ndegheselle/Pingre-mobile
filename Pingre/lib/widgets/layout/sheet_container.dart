@@ -25,36 +25,41 @@ class SheetContainer extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(
-  width: double.infinity,
-  child:
-          Stack(
-            alignment: .center,
-            children: [
-              Text(
-                title,
-                style: context.theme.typography.xl.copyWith(fontWeight: .bold),
-              ),
-              Positioned(
-                top: 4,
-                child: Container(
-                  width: 40,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: context.theme.colors.border,
-                    borderRadius: context.theme.style.borderRadius,
+            width: double.infinity,
+            child: Stack(
+              alignment: .center,
+              children: [
+                Padding(
+                  padding: .only(top: 4),
+                  child: Text(
+                    title,
+                    style: context.theme.typography.xl.copyWith(
+                      fontWeight: .bold,
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                right: 0,
-                child: FButton.icon(
-                  variant: .ghost,
-                  onPress: () => Navigator.of(context).pop(),
-                  child: Icon(FIcons.x),
+                Positioned(
+                  top: 4,
+                  child: Container(
+                    width: 40,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: context.theme.colors.border,
+                      borderRadius: context.theme.style.borderRadius,
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          )),
+                Positioned(
+                  right: 0,
+                  child: FButton.icon(
+                    variant: .ghost,
+                    onPress: () => Navigator.of(context).pop(),
+                    child: Icon(FIcons.x),
+                  ),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: Padding(padding: const .all(4), child: child),
           ),

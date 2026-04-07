@@ -45,9 +45,10 @@ class _ReportsPageState extends State<ReportsPage> {
             Expanded(
               child: FSelectMenuTile<_ReportView>(
                 style: .delta(menuStyle: .delta(maxWidth: 300)),
-                selectControl: .managedRadio(initial: .primary, onChange: (values) {
-
-                }),
+                selectControl: .managedRadio(
+                  initial: .primary,
+                  onChange: (values) {},
+                ),
                 prefix: const Icon(FIcons.squareChartGantt),
                 title: const Text('View'),
                 detailsBuilder: (context, values, child) => Text(
@@ -64,42 +65,48 @@ class _ReportsPageState extends State<ReportsPage> {
                   .suffix(
                     prefix: Icon(FIcons.listTree),
                     title: Text("Primary"),
-                    subtitle: Text(
-                      "Grouup by primary tag",
-                    ),
+                    subtitle: Text("Grouup by primary tag"),
                     value: .primary,
                   ),
                   .suffix(
                     prefix: Icon(FIcons.list),
                     title: Text("All"),
-                    subtitle: Text(
-                      "Group by tag (with duplicates)",
-                    ),
+                    subtitle: Text("Group by tag (with duplicates)"),
                     value: .all,
                   ),
                 ],
               ),
             ),
             SizedBox(width: 4),
-            FButton.icon(
+            FTooltip(
+              tipBuilder: (context, _) => const Text('Filters'),
+              child: FButton.icon(
                 size: .lg,
-              variant: .outline,
-              onPress: _openFilterSheet,
-              child: Icon(FIcons.funnel),
+                variant: .outline,
+                onPress: _openFilterSheet,
+                child: Icon(FIcons.funnel),
+              ),
             ),
             SizedBox(width: 4),
-            FButton.icon(
+            FTooltip(
+              tipBuilder: (context, _) => const Text('Export'),
+              child: FButton.icon(
                 size: .lg,
-              variant: .outline,
-              onPress: null,
-              child: Icon(FIcons.fileUp),
+                variant: .outline,
+                onPress: null,
+                child: Icon(FIcons.fileUp),
+              ),
             ),
           ],
         ),
         const SizedBox(height: 4),
-        Expanded(child: 
-        ReportViewPrimary(rangeUnit: _selectedTimeRange, filters: _filters))
-     ],
+        Expanded(
+          child: ReportViewPrimary(
+            rangeUnit: _selectedTimeRange,
+            filters: _filters,
+          ),
+        ),
+      ],
     );
   }
 }
