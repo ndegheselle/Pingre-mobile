@@ -18,20 +18,11 @@ class TransactionSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FItem(
-      style: FItemStyle.delta(margin: EdgeInsetsGeometry.value(EdgeInsets.zero)),
-      title: Row(
-        children: [
-          Text(transaction.tags.primary.name),
-          const SizedBox(width: 8),
-          Opacity(
-            opacity: 0.5,
-            child: Text(
-              transaction.tags.secondaries.map((t) => t.name).join(', '),
-            ),
-          ),
-        ],
-      ),
-      subtitle: transaction.notes.isNotEmpty ? Text(transaction.notes) : null,
+      style: .delta(margin: .value(EdgeInsets.zero)),
+      title: Row(children: [Text(transaction.tags.primary.name)]),
+      subtitle: transaction.tags.secondaries.isNotEmpty
+          ? Text(transaction.tags.secondaries.map((t) => t.name).join(', '))
+          : null,
       suffix: ValueDisplay(value: transaction.value),
       onPress: onPress,
     );

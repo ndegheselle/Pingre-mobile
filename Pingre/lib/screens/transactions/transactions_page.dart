@@ -3,6 +3,7 @@ import 'package:forui/forui.dart';
 import 'package:pingre/models/time_range.dart';
 import 'package:pingre/models/transaction_group.dart';
 import 'package:pingre/screens/transactions/transaction_edit.dart';
+import 'package:pingre/screens/transactions/transaction_summary.dart';
 import 'package:pingre/widgets/data/value_display.dart';
 import 'package:pingre/services/transactions.dart';
 import 'package:pingre/widgets/data/elastic_pull_refresh.dart';
@@ -141,29 +142,7 @@ class _TransactionssPageState extends State<TransactionsPage> {
                                 is TransactionGroup;
                         return Column(
                           children: [
-                            FItem(
-                              style: .delta(margin: .value(.all(0))),
-                              title: Row(
-                                children: [
-                                  Text(item.tags.primary.name),
-                                  SizedBox(width: 8),
-                                  Opacity(opacity: 0.5, child:
-                                  Text(
-                                    item.tags.secondaries
-                                        .map((t) => t.name)
-                                        .join(", "),
-                                  )),
-                                ],
-                              ),
-                              subtitle: item.notes.isEmpty == false
-                                  ? Text(item.notes)
-                                  : null,
-                              suffix: ValueDisplay(value: item.value),
-                              onPress: () => showTransactionEdit(
-                                context,
-                                transaction: item,
-                              ),
-                            ),
+                            TransactionSummary(transaction: item),
                             if (isLast) SizedBox(height: 4),
                           ],
                         );

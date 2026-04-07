@@ -4,7 +4,7 @@ import 'package:forui/forui.dart';
 import 'package:pingre/models/time_range.dart';
 import 'package:pingre/services/tags.dart';
 import 'package:pingre/services/transactions.dart';
-import 'package:pingre/widgets/data/transaction_summary.dart';
+import 'package:pingre/screens/transactions/transaction_summary.dart';
 import 'package:pingre/widgets/layout/sheet_container.dart';
 import 'package:provider/provider.dart';
 
@@ -20,12 +20,9 @@ Future<void> showTagDetailSheet(
     mainAxisMaxRatio: null,
     builder: (context) => DraggableScrollableSheet(
       expand: false,
-      initialChildSize: 0.6,
-      minChildSize: 0.3,
-      maxChildSize: 0.95,
       builder: (context, controller) => ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(
-          dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad},
+          dragDevices: {.touch, .mouse, .trackpad},
         ),
         child: _TagDetailSheet(tag: tag, range: range, scrollController: controller),
       ),

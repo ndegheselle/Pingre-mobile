@@ -59,12 +59,12 @@ class _ReportViewPrimaryState extends State<ReportViewPrimary> {
 
     final Map<String, TagTotal> groups = {};
     for (var transaction in transactions) {
-      if (transaction.value > Decimal.zero &&
+      if (transaction.value < Decimal.zero &&
           widget.filters.transactionType.contains(TransactionFilter.expenses) ==
               false) {
         continue;
       }
-      if (transaction.value < Decimal.zero &&
+      if (transaction.value > Decimal.zero &&
           widget.filters.transactionType.contains(TransactionFilter.income) == false) {
         continue;
       }
@@ -77,7 +77,7 @@ class _ReportViewPrimaryState extends State<ReportViewPrimary> {
       final current = groups[tag.id];
       groups[tag.id] = TagTotal(
         tag: tag,
-        total: (current?.total ?? Decimal.zero) + transaction.value.abs(),
+        total: (current?.total ?? Decimal.zero) + transaction.value,
       );
     }
 

@@ -45,7 +45,9 @@ class _ReportsPageState extends State<ReportsPage> {
             Expanded(
               child: FSelectMenuTile<_ReportView>(
                 style: .delta(menuStyle: .delta(maxWidth: 300)),
-                selectControl: .managedRadio(onChange: (values) {}),
+                selectControl: .managedRadio(initial: .primary, onChange: (values) {
+
+                }),
                 prefix: const Icon(FIcons.squareChartGantt),
                 title: const Text('View'),
                 detailsBuilder: (context, values, child) => Text(
@@ -81,14 +83,14 @@ class _ReportsPageState extends State<ReportsPage> {
             SizedBox(width: 4),
             FButton.icon(
                 size: .lg,
-              variant: .secondary,
+              variant: .outline,
               onPress: _openFilterSheet,
               child: Icon(FIcons.funnel),
             ),
             SizedBox(width: 4),
             FButton.icon(
                 size: .lg,
-              variant: .secondary,
+              variant: .outline,
               onPress: null,
               child: Icon(FIcons.fileUp),
             ),
