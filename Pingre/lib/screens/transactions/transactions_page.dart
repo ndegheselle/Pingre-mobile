@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/models/time_range.dart';
 import 'package:pingre/models/transaction_group.dart';
-import 'package:pingre/screens/transactions/transaction_edit.dart';
 import 'package:pingre/screens/transactions/transaction_summary.dart';
-import 'package:pingre/widgets/data/value_display.dart';
 import 'package:pingre/services/transactions.dart';
 import 'package:pingre/widgets/data/elastic_pull_refresh.dart';
+import 'package:pingre/widgets/data/value_display.dart';
 import 'package:pingre/widgets/inputs/time_range_select.dart';
 import 'package:provider/provider.dart';
 
@@ -65,7 +64,7 @@ class _TransactionssPageState extends State<TransactionsPage> {
   }
 
   Future<List<Object>> _loadPreviousTransactions(TimeRangeUnit unit) async {
-    _lastTimeRange = .elapsed(.month, _lastTimeRange.start);
+    _lastTimeRange = _lastTimeRange.previous();
     // Get a month of transactions
     var transactions = await _transactions.getByRange(_lastTimeRange);
     var groups = transactions.continueToGroupFrom(_groups.last);

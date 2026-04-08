@@ -181,23 +181,21 @@ extension TimeRangeUnitLabel on TimeRangeUnit {
 }
 
 extension DateTimeExtension on DateTime {
-  DateTime substractMonths(int numberMonths) {
-    if (month <= numberMonths) {
-      return DateTime(year - 1, 12, 1).substractMonths(numberMonths - month);
-    }
-    return DateTime(year, month - numberMonths, 1);
-  }
 
   DateTime addMonths(int numberMonths) {
     final totalMonths = month + numberMonths;
     if (totalMonths > 12) {
-      return DateTime(year + 1, 1, 1).addMonths(totalMonths - 13);
+      return DateTime(year + 1, 1, day).addMonths(totalMonths - 13);
     }
-    return DateTime(year, totalMonths, 1);
+    else if (totalMonths <= 0)
+    {
+      return DateTime(year - 1, 12, day).addMonths(totalMonths);
+    }
+    return DateTime(year, totalMonths, day);
   }
+  DateTime substractMonths(int numberMonths) => addMonths(-numberMonths);
 
-  DateTime addYears(int numberYears) =>
-      DateTime(year + numberYears, month, day);
+  DateTime addYears(int numberYears) => DateTime(year + numberYears, month, day);
   DateTime substractYears(int numberYears) => addYears(-numberYears);
 
   /// Set the hours to the start of the day (00h00)

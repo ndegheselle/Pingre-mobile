@@ -54,7 +54,7 @@ extension TransactionsExtension on List<Transaction> {
 
     List<TransactionGroup> groups = [];
     TransactionGroup currentGroup = TransactionGroup(
-      range: .current(unit, now),
+      range: .current(unit, end: now),
     );
     for (var transaction in this) {
       while (transaction.date.isBefore(currentGroup.range.start)) {
@@ -81,15 +81,15 @@ extension TransactionsExtension on List<Transaction> {
     TransactionGroup currentGroup = existingGroup;
     for (var transaction in this) {
       while (transaction.date.isBefore(currentGroup.range.start)) {
-        if (currentGroup.transactions.isNotEmpty) {
+        if (currentGroup.transactions.isNotEmpty && currentGroup != existingGroup) {
           groups.add(currentGroup);
         }
         currentGroup = currentGroup.previous();
       }
       currentGroup.add(transaction);
     }
+    if (currentGroup != existingGroup) groups.add(currentGroup);
 
-    groups.add(currentGroup);
     return groups;
   }
 }
