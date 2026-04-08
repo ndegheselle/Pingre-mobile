@@ -1,10 +1,9 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/models/time_range.dart';
+import 'package:pingre/screens/transactions/transaction_summary.dart';
 import 'package:pingre/services/tags.dart';
 import 'package:pingre/services/transactions.dart';
-import 'package:pingre/screens/transactions/transaction_summary.dart';
 import 'package:pingre/widgets/layout/sheet_container.dart';
 import 'package:provider/provider.dart';
 

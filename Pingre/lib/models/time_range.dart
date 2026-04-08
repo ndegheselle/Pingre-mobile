@@ -15,142 +15,106 @@ class TimeRange {
     this.isCurrent = false,
   });
 
-  /// Create a time range that [end] at [now] and [start] at [now] minus the number of days defined by the [unit].
-  /// For example if now is the 18/03/2026 and the unit is [TimeRangeUnit.month] you will get 18/03/2026 -> 18/02/2026.
-  /// [TimeRangeUnit.day] is an exception since it will return a range for the day in [now].
-  factory TimeRange.elapsed(TimeRangeUnit unit, [DateTime? now]) {
-    final base = now ?? DateTime.now();
+  /// Create a time range spanning the duration defined by [unit], anchored at either [start] or [end].
+  /// Exactly one of [start] or [end] must be provided; if neither is given, [start] defaults to now.
+  /// For example, with [start] = 18/02/2026 and [unit] = [TimeRangeUnit.month], you get 18/02/2026 → 18/03/2026.
+  factory TimeRange.elapsed(
+    TimeRangeUnit unit, {
+    DateTime? start,
+    DateTime? end,
+  }) {
+    if (start == null && end == null) start = DateTime.now();
+    if (start != null && end != null) throw Exception("The start and end cannot be set together.");
 
-    final endOfToday = DateTime(
-      base.year,
-      base.month,
-      base.day + 1,
-    ).subtract(const Duration(microseconds: 1));
-    final startOfToday = DateTime(base.year, base.month, base.day);
-
-    switch (unit) {
-      case TimeRangeUnit.day:
-        return TimeRange(unit: unit, start: startOfToday, end: endOfToday);
-
-      case TimeRangeUnit.week:
-        final previousWeek = startOfToday.subtract(Duration(days: 6));
-        return TimeRange(unit: unit, start: previousWeek, end: endOfToday);
-
-      case TimeRangeUnit.twoWeeks:
-        final previousTwoWeeks = startOfToday.subtract(Duration(days: 7 + 6));
-        return TimeRange(unit: unit, start: previousTwoWeeks, end: endOfToday);
-
-      case TimeRangeUnit.month:
-        return TimeRange(
-          unit: unit,
-          start: startOfToday.substractMonths(1),
-          end: endOfToday,
-        );
-
-      case TimeRangeUnit.quarter:
-        return TimeRange(
-          unit: unit,
-          start: startOfToday.substractMonths(3),
-          end: endOfToday,
-        );
-
-      case TimeRangeUnit.year:
-        final previousYear = DateTime(base.year - 1, base.month, base.day);
-        return TimeRange(unit: unit, start: previousYear, end: endOfToday);
-    }
+    return switch (unit) {
+      .day => TimeRange(
+        unit: unit,
+        start: (start ?? end!).toStart(),
+        end: (end ?? start!).toEnd(),
+      ),
+      .week => TimeRange(
+        unit: unit,
+        start: (start ?? end!.subtract(Duration(days: 7))).toStart(),
+        end: (end ?? start!.add(Duration(days: 7))).toEnd(),
+      ),
+      .twoWeeks => TimeRange(
+        unit: unit,
+        start: (start ?? end!.subtract(Duration(days: 14))).toStart(),
+        end: (end ?? start!.add(Duration(days: 14))).toEnd(),
+      ),
+      .month => TimeRange(
+        unit: unit,
+        start: (start ?? end!.substractMonths(1)).toStart(),
+        end: (end ?? start!.addMonths(1)).toEnd(),
+      ),
+      .quarter => TimeRange(
+        unit: unit,
+        start: (start ?? end!.substractMonths(3)).toStart(),
+        end: (end ?? start!.addMonths(3)).toEnd(),
+      ),
+      .year => TimeRange(
+        unit: unit,
+        start: (start ?? end!.substractYears(1)).toStart(),
+        end: (end ?? start!.addYears(1)).toEnd(),
+      ),
+    };
   }
 
-  /// Create a time range that [end] at [now] and [start] at the begining of the period defined in [unit].
-  /// For example if now is the 18/03/2026 and the unit is [TimeRangeUnit.month] you will get 18/03/2026 -> 01/03/2026.
-  factory TimeRange.current(TimeRangeUnit unit, [DateTime? now]) {
-    final base = now ?? DateTime.now();
+  /// Create a time range from the beginning of the period defined by [unit] up to the end of the anchor date's day.
+  /// Exactly one of [start] or [end] must be provided; if neither is given, the anchor defaults to now.
+  /// For example, with anchor = 18/03/2026 and [unit] = [TimeRangeUnit.month], you get 01/03/2026 → 18/03/2026.
+  factory TimeRange.current(TimeRangeUnit unit, {DateTime? start, DateTime? end}) {
+    if (start == null && end == null) start = DateTime.now();
+    if (start != null && end != null) throw Exception("The start and end cannot be set together.");
 
-    final endOfToday = DateTime(
-      base.year,
-      base.month,
-      base.day + 1,
-    ).subtract(const Duration(microseconds: 1));
-    final startOfToday = DateTime(base.year, base.month, base.day);
-
-    switch (unit) {
-      case TimeRangeUnit.day:
-        return TimeRange(
-          unit: unit,
-          start: startOfToday,
-          end: endOfToday,
-          isCurrent: true,
-        );
-
-      case TimeRangeUnit.week:
-        final startOfWeek = startOfToday.subtract(
-          Duration(days: base.weekday - 1),
-        );
-        return TimeRange(
-          unit: unit,
-          start: startOfWeek,
-          end: endOfToday,
-          isCurrent: true,
-        );
-
-      case TimeRangeUnit.twoWeeks:
-        final startOfTwoWeeks = startOfToday.subtract(
-          Duration(days: base.weekday - 1 + 7),
-        );
-        return TimeRange(
-          unit: unit,
-          start: startOfTwoWeeks,
-          end: endOfToday,
-          isCurrent: true,
-        );
-
-      case TimeRangeUnit.month:
-        final startOfMonth = DateTime(base.year, base.month, 1);
-        return TimeRange(
-          unit: unit,
-          start: startOfMonth,
-          end: endOfToday,
-          isCurrent: true,
-        );
-
-      case TimeRangeUnit.quarter:
-        final quarterStartMonth = ((base.month - 1) ~/ 3) * 3 + 1;
-        final startOfQuarter = DateTime(base.year, quarterStartMonth, 1);
-        return TimeRange(
-          unit: unit,
-          start: startOfQuarter,
-          end: endOfToday,
-          isCurrent: true,
-        );
-
-      case TimeRangeUnit.year:
-        final startOfYear = DateTime(base.year, 1, 1);
-        return TimeRange(
-          unit: unit,
-          start: startOfYear,
-          end: endOfToday,
-          isCurrent: true,
-        );
-    }
+return switch (unit) {
+      .day => TimeRange(
+        unit: unit,
+        start: (start ?? end!).toStart(),
+        end: (end ?? start!).toEnd(),
+      ),
+      .week => TimeRange(
+        unit: unit,
+        start: (start ?? end!.subtract(Duration(days: end.weekday - 1))).toStart(),
+        end: (end ?? start!.add(Duration(days: 7 - start.weekday))).toEnd(),
+      ),
+      .twoWeeks => TimeRange(
+        unit: unit,
+        start: (start ?? end!.subtract(Duration(days: end.weekday - 1 + 7))).toStart(),
+        end: (end ?? start!.add(Duration(days: 7 - start.weekday + 7))).toEnd(),
+      ),
+      .month => TimeRange(
+        unit: unit,
+        start: (start ?? DateTime(end!.year, end.month, 1)).toStart(),
+        end: (end ?? DateTime(start!.year, start.month + 1, 0)).toEnd(),
+      ),
+      .quarter => TimeRange(
+        unit: unit,
+        start: (start ?? DateTime(end!.substractMonths(3).year, end.substractMonths(3).month, 1)).toStart(),
+        end: (end ?? DateTime(start!.addMonths(3).year, start.addMonths(3).month + 1, 0)).toEnd(),
+      ),
+      .year => TimeRange(
+        unit: unit,
+        start: (start ?? DateTime(end!.year, 1, 1)).toStart(),
+        end: (end ?? DateTime(start!.year, 12, 31)).toEnd(),
+      ),
+    };
   }
 
   bool get isLatest {
     final now = DateTime.now();
-    return end.year == now.year &&
-        end.month == now.month &&
-        end.day == now.day;
+    return end.year == now.year && end.month == now.month && end.day == now.day;
   }
 
   /// Returns the previous range of the same unit
   TimeRange previous() => isCurrent
-      ? .current(unit, start.subtract(const Duration(days: 1)))
-      : .elapsed(unit, start.subtract(const Duration(days: 1)));
+      ? .current(unit, end: start.subtract(const Duration(days: 1)))
+      : .elapsed(unit, end: start.subtract(const Duration(days: 1)));
 
-  /// Returns the next range of the same unit, or null if already at the latest
-  TimeRange? next() {
-    if (isLatest) return null;
-    final nextDay = end.add(const Duration(days: 1));
-    return .elapsed(unit, nextDay);
-  }
+  /// Returns the next range of the same unit
+  TimeRange next() => isCurrent
+      ? .current(unit, start: end.add(const Duration(days: 1)))
+      : .elapsed(unit, start: end.add(const Duration(days: 1)));
 
   /// Get the name of the group based on the [range]
   String getName() {
@@ -222,6 +186,25 @@ extension DateTimeExtension on DateTime {
     return DateTime(year, month - numberMonths, 1);
   }
 
+  DateTime addMonths(int numberMonths) {
+    final totalMonths = month + numberMonths;
+    if (totalMonths > 12) {
+      return DateTime(year + 1, 1, 1).addMonths(totalMonths - 13);
+    }
+    return DateTime(year, totalMonths, 1);
+  }
+
+  DateTime addYears(int numberYears) =>
+      DateTime(year + numberYears, month, day);
+  DateTime substractYears(int numberYears) => addYears(-numberYears);
+
+  /// Set the hours to the start of the day (00h00)
+  DateTime toStart() => DateTime(year, month, day);
+
+  /// Set the hours to the end of the day (23h59)
+  DateTime toEnd() =>
+      toStart().add(Duration(days: 1)).subtract(Duration(microseconds: 1));
+
   String formatShort() {
     const months = [
       'Jan',
@@ -242,8 +225,18 @@ extension DateTimeExtension on DateTime {
 
   String formatWithHour() {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final h = hour.toString().padLeft(2, '0');
     final m = minute.toString().padLeft(2, '0');

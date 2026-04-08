@@ -24,10 +24,6 @@ class TransactionDetail extends StatelessWidget {
 
   const TransactionDetail({super.key, required this.transaction});
 
-  String _formatDate(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-  }
-
   @override
   Widget build(BuildContext context) {
     return SheetContainer(
