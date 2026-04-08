@@ -103,7 +103,9 @@ return switch (unit) {
 
   bool get isLatest {
     final now = DateTime.now();
-    return end.year == now.year && end.month == now.month && end.day == now.day;
+    return end.year >= now.year &&
+        end.month >= now.month &&
+        end.day >= now.day;
   }
 
   /// Returns the previous range of the same unit

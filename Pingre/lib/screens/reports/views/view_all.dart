@@ -135,7 +135,7 @@ class _ReportViewAllState extends State<ReportViewAll> {
                               onPress: _range.isLatest
                                   ? null
                                   : () => setState(() {
-                                      _range = _range.next()!;
+                                      _range = _range.next();
                                       _future = _load();
                                     }),
                               child: const Icon(FIcons.chevronRight),
