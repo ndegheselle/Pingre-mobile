@@ -1,4 +1,5 @@
 import 'package:decimal/decimal.dart';
+import 'package:isar/isar.dart';
 import 'package:pingre/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 
@@ -35,8 +36,9 @@ extension AccountTypeL10n on AccountType {
 }
 
 /// An account to keep track of where the money is
+@collection
 class Account {
-  final String id;
+  final int id;
   final String name;
   final String description;
   final AccountType type;
@@ -47,8 +49,8 @@ class Account {
     required this.description,
     required this.type,
     required this.balance,
-    String? id
-  }) : id = id ?? const Uuid().v4();
+    int? id
+  }) : id = id ?? Isar.autoIncrement;
 
   Account copyWith({
     String? name,
