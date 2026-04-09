@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/services/accounts.dart';
-import 'package:pingre/services/recurring.dart';
-import 'package:pingre/services/tags.dart';
-import 'package:pingre/services/settings.dart';
-import 'package:pingre/services/transactions.dart';
+import 'package:pingre/features/accounts/services/accounts.dart';
+import 'package:pingre/features/recurring/services/recurring.dart';
+import 'package:pingre/features/tags/services/tags.dart';
+import 'package:pingre/features/settings/services/settings.dart';
+import 'package:pingre/features/transactions/services/transactions.dart';
 import 'package:pingre/theme_extensions.dart';
 import 'package:provider/provider.dart';
 
-import 'screens/home_page.dart';
+import 'home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
