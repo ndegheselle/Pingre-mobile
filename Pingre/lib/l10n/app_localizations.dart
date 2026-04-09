@@ -656,12 +656,6 @@ abstract class AppLocalizations {
   /// **'Exported'**
   String get reportExportSuccess;
 
-  /// No description provided for @reportExportDownloaded.
-  ///
-  /// In en, this message translates to:
-  /// **'CSV downloaded'**
-  String get reportExportDownloaded;
-
   /// No description provided for @reportFiltersTitle.
   ///
   /// In en, this message translates to:

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
@@ -177,16 +178,16 @@ class _PageReportsState extends State<PageReports> {
     final today = DateTime.now();
     final filename =
         'transactions_${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}.csv';
-    final bytes = utf8.encode(buffer.toString());
+    final bytes = Uint8List.fromList(utf8.encode(buffer.toString()));
     final path = await saveCsvFile(bytes, filename);
 
-    if (!mounted) return;
+    if (!mounted || path == null) return;
     showFToast(
       context: context,
       alignment: .topCenter,
       icon: const Icon(FIcons.fileUp),
       title: Text(l10n.reportExportSuccess),
-      description: path != null ? Text(path) : Text(l10n.reportExportDownloaded),
+      description: Text(path),
     );
   }
 

@@ -104,7 +104,6 @@
   "reportFiltersTooltip": "Filters",
   "reportExportTooltip": "Export",
   "reportExportSuccess": "Exported",
-  "reportExportDownloaded": "CSV downloaded",
   "reportFiltersTitle": "Filters",
   "reportTransactionTypeSection": "Transaction type",
   "reportTransactionTypeLabel": "Transaction Type",
