@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/features/transactions/screens/transaction_form_fields.dart';
+import 'package:pingre/features/transactions/models/transaction.dart';
+import 'package:pingre/features/transactions/widgets/transaction_form_fields.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
 import 'package:provider/provider.dart';
@@ -14,20 +15,20 @@ Future<dynamic> showTransactionEdit(
     mainAxisMaxRatio: 7 / 10,
     context: context,
     side: .btt,
-    builder: (context) => TransactionEdit(transaction: transaction),
+    builder: (context) => OverlayTransactionEdit(transaction: transaction),
   );
 }
 
-class TransactionEdit extends StatefulWidget {
+class OverlayTransactionEdit extends StatefulWidget {
   final Transaction? transaction;
 
-  const TransactionEdit({super.key, this.transaction});
+  const OverlayTransactionEdit({super.key, this.transaction});
 
   @override
-  State<TransactionEdit> createState() => _TransactionEditState();
+  State<OverlayTransactionEdit> createState() => _OverlayTransactionEditState();
 }
 
-class _TransactionEditState extends State<TransactionEdit> {
+class _OverlayTransactionEditState extends State<OverlayTransactionEdit> {
   late bool _isEditing;
   late TransactionFormData _formData;
   final _formKey = GlobalKey<FormState>();

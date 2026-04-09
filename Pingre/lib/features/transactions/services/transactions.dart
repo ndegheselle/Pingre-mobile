@@ -3,69 +3,9 @@ import 'dart:math';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:pingre/common/models/time_range.dart';
-import 'package:pingre/features/tags/services/tags.dart';
-import 'package:uuid/uuid.dart';
-
-/// A selection of tags, a [primary] tag act like a category and is used to group and create reports
-class TagsSelection {
-  /// Main tag of the selection
-  final Tag primary;
-
-  /// Secondaries tags
-  final List<Tag> secondaries;
-  List<Tag> get all => [primary, ...secondaries];
-
-  TagsSelection({required this.primary, List<Tag>? secondaries})
-    : secondaries = secondaries ?? [];
-}
-
-/// One line of transaction
-class Transaction {
-  final String id;
-  final Decimal value;
-
-  final TagsSelection tags;
-
-  final DateTime date;
-  final String notes;
-
-  Transaction({
-    required this.value,
-    required this.date,
-    required this.tags,
-    this.notes = "",
-    String? id,
-  }) : id = id ?? const Uuid().v4();
-
-  Transaction copyWith({
-    Decimal? value,
-    TagsSelection? tags,
-    DateTime? date,
-    String? notes,
-  }) {
-    return Transaction(
-      id: id,
-      value: value ?? this.value,
-      tags: tags ?? this.tags,
-      date: date ?? this.date,
-      notes: notes ?? this.notes,
-    );
-  }
-}
-
-/// A group of transactions
-class TransactionsGroup {
-  final TimeRange range;
-  final String name;
-  final Decimal total;
-  final List<Transaction> transactions;
-
-  TransactionsGroup({
-    required this.range,
-    required this.name,
-    required this.transactions,
-  }) : total = transactions.fold(.zero, (a, b) => a + b.value);
-}
+import 'package:pingre/features/tags/models/tag.dart';
+import 'package:pingre/features/tags/models/tags_selection.dart';
+import 'package:pingre/features/transactions/models/transaction.dart';
 
 class TransactionsService extends ChangeNotifier {
   final Map<String, Transaction> _transactionsMap = _generateFakeData();

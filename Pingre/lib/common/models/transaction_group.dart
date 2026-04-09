@@ -1,6 +1,6 @@
 import 'package:decimal/decimal.dart';
 import 'package:pingre/common/models/time_range.dart';
-import 'package:pingre/features/transactions/services/transactions.dart';
+import 'package:pingre/features/transactions/models/transaction.dart';
 
 class TransactionGroup {
   late final String name;
@@ -48,28 +48,6 @@ extension TransactionGroupExtension on Iterable<TransactionGroup> {
 
 /// Convenience methods for grouping and processing lists of [Transaction]s, the list must be sorted by date.
 extension TransactionsExtension on List<Transaction> {
-  /// Group transactions in transactions groups with empty group between transactions.
-  List<TransactionGroup> groupByUnit(TimeRangeUnit unit, {DateTime? now}) {
-    if (isEmpty) return [];
-
-    List<TransactionGroup> groups = [];
-    TransactionGroup currentGroup = TransactionGroup(
-      range: .current(unit, end: now),
-    );
-    for (var transaction in this) {
-      while (transaction.date.isBefore(currentGroup.range.start)) {
-        if (currentGroup.transactions.isNotEmpty) {
-          groups.add(currentGroup);
-        }
-        currentGroup = currentGroup.previous();
-      }
-      currentGroup.add(transaction);
-    }
-
-    groups.add(currentGroup);
-    return groups;
-  }
-
   /// Adds a transaction to the given [existingGroup] and creates new groups if needed.
   ///
   /// Returns the newly created [TransactionGroup]s. The provided [existingGroup]

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/common/models/time_range.dart';
-import 'package:pingre/features/tags/screens/tags_display.dart';
-import 'package:pingre/features/transactions/screens/transaction_edit.dart';
-import 'package:pingre/features/transactions/services/transactions.dart';
+import 'package:pingre/features/tags/widgets/tags_display.dart';
+import 'package:pingre/features/transactions/models/transaction.dart';
+import 'package:pingre/features/transactions/screens/overlay_transaction_edit.dart';
 import 'package:pingre/common/widgets/data/value_display.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
 
@@ -15,14 +15,14 @@ Future<dynamic> showTransactionDetail(
     mainAxisMaxRatio: 5 / 10,
     context: context,
     side: .btt,
-    builder: (context) => TransactionDetail(transaction: transaction),
+    builder: (context) => OverlayTransactionDetail(transaction: transaction),
   );
 }
 
-class TransactionDetail extends StatelessWidget {
+class OverlayTransactionDetail extends StatelessWidget {
   final Transaction transaction;
 
-  const TransactionDetail({super.key, required this.transaction});
+  const OverlayTransactionDetail({super.key, required this.transaction});
 
   @override
   Widget build(BuildContext context) {

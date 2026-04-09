@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/features/tags/services/tags.dart';
-import 'package:pingre/features/transactions/services/transactions.dart';
+import 'package:pingre/features/tags/models/tags_selection.dart';
 import 'package:pingre/common/widgets/inputs/search_add.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
 import 'package:provider/provider.dart';
@@ -14,20 +14,20 @@ Future<TagsSelection?> showTagsSelect(
     mainAxisMaxRatio: 6 / 10,
     context: context,
     side: .btt,
-    builder: (context) => TagsSelect(initialSelection: initialSelection),
+    builder: (context) => OverlayTagsSelect(initialSelection: initialSelection),
   );
 }
 
-class TagsSelect extends StatefulWidget {
+class OverlayTagsSelect extends StatefulWidget {
   final TagsSelection? initialSelection;
 
-  const TagsSelect({super.key, this.initialSelection});
+  const OverlayTagsSelect({super.key, this.initialSelection});
 
   @override
-  State<TagsSelect> createState() => _TagsSelectState();
+  State<OverlayTagsSelect> createState() => _OverlayTagsSelectState();
 }
 
-class _TagsSelectState extends State<TagsSelect> {
+class _OverlayTagsSelectState extends State<OverlayTagsSelect> {
   late String? _primaryTagId;
   late Set<String> _secondariesIds;
 

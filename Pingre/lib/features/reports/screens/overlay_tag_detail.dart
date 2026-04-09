@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/common/models/time_range.dart';
-import 'package:pingre/features/transactions/screens/transaction_summary.dart';
-import 'package:pingre/features/tags/services/tags.dart';
+import 'package:pingre/features/tags/models/tag.dart';
+import 'package:pingre/features/transactions/models/transaction.dart';
+import 'package:pingre/features/transactions/widgets/transaction_summary.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
 import 'package:provider/provider.dart';
 
 /// Show a draggable bottom sheet listing all transactions for [tag] in [range].
-Future<void> showTagDetailSheet(
+Future<void> showTagDetail(
   BuildContext context, {
   required Tag tag,
   required TimeRange range,
@@ -23,28 +24,29 @@ Future<void> showTagDetailSheet(
         behavior: ScrollConfiguration.of(context).copyWith(
           dragDevices: {.touch, .mouse, .trackpad},
         ),
-        child: _TagDetailSheet(tag: tag, range: range, scrollController: controller),
+        child: OverlayTagDetail(tag: tag, range: range, scrollController: controller),
       ),
     ),
   );
 }
 
-class _TagDetailSheet extends StatefulWidget {
+class OverlayTagDetail extends StatefulWidget {
   final Tag tag;
   final TimeRange range;
   final ScrollController scrollController;
 
-  const _TagDetailSheet({
+  const OverlayTagDetail({
+    super.key,
     required this.tag,
     required this.range,
     required this.scrollController,
   });
 
   @override
-  State<_TagDetailSheet> createState() => _TagDetailSheetState();
+  State<OverlayTagDetail> createState() => OverlayTagDetailState();
 }
 
-class _TagDetailSheetState extends State<_TagDetailSheet> {
+class OverlayTagDetailState extends State<OverlayTagDetail> {
   late Future<List<Transaction>> _future;
 
   @override

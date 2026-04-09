@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/features/transactions/screens/transaction_detail.dart';
-import 'package:pingre/features/transactions/services/transactions.dart';
+import 'package:pingre/features/transactions/models/transaction.dart';
+import 'package:pingre/features/transactions/screens/overlay_transaction_detail.dart';
 import 'package:pingre/common/widgets/data/value_display.dart';
 
 /// A generic widget that displays a single transaction row,

@@ -1,37 +1,11 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:pingre/common/models/time_range.dart';
-import 'package:pingre/features/tags/services/tags.dart';
+import 'package:pingre/features/recurring/models/recurring.dart';
+import 'package:pingre/features/tags/models/tag.dart';
+import 'package:pingre/features/tags/models/tags_selection.dart';
+import 'package:pingre/features/transactions/models/transaction.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
-import 'package:uuid/uuid.dart';
-
-class RecurringTransaction {
-  final String id;
-  final String name;
-  final Transaction transaction;
-  final TimeRangeUnit range;
-
-  RecurringTransaction({
-    required this.name,
-    required this.transaction,
-    required this.range,
-    String? id,
-  }) : id = id ?? const Uuid().v4();
-
-  RecurringTransaction copyWith({
-    String? id,
-    String? name,
-    Transaction? transaction,
-    TimeRangeUnit? range,
-  }) {
-    return RecurringTransaction(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      transaction: transaction ?? this.transaction,
-      range: range ?? this.range,
-    );
-  }
-}
 
 class RecurringTransactionsService extends ChangeNotifier {
   final Map<String, RecurringTransaction> _recurringTransactionsMap = {};

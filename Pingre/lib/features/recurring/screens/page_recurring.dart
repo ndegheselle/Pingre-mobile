@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/common/models/time_range_icon.dart';
-import 'package:pingre/features/recurring/screens/recurring_edit.dart';
+import 'package:pingre/features/recurring/screens/overlay_recurring_edit.dart';
 import 'package:pingre/features/recurring/services/recurring.dart';
 import 'package:pingre/common/widgets/data/value_display.dart';
 import 'package:pingre/common/widgets/inputs/search_add.dart';
 import 'package:provider/provider.dart';
 
-class RecurringPage extends StatefulWidget {
-  const RecurringPage({super.key});
+class PageRecurring extends StatefulWidget {
+  const PageRecurring({super.key});
 
   @override
-  State<RecurringPage> createState() => _RecurringPageState();
+  State<PageRecurring> createState() => _PageRecurringState();
 }
 
-class _RecurringPageState extends State<RecurringPage> {
+class _PageRecurringState extends State<PageRecurring> {
   final TextEditingController _controller = TextEditingController();
 
   void _addRecurring(String name) {

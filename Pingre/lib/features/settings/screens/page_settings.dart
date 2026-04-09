@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/features/tags/screens/tags_page.dart';
+import 'package:pingre/features/tags/screens/page_tags.dart';
 import 'package:pingre/features/settings/services/settings.dart';
 import 'package:provider/provider.dart';
 
-class AppSettingsPage extends StatefulWidget {
-  const AppSettingsPage({super.key});
+class PageSettings extends StatefulWidget {
+  const PageSettings({super.key});
 
   @override
-  State<AppSettingsPage> createState() => _AppSettingsPageState();
+  State<PageSettings> createState() => _PageSettingsState();
 }
 
-class _AppSettingsPageState extends State<AppSettingsPage> {
+class _PageSettingsState extends State<PageSettings> {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsService>();
@@ -59,7 +59,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
             details: const Text('Edit, create and delete'),
             onPress: () {
               Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (context) => const TagsPage()),
+                MaterialPageRoute<void>(builder: (context) => const PageTags()),
               );
             },
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/features/tags/models/tag.dart';
 import 'package:pingre/features/tags/services/tags.dart';
 import 'package:pingre/common/widgets/inputs/color_picker.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
@@ -10,24 +11,24 @@ Future<dynamic> showTagEdit(BuildContext context, Tag tag) {
   return showFSheet(
     context: context,
     side: .btt,
-    builder: (context) => TagEdit(tag: tag),
+    builder: (context) => OverlayTagEdit(tag: tag),
   );
 }
 
-class TagEdit extends StatefulWidget {
+class OverlayTagEdit extends StatefulWidget {
   final Tag tag;
 
-  const TagEdit({super.key, required this.tag});
+  const OverlayTagEdit({super.key, required this.tag});
 
   @override
-  State<TagEdit> createState() => _TagEditState();
+  State<OverlayTagEdit> createState() => _OverlayTagEditState();
 }
 
-class _TagEditState extends State<TagEdit> {
+class _OverlayTagEditState extends State<OverlayTagEdit> {
   late final TextEditingController _nameController;
   late Color? _selectedColor;
 
-  _TagEditState();
+  _OverlayTagEditState();
 
   @override
   void initState() {

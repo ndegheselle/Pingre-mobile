@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/features/accounts/screens/account_edit.dart';
-import 'package:pingre/features/accounts/screens/account_type_icon.dart';
+import 'package:pingre/features/accounts/screens/overlay_account_edit.dart';
+import 'package:pingre/features/accounts/widgets/account_type_icon.dart';
 import 'package:pingre/features/accounts/services/accounts.dart';
 import 'package:pingre/common/widgets/data/value_display.dart';
 import 'package:pingre/common/widgets/inputs/search_add.dart';
 import 'package:provider/provider.dart';
 
-class AccountsPage extends StatefulWidget {
-  const AccountsPage({super.key});
+class PageAccounts extends StatefulWidget {
+  const PageAccounts({super.key});
 
   @override
-  State<AccountsPage> createState() => _AccountsPageState();
+  State<PageAccounts> createState() => _PageAccountsState();
 }
 
-class _AccountsPageState extends State<AccountsPage> {
+class _PageAccountsState extends State<PageAccounts> {
   final TextEditingController _controller = TextEditingController();
 
   void _addAccount(String name) {

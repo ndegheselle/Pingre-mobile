@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/features/transactions/services/transactions.dart';
+import 'package:pingre/features/tags/models/tags_selection.dart';
 
 class TagsDisplay extends StatelessWidget {
   final TagsSelection? selection;

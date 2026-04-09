@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/common/models/time_range.dart';
-import 'package:pingre/features/reports/screens/report_filter_sheet.dart';
+import 'package:pingre/features/reports/models/report_filters.dart';
+import 'package:pingre/features/reports/screens/overlay_report_filters.dart';
 import 'package:pingre/features/reports/screens/views/view_primary.dart';
 import 'package:pingre/common/widgets/inputs/time_range_select.dart';
 
 enum _ReportView { primary, all }
 
-class ReportsPage extends StatefulWidget {
-  const ReportsPage({super.key});
+class PageReports extends StatefulWidget {
+  const PageReports({super.key});
 
   @override
-  State<ReportsPage> createState() => _ReportsPageState();
+  State<PageReports> createState() => _PageReportsState();
 }
 
-class _ReportsPageState extends State<ReportsPage> {
+class _PageReportsState extends State<PageReports> {
   TimeRangeUnit _selectedTimeRange = TimeRangeUnit.month;
   ReportFilters _filters = const ReportFilters();
 

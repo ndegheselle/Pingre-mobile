@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/features/accounts/screens/accounts_page.dart';
-import 'package:pingre/features/settings/screens/app_settings_page.dart';
-import 'package:pingre/features/recurring/screens/recurring_page.dart';
-import 'package:pingre/features/reports/screens/report_page.dart';
-import 'package:pingre/features/transactions/screens/transaction_edit.dart';
-import 'package:pingre/features/transactions/screens/transactions_page.dart';
+import 'package:pingre/features/accounts/screens/page_accounts.dart';
+import 'package:pingre/features/settings/screens/page_settings.dart';
+import 'package:pingre/features/recurring/screens/page_recurring.dart';
+import 'package:pingre/features/reports/screens/page_reports.dart';
+import 'package:pingre/features/transactions/screens/overlay_transaction_edit.dart';
+import 'package:pingre/features/transactions/screens/page_transactions.dart';
 
 final contents = [
-  const TransactionsPage(),
-  const RecurringPage(),
-  const AccountsPage(),
-  const ReportsPage(),
+  const PageTransactions(),
+  const PageRecurring(),
+  const PageAccounts(),
+  const PageReports(),
 ];
 
 class HomePage extends StatefulWidget {
@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
 
   void openSettings() {
     Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (context) => const AppSettingsPage()),
+      MaterialPageRoute<void>(builder: (context) => const PageSettings()),
     );
   }
 
@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
           childPad: false,
           header: headers[_index],
           footer: FBottomNavigationBar(
-            index: _index,
+            index: _index >= 2 ? _index + 1 : _index,
             onChange: (index) => setState(() {
               if (index == 2) return;
               if (index > 2) {

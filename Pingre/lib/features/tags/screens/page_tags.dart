@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/features/tags/screens/tag_edit.dart';
+import 'package:pingre/features/tags/screens/overlay_tag_edit.dart';
 import 'package:pingre/features/tags/services/tags.dart';
 import 'package:pingre/common/widgets/inputs/search_add.dart';
 import 'package:provider/provider.dart';
 
-class TagsPage extends StatefulWidget {
-  const TagsPage({super.key});
+class PageTags extends StatefulWidget {
+  const PageTags({super.key});
 
   @override
-  State<TagsPage> createState() => _TagsPageState();
+  State<PageTags> createState() => _PageTagsState();
 }
 
-class _TagsPageState extends State<TagsPage> {
+class _PageTagsState extends State<PageTags> {
   final TextEditingController _controller = TextEditingController();
 
   void _addTag(String name) {

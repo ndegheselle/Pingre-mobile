@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/features/accounts/services/accounts.dart';
+import 'package:pingre/features/accounts/models/account.dart';
 
 class AccountTypeIcon extends StatelessWidget {
   final AccountType type;

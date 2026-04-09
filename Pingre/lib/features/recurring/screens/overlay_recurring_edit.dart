@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/common/models/time_range.dart';
-import 'package:pingre/features/transactions/screens/transaction_form_fields.dart';
+import 'package:pingre/features/recurring/models/recurring.dart';
+import 'package:pingre/features/transactions/models/transaction.dart';
+import 'package:pingre/features/transactions/widgets/transaction_form_fields.dart';
 import 'package:pingre/features/recurring/services/recurring.dart';
-import 'package:pingre/features/transactions/services/transactions.dart';
 import 'package:pingre/common/widgets/inputs/time_range_select.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
 import 'package:provider/provider.dart';
@@ -18,29 +19,29 @@ Future<dynamic> showRecurringTransactionEdit(
     mainAxisMaxRatio: 8 / 10,
     context: context,
     side: .btt,
-    builder: (context) => RecurringTransactionEdit(
+    builder: (context) => OverlayRecurringTransactionEdit(
       recurringTransaction: recurringTransaction,
       name: name,
     ),
   );
 }
 
-class RecurringTransactionEdit extends StatefulWidget {
+class OverlayRecurringTransactionEdit extends StatefulWidget {
   final RecurringTransaction? recurringTransaction;
   final String? name;
 
-  const RecurringTransactionEdit({
+  const OverlayRecurringTransactionEdit({
     super.key,
     this.recurringTransaction,
     this.name,
   });
 
   @override
-  State<RecurringTransactionEdit> createState() =>
-      _RecurringTransactionEditState();
+  State<OverlayRecurringTransactionEdit> createState() =>
+      _OverlayRecurringTransactionEditState();
 }
 
-class _RecurringTransactionEditState extends State<RecurringTransactionEdit> {
+class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransactionEdit> {
   late bool _isEditing;
   late TransactionFormData _formData;
   late TextEditingController _nameController;

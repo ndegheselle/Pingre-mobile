@@ -1,32 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/features/tags/screens/tags_select.dart';
+import 'package:pingre/features/reports/models/report_filters.dart';
+import 'package:pingre/features/tags/screens/overlay_tags_select.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
-
-enum TransactionFilter { expenses, income }
-
-class ReportFilters {
-  final Set<TransactionFilter> transactionType;
-  final Set<String> tagIds;
-
-  const ReportFilters({
-    this.transactionType = const {
-      TransactionFilter.expenses,
-      TransactionFilter.income,
-    },
-    this.tagIds = const {},
-  });
-
-  ReportFilters copyWith({
-    Set<TransactionFilter>? transactionType,
-    Set<String>? tagIds,
-  }) {
-    return ReportFilters(
-      transactionType: transactionType ?? this.transactionType,
-      tagIds: tagIds ?? this.tagIds,
-    );
-  }
-}
 
 Future<ReportFilters?> showReportFilterSheet(
   BuildContext context, {
@@ -36,20 +12,20 @@ Future<ReportFilters?> showReportFilterSheet(
     mainAxisMaxRatio: 7 / 10,
     context: context,
     side: .btt,
-    builder: (context) => ReportFilterSheet(current: current),
+    builder: (context) => OverlayReportFilters(current: current),
   );
 }
 
-class ReportFilterSheet extends StatefulWidget {
+class OverlayReportFilters extends StatefulWidget {
   final ReportFilters current;
 
-  const ReportFilterSheet({super.key, required this.current});
+  const OverlayReportFilters({super.key, required this.current});
 
   @override
-  State<ReportFilterSheet> createState() => _ReportFilterSheetState();
+  State<OverlayReportFilters> createState() => _OverlayReportFiltersState();
 }
 
-class _ReportFilterSheetState extends State<ReportFilterSheet> {
+class _OverlayReportFiltersState extends State<OverlayReportFilters> {
   late Set<TransactionFilter> _transactionType;
   late Set<String> _selectedTagIds;
 

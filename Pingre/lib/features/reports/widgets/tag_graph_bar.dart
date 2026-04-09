@@ -3,27 +3,7 @@ import 'dart:math';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/features/tags/services/tags.dart';
-
-class TagTotal {
-  final Tag tag;
-  final Decimal total;
-
-  TagTotal({required this.tag, required this.total});
-}
-
-const List<Color> palette = [
-  Color(0xFF6366F1),
-  Color(0xFF8B5CF6),
-  Color(0xFFEC4899),
-  Color(0xFFF97316),
-  Color(0xFF14B8A6),
-  Color(0xFF06B6D4),
-  Color(0xFF84CC16),
-  Color(0xFFEAB308),
-  Color(0xFFEF4444),
-  Color(0xFF3B82F6),
-];
+import 'package:pingre/features/reports/models/tag_total.dart';
 
 class TagGraphBar extends StatelessWidget {
   final List<TagTotal> tagTotals;

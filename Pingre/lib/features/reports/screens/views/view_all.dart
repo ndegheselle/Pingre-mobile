@@ -2,9 +2,10 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/common/models/time_range.dart';
-import 'package:pingre/features/reports/screens/report_filter_sheet.dart';
-import 'package:pingre/features/reports/screens/tag_detail_sheet.dart';
-import 'package:pingre/features/reports/screens/views/view.dart';
+import 'package:pingre/features/reports/models/report_filters.dart';
+import 'package:pingre/features/reports/models/tag_total.dart';
+import 'package:pingre/features/reports/screens/overlay_tag_detail.dart';
+import 'package:pingre/features/reports/widgets/tag_graph_bar.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
 import 'package:pingre/common/widgets/data/value_display.dart';
 import 'package:provider/provider.dart';
@@ -20,10 +21,10 @@ class ReportViewAll extends StatefulWidget {
   });
 
   @override
-  State<ReportViewAll> createState() => _ReportViewAllState();
+  State<ReportViewAll> createState() => ReportViewAllState();
 }
 
-class _ReportViewAllState extends State<ReportViewAll> {
+class ReportViewAllState extends State<ReportViewAll> {
   late TimeRange _range;
   late Future<List<TagTotal>> _future;
   late TransactionsService _transactions;
@@ -32,9 +33,19 @@ class _ReportViewAllState extends State<ReportViewAll> {
   void initState() {
     super.initState();
     _transactions = context.read<TransactionsService>();
-    _range = TimeRange.elapsed(widget.rangeUnit);
+    _range = .current(widget.rangeUnit);
     _future = _load();
     _transactions.addListener(_reload);
+  }
+
+  @override
+  void didUpdateWidget(ReportViewAll oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.filters != widget.filters ||
+        oldWidget.rangeUnit != widget.rangeUnit) {
+      _range = .current(widget.rangeUnit);
+      _reload();
+    }
   }
 
   @override
@@ -132,9 +143,7 @@ class _ReportViewAllState extends State<ReportViewAll> {
                             const Spacer(),
                             FButton.icon(
                               variant: .ghost,
-                              onPress: _range.isLatest
-                                  ? null
-                                  : () => setState(() {
+                              onPress: () => setState(() {
                                       _range = _range.next();
                                       _future = _load();
                                     }),
@@ -181,7 +190,7 @@ class _ReportViewAllState extends State<ReportViewAll> {
                                   ),
                                   title: Text(t.tag.name),
                                   suffix: ValueDisplay(value: t.total),
-                                  onPress: () => showTagDetailSheet(
+                                  onPress: () => showTagDetail(
                                     context,
                                     tag: t.tag,
                                     range: _range,

@@ -23,7 +23,7 @@ class TimeRange {
     DateTime? start,
     DateTime? end,
   }) {
-    if (start == null && end == null) start = DateTime.now();
+    if (start == null && end == null) end = DateTime.now();
     if (start != null && end != null) throw Exception("The start and end cannot be set together.");
 
     return switch (unit) {
@@ -64,7 +64,7 @@ class TimeRange {
   /// Exactly one of [start] or [end] must be provided; if neither is given, the anchor defaults to now.
   /// For example, with anchor = 18/03/2026 and [unit] = [TimeRangeUnit.month], you get 01/03/2026 → 18/03/2026.
   factory TimeRange.current(TimeRangeUnit unit, {DateTime? start, DateTime? end}) {
-    if (start == null && end == null) start = DateTime.now();
+    if (start == null && end == null) end = DateTime.now();
     if (start != null && end != null) throw Exception("The start and end cannot be set together.");
 
 return switch (unit) {
@@ -101,13 +101,6 @@ return switch (unit) {
     };
   }
 
-  bool get isLatest {
-    final now = DateTime.now();
-    return end.year >= now.year &&
-        end.month >= now.month &&
-        end.day >= now.day;
-  }
-
   /// Returns the previous range of the same unit
   TimeRange previous() => isCurrent
       ? .current(unit, end: start.subtract(const Duration(days: 1)))
@@ -120,43 +113,18 @@ return switch (unit) {
 
   /// Get the name of the group based on the [range]
   String getName() {
-    final now = DateTime.now();
-
-    // Helper to check if the range is current
-    bool isCurrent(TimeRange range) {
-      switch (range.unit) {
-        case TimeRangeUnit.day:
-          return range.end.day == now.day &&
-              range.end.month == now.month &&
-              range.end.year == now.year;
-        case TimeRangeUnit.week:
-        case TimeRangeUnit.twoWeeks:
-          // Check if the range includes today
-          return now.isAfter(range.start) && now.isBefore(range.end);
-        case TimeRangeUnit.month:
-        case TimeRangeUnit.quarter:
-          return range.end.month == now.month && range.end.year == now.year;
-        case TimeRangeUnit.year:
-          return range.end.year == now.year;
-      }
-    }
-
     // Original logic for other cases
     switch (unit) {
       case TimeRangeUnit.day:
-        return isCurrent(this) ? 'Today' : start.formatShort();
+        return start.formatShort();
       case TimeRangeUnit.week:
       case TimeRangeUnit.twoWeeks:
-        return isCurrent(this)
-            ? 'Current ${unit.label}'
-            : '${start.formatShort()} - ${end.formatShort()}';
+        return '${start.formatShort()} - ${end.formatShort()}';
       case TimeRangeUnit.month:
       case TimeRangeUnit.quarter:
-        return isCurrent(this)
-            ? 'Current ${unit.label}'
-            : start.formatShortMonth();
+        return start.formatShortMonth();
       case TimeRangeUnit.year:
-        return isCurrent(this) ? 'Current ${unit.label}' : '${start.year}';
+        return '${start.year}';
     }
   }
 }

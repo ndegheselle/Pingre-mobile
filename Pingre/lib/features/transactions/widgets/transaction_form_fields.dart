@@ -1,9 +1,10 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/features/tags/screens/tags_display.dart';
-import 'package:pingre/features/tags/screens/tags_select.dart';
-import 'package:pingre/features/transactions/services/transactions.dart';
+import 'package:pingre/features/tags/widgets/tags_display.dart';
+import 'package:pingre/features/tags/screens/overlay_tags_select.dart';
+import 'package:pingre/features/tags/models/tags_selection.dart';
+import 'package:pingre/features/transactions/models/transaction.dart';
 import 'package:pingre/common/widgets/data/error_display.dart';
 import 'package:pingre/common/widgets/inputs/value_input.dart';
 

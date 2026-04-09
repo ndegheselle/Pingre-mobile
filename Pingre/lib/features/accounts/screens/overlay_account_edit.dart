@@ -1,7 +1,8 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/features/accounts/screens/account_type_icon.dart';
+import 'package:pingre/features/accounts/models/account.dart';
+import 'package:pingre/features/accounts/widgets/account_type_icon.dart';
 import 'package:pingre/features/accounts/services/accounts.dart';
 import 'package:pingre/common/widgets/data/error_display.dart';
 import 'package:pingre/common/widgets/inputs/value_input.dart';
@@ -18,21 +19,21 @@ Future<dynamic> showAccountEdit(
     mainAxisMaxRatio: 7 / 10,
     context: context,
     side: .btt,
-    builder: (context) => AccountEdit(account: account, name: name),
+    builder: (context) => OverlayAccountEdit(account: account, name: name),
   );
 }
 
-class AccountEdit extends StatefulWidget {
+class OverlayAccountEdit extends StatefulWidget {
   final Account? account;
   final String? name;
 
-  const AccountEdit({super.key, this.account, this.name});
+  const OverlayAccountEdit({super.key, this.account, this.name});
 
   @override
-  State<AccountEdit> createState() => _AccountEditState();
+  State<OverlayAccountEdit> createState() => _OverlayAccountEditState();
 }
 
-class _AccountEditState extends State<AccountEdit> {
+class _OverlayAccountEditState extends State<OverlayAccountEdit> {
   late bool _isEditing;
   final Map<String, String> _errors = {};
 
