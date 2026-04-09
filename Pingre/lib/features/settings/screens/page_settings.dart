@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/features/tags/screens/page_tags.dart';
 import 'package:pingre/features/settings/services/settings.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class PageSettings extends StatefulWidget {
@@ -15,13 +16,14 @@ class _PageSettingsState extends State<PageSettings> {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsService>();
+    final l10n = AppLocalizations.of(context)!;
 
     return FScaffold(
       header: FHeader.nested(
-        title: const Text('Settings'),
+        title: Text(l10n.settingsTitle),
         prefixes: [FHeaderAction.back(onPress: () => Navigator.pop(context))],
       ),
-      child: FTileGroup(
+      child: Padding(padding: .only(bottom: 12), child: FTileGroup(
         children: [
           FSelectMenuTile<ThemeMode>(
             selectControl: .managedRadio(
@@ -31,24 +33,56 @@ class _PageSettingsState extends State<PageSettings> {
               },
             ),
             prefix: const Icon(FIcons.sunMoon),
-            title: const Text('Theme'),
+            title: Text(l10n.settingsTheme),
             detailsBuilder: (_, values, _) =>
                 _ThemeSquare(mode: values.firstOrNull ?? .system),
-            menu: const [
+            menu: [
               .suffix(
-                prefix: _ThemeSquare(mode: .system),
-                title: Text('Auto'),
+                prefix: const _ThemeSquare(mode: .system),
+                title: Text(l10n.settingsThemeAuto),
                 value: .system,
               ),
               .suffix(
-                prefix: _ThemeSquare(mode: .light),
-                title: Text('Light'),
+                prefix: const _ThemeSquare(mode: .light),
+                title: Text(l10n.settingsThemeLight),
                 value: .light,
               ),
               .suffix(
-                prefix: _ThemeSquare(mode: .dark),
-                title: Text('Dark'),
+                prefix: const _ThemeSquare(mode: .dark),
+                title: Text(l10n.settingsThemeDark),
                 value: .dark,
+              ),
+            ],
+          ),
+          FSelectMenuTile<Locale?>(
+            selectControl: .managedRadio(
+              initial: settings.locale,
+              onChange: (values) {
+                if (values.isNotEmpty) settings.locale = values.first;
+              },
+            ),
+            prefix: const Icon(FIcons.languages),
+            title: Text(l10n.settingsLanguage),
+            detailsBuilder: (_, values, _) {
+              final locale = values.firstOrNull;
+              return Text(locale == null
+                  ? l10n.settingsLanguageAuto
+                  : locale.languageCode == 'fr'
+                      ? l10n.settingsLanguageFrench
+                      : l10n.settingsLanguageEnglish);
+            },
+            menu: [
+              FSelectTile<Locale?>.suffix(
+                title: Text(l10n.settingsLanguageAuto),
+                value: null,
+              ),
+              FSelectTile<Locale?>.suffix(
+                title: Text(l10n.settingsLanguageEnglish),
+                value: const Locale('en'),
+              ),
+              FSelectTile<Locale?>.suffix(
+                title: Text(l10n.settingsLanguageFrench),
+                value: const Locale('fr'),
               ),
             ],
           ),
@@ -60,7 +94,7 @@ class _PageSettingsState extends State<PageSettings> {
               },
             ),
             prefix: Icon(settings.currency.icon),
-            title: const Text('Currency'),
+            title: Text(l10n.settingsCurrency),
             detailsBuilder: (_, values, _) => Text(values.firstOrNull?.label ?? ''),
             menu: [
               for (final c in Currency.values)
@@ -73,9 +107,9 @@ class _PageSettingsState extends State<PageSettings> {
           ),
           .tile(
             prefix: const Icon(FIcons.tags),
-            title: const Text('Tags'),
+            title: Text(l10n.settingsTags),
             suffix: const Icon(FIcons.chevronRight),
-            details: const Text('Edit, create and delete'),
+            details: Text(l10n.settingsTagsDetail),
             onPress: () {
               Navigator.of(context).push(
                 MaterialPageRoute<void>(builder: (context) => const PageTags()),
@@ -84,7 +118,7 @@ class _PageSettingsState extends State<PageSettings> {
           ),
         ],
       ),
-    );
+    ));
   }
 }
 

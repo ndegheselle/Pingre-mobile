@@ -4,6 +4,7 @@ import 'package:pingre/features/transactions/models/transaction.dart';
 import 'package:pingre/features/transactions/widgets/transaction_form_fields.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 /// Show the transaction edit page as a sheet
@@ -70,31 +71,31 @@ class _OverlayTransactionEditState extends State<OverlayTransactionEdit> {
   }
 
   void _onSaved() {
+    final l10n = AppLocalizations.of(context)!;
     showFToast(
       context: context,
       alignment: .topCenter,
       icon: const Icon(FIcons.check),
-      title: const Text("Saved"),
-      description: const Text("The transaction has been edited"),
+      title: Text(l10n.toastSavedTitle),
+      description: Text(l10n.transactionSavedDesc),
     );
     Navigator.of(context).pop();
   }
 
   void _remove() {
+    final l10n = AppLocalizations.of(context)!;
     showFDialog(
       context: context,
       builder: (context, style, animation) => FDialog(
         style: style,
         animation: animation,
-        title: const Text('Removed transaction'),
-        body: const Text(
-          'Are you sure you want to remove this transaction?',
-        ),
+        title: Text(l10n.transactionRemovedDialogTitle),
+        body: Text(l10n.transactionRemovedDialogBody),
         actions: [
           FButton(
             variant: .destructive,
             size: .sm,
-            child: const Text('Remove'),
+            child: Text(l10n.actionRemove),
             onPress: () {
               context
                   .read<TransactionsService>()
@@ -107,7 +108,7 @@ class _OverlayTransactionEditState extends State<OverlayTransactionEdit> {
           FButton(
             variant: .outline,
             size: .sm,
-            child: const Text('Cancel'),
+            child: Text(l10n.actionCancel),
             onPress: () => Navigator.of(context).pop(),
           ),
         ],
@@ -116,20 +117,22 @@ class _OverlayTransactionEditState extends State<OverlayTransactionEdit> {
   }
 
   void _onRemove() {
+    final l10n = AppLocalizations.of(context)!;
     showFToast(
       context: context,
       alignment: .topCenter,
       icon: const Icon(FIcons.check),
-      title: const Text("Removed"),
-      description: const Text("The transaction has been removed"),
+      title: Text(l10n.toastRemovedTitle),
+      description: Text(l10n.transactionRemovedDesc),
     );
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SheetContainer(
-      title: _isEditing ? "Edit transaction" : "New transaction",
+      title: _isEditing ? l10n.editTransaction : l10n.newTransaction,
       child: Column(
         children: [
           const SizedBox(height: 4),
@@ -149,7 +152,7 @@ class _OverlayTransactionEditState extends State<OverlayTransactionEdit> {
                 variant: .destructive,
                 onPress: _remove,
                 prefix: const Icon(FIcons.trash),
-                child: const Text("Remove"),
+                child: Text(l10n.actionRemove),
               ),
             ),
 
@@ -157,7 +160,7 @@ class _OverlayTransactionEditState extends State<OverlayTransactionEdit> {
           FButton(
             onPress: _save,
             prefix: const Icon(FIcons.save),
-            child: const Text("Save"),
+            child: Text(l10n.actionSave),
           ),
         ],
       ),

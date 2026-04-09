@@ -7,6 +7,7 @@ import 'package:pingre/features/accounts/services/accounts.dart';
 import 'package:pingre/common/widgets/data/error_display.dart';
 import 'package:pingre/common/widgets/inputs/value_input.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 /// Show the account edit page in a sheet
@@ -68,11 +69,12 @@ class _OverlayAccountEditState extends State<OverlayAccountEdit> {
   }
 
   void _save() {
+    final l10n = AppLocalizations.of(context)!;
     final service = context.read<AccountsService>();
 
     if (_nameController.text.isEmpty) {
       return setState(() {
-        _errors["name"] = "Name is required.";
+        _errors["name"] = l10n.accountNameRequired;
       });
     }
 
@@ -99,31 +101,31 @@ class _OverlayAccountEditState extends State<OverlayAccountEdit> {
   }
 
   void _onSaved() {
+    final l10n = AppLocalizations.of(context)!;
     showFToast(
       context: context,
       alignment: .topCenter,
       icon: const Icon(FIcons.check),
-      title: const Text("Saved"),
-      description: const Text("The account has been saved"),
+      title: Text(l10n.toastSavedTitle),
+      description: Text(l10n.accountSavedDesc),
     );
     Navigator.of(context).pop();
   }
 
   void _remove() {
+    final l10n = AppLocalizations.of(context)!;
     showFDialog(
       context: context,
       builder: (context, style, animation) => FDialog(
         style: style,
         animation: animation,
-        title: const Text('Remove account'),
-        body: const Text(
-          'Are you sure you want to remove this account? This action cannot be undone.',
-        ),
+        title: Text(l10n.accountRemovedDialogTitle),
+        body: Text(l10n.accountRemovedDialogBody),
         actions: [
           FButton(
             variant: .destructive,
             size: .sm,
-            child: const Text('Remove'),
+            child: Text(l10n.actionRemove),
             onPress: () {
               context.read<AccountsService>().remove(widget.account!.id);
               _onRemove();
@@ -133,7 +135,7 @@ class _OverlayAccountEditState extends State<OverlayAccountEdit> {
           FButton(
             variant: .outline,
             size: .sm,
-            child: const Text('Cancel'),
+            child: Text(l10n.actionCancel),
             onPress: () => Navigator.of(context).pop(),
           ),
         ],
@@ -142,28 +144,30 @@ class _OverlayAccountEditState extends State<OverlayAccountEdit> {
   }
 
   void _onRemove() {
+    final l10n = AppLocalizations.of(context)!;
     showFToast(
       context: context,
       alignment: .topCenter,
       icon: const Icon(FIcons.check),
-      title: const Text("Removed"),
-      description: const Text("The account has been removed"),
+      title: Text(l10n.toastRemovedTitle),
+      description: Text(l10n.accountRemovedDesc),
     );
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SheetContainer(
-      title: _isEditing ? "Edit account" : "New account",
+      title: _isEditing ? l10n.editAccount : l10n.newAccount,
       child: Column(
         children: [
           const SizedBox(height: 8),
           ValueInput(controller: _balanceController),
           const SizedBox(height: 4),
           FSelect<AccountType>.rich(
-            hint: 'Type',
-            format: (type) => type.name,
+            hint: l10n.accountTypeHint,
+            format: (type) => type.localizedName(l10n),
             control: .lifted(
               value: _selectedType,
               onChange: (value) => setState(() => _selectedType = value!),
@@ -172,8 +176,8 @@ class _OverlayAccountEditState extends State<OverlayAccountEdit> {
               for (final type in AccountType.values)
                 .item(
                   prefix: AccountTypeIcon(type: type),
-                  title: Text(type.name),
-                  subtitle: Text(type.description),
+                  title: Text(type.localizedName(l10n)),
+                  subtitle: Text(type.localizedDescription(l10n)),
                   value: type,
                 ),
             ],
@@ -182,13 +186,13 @@ class _OverlayAccountEditState extends State<OverlayAccountEdit> {
           ErrorDisplay(
             error: _errors["name"],
             child: FTextField(
-              hint: 'Name',
+              hint: l10n.accountNameHint,
               control: .managed(controller: _nameController),
             ),
           ),
           const SizedBox(height: 4),
           FTextField.multiline(
-            hint: 'Description',
+            hint: l10n.accountDescriptionHint,
             control: .managed(controller: _descriptionController),
           ),
           const Spacer(),
@@ -199,14 +203,14 @@ class _OverlayAccountEditState extends State<OverlayAccountEdit> {
                 variant: .destructive,
                 onPress: _remove,
                 prefix: const Icon(FIcons.trash),
-                child: const Text("Remove"),
+                child: Text(l10n.actionRemove),
               ),
             ),
           const SizedBox(height: 8),
           FButton(
             onPress: _save,
             prefix: const Icon(FIcons.save),
-            child: const Text("Save"),
+            child: Text(l10n.actionSave),
           ),
         ],
       ),

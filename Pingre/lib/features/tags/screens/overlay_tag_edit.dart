@@ -4,6 +4,7 @@ import 'package:pingre/features/tags/models/tag.dart';
 import 'package:pingre/features/tags/services/tags.dart';
 import 'package:pingre/common/widgets/inputs/color_picker.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 /// Show the tag edit page in a sheet
@@ -54,32 +55,32 @@ class _OverlayTagEditState extends State<OverlayTagEdit> {
   }
 
   void _onSaved() {
+    final l10n = AppLocalizations.of(context)!;
     showFToast(
       context: context,
       alignment: .topCenter,
       icon: const Icon(FIcons.check),
-      title: const Text("Saved"),
-      description: const Text("The tag has been edited"),
+      title: Text(l10n.toastSavedTitle),
+      description: Text(l10n.tagSavedDesc),
     );
     Navigator.of(context).pop();
   }
 
   /// Show a dialog to ask if the user want to remove the tag and then remove it
   void _remove() {
+    final l10n = AppLocalizations.of(context)!;
     showFDialog(
       context: context,
       builder: (context, style, animation) => FDialog(
         style: style,
         animation: animation,
-        title: const Text('Remove tag'),
-        body: const Text(
-          'Are you sure you want to remove this tag? This action cannot be undone.',
-        ),
+        title: Text(l10n.tagRemovedDialogTitle),
+        body: Text(l10n.tagRemovedDialogBody),
         actions: [
           FButton(
             variant: .destructive,
             size: .sm,
-            child: const Text('Remove'),
+            child: Text(l10n.actionRemove),
             onPress: () {
               context.read<TagsService>().remove(widget.tag.id);
               _onRemoved();
@@ -89,7 +90,7 @@ class _OverlayTagEditState extends State<OverlayTagEdit> {
           FButton(
             variant: .outline,
             size: .sm,
-            child: const Text('Cancel'),
+            child: Text(l10n.actionCancel),
             onPress: () => Navigator.of(context).pop(),
           ),
         ],
@@ -98,20 +99,22 @@ class _OverlayTagEditState extends State<OverlayTagEdit> {
   }
 
   void _onRemoved() {
+    final l10n = AppLocalizations.of(context)!;
     showFToast(
       context: context,
       alignment: .topCenter,
       icon: const Icon(FIcons.check),
-      title: const Text("Removed"),
-      description: const Text("The tag has been removed"),
+      title: Text(l10n.toastRemovedTitle),
+      description: Text(l10n.tagRemovedDesc),
     );
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SheetContainer(
-      title: "Edit tag",
+      title: l10n.editTag,
       child: Column(
         children: [
           const SizedBox(height: 4),
@@ -121,7 +124,7 @@ class _OverlayTagEditState extends State<OverlayTagEdit> {
           ),
           const SizedBox(height: 4),
           FTextField(
-            label: const Text("Name"),
+            label: Text(l10n.tagNameLabel),
             control: .managed(controller: _nameController),
           ),
           const Spacer(),
@@ -129,13 +132,13 @@ class _OverlayTagEditState extends State<OverlayTagEdit> {
             variant: .destructive,
             onPress: _remove,
             prefix: const Icon(FIcons.trash),
-            child: const Text("Remove"),
+            child: Text(l10n.actionRemove),
           ),
           const SizedBox(height: 8),
           FButton(
             onPress: _save,
             prefix: const Icon(FIcons.save),
-            child: const Text("Save"),
+            child: Text(l10n.actionSave),
           ),
         ],
       ),

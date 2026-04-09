@@ -35,7 +35,6 @@ class _PageTransactionsState extends State<PageTransactions> {
     _future = _loadTransactions(_selectedTimeRange);
     _transactions.addListener(_reload);
     _scrollController = ScrollController();
-    // _scrollController = ScrollController(initialScrollOffset: 999999);
   }
 
   @override
@@ -100,6 +99,8 @@ class _PageTransactionsState extends State<PageTransactions> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context).languageCode;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -118,10 +119,8 @@ class _PageTransactionsState extends State<PageTransactions> {
               final flatItems = snapshot.data!;
 
               return CustomScrollView(
-                controller:
-                    _scrollController, // 👈 this sliver is the scroll anchor (position 0)
+                controller: _scrollController,
                 slivers: [
-                  // Content grows UPWARD from the anchor
                   SliverList.builder(
                     itemCount: flatItems.length,
                     itemBuilder: (context, index) {
@@ -139,7 +138,7 @@ class _PageTransactionsState extends State<PageTransactions> {
                                   ),
                                 ),
                                 prefix: const Icon(FIcons.calendar),
-                                title: Text(item.name),
+                                title: Text(item.getName(locale)),
                                 suffix: ValueDisplay(
                                   value: item.total,
                                   isHeader: true,
@@ -153,7 +152,7 @@ class _PageTransactionsState extends State<PageTransactions> {
                       if (item is Transaction) {
                         final isLast =
                             index ==
-                                1 || // 👈 was: index == flatItems.length - 1
+                                1 ||
                             flatItems[flatItems.length - index - 1]
                                 is TransactionGroup;
                         return Column(
@@ -167,7 +166,6 @@ class _PageTransactionsState extends State<PageTransactions> {
                       return SizedBox.shrink();
                     },
                   ),
-                  // Footer sits AT the anchor point (visually at the bottom)
                   if (!_noMoreTransactions)
                     SliverFillRemaining(
                       hasScrollBody: false,

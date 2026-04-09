@@ -3,6 +3,7 @@ import 'package:forui/forui.dart';
 import 'package:pingre/features/reports/models/report_filters.dart';
 import 'package:pingre/features/tags/screens/overlay_tags_select.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 
 Future<ReportFilters?> showReportFilterSheet(
   BuildContext context, {
@@ -59,14 +60,16 @@ class _OverlayReportFiltersState extends State<OverlayReportFilters> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SheetContainer(
-      title: "Filters",
+      title: l10n.reportFiltersTitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 8),
           Text(
-            "Transaction type",
+            l10n.reportTransactionTypeSection,
             style: context.theme.typography.sm.copyWith(
               color: context.theme.colors.mutedForeground,
             ),
@@ -83,28 +86,28 @@ class _OverlayReportFiltersState extends State<OverlayReportFilters> {
             ),
             detailsBuilder: (context, values, child) => Text(
               values.map((v) => switch (v) {
-                TransactionFilter.expenses => 'Expenses',
-                TransactionFilter.income => 'Income',
+                TransactionFilter.expenses => l10n.reportExpenses,
+                TransactionFilter.income => l10n.reportIncome,
               }).join(', '),
             ),
             prefix: const Icon(FIcons.banknote),
-            title: const Text('Transaction Type'),
-            menu: const [
+            title: Text(l10n.reportTransactionTypeLabel),
+            menu: [
               .suffix(
-                prefix: Icon(FIcons.trendingDown),
-                title: Text('Expenses'),
+                prefix: const Icon(FIcons.trendingDown),
+                title: Text(l10n.reportExpenses),
                 value: .expenses,
               ),
               .suffix(
-                prefix: Icon(FIcons.trendingUp),
-                title: Text('Income'),
+                prefix: const Icon(FIcons.trendingUp),
+                title: Text(l10n.reportIncome),
                 value: .income,
               ),
             ],
           ),
           const SizedBox(height: 12),
           Text(
-            "Tags",
+            l10n.reportTagsSection,
             style: context.theme.typography.sm.copyWith(
               color: context.theme.colors.mutedForeground,
             ),
@@ -114,9 +117,9 @@ class _OverlayReportFiltersState extends State<OverlayReportFilters> {
             control: .managed(controller: _tagSearchController),
             prefixBuilder: (context, style, variants) => Padding(
               padding: .directional(start: 8),
-              child: Opacity(opacity: 0.5, child: Icon(FIcons.search)),
+              child: Opacity(opacity: 0.5, child: const Icon(FIcons.search)),
             ),
-            hint: 'Search tags ...',
+            hint: l10n.reportSearchTagsHint,
             clearable: (value) => value.text.isNotEmpty,
           ),
           const SizedBox(height: 4),
@@ -136,7 +139,7 @@ class _OverlayReportFiltersState extends State<OverlayReportFilters> {
           FButton(
             onPress: _apply,
             prefix: const Icon(FIcons.check),
-            child: const Text("Apply"),
+            child: Text(l10n.actionApply),
           ),
         ],
       ),

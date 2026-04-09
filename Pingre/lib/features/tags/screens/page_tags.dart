@@ -3,6 +3,7 @@ import 'package:forui/forui.dart';
 import 'package:pingre/features/tags/screens/overlay_tag_edit.dart';
 import 'package:pingre/features/tags/services/tags.dart';
 import 'package:pingre/common/widgets/inputs/search_add.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class PageTags extends StatefulWidget {
@@ -22,9 +23,11 @@ class _PageTagsState extends State<PageTags> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return FScaffold(
       header: FHeader.nested(
-        title: const Text('Tags'),
+        title: Text(l10n.tagsTitle),
         prefixes: [FHeaderAction.back(onPress: () => Navigator.pop(context))],
       ),
       child: Column(
@@ -42,7 +45,7 @@ class _PageTagsState extends State<PageTags> {
                         : service.search(_controller.text);
 
                     return filteredTags.isEmpty
-                        ? const Center(child: Text('No tags found'))
+                        ? Center(child: Text(l10n.noTagsFound))
                         : FTileGroup(
                             divider: .full,
                             children: filteredTags

@@ -7,6 +7,7 @@ import 'package:pingre/features/tags/models/tags_selection.dart';
 import 'package:pingre/features/transactions/models/transaction.dart';
 import 'package:pingre/common/widgets/data/error_display.dart';
 import 'package:pingre/common/widgets/inputs/value_input.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 
 class TransactionFormData {
   Decimal value;
@@ -64,6 +65,8 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
         children: [
           ValueInput(controller: _valueController),
@@ -73,7 +76,7 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
               child: FormField<TagsSelection?>(
                 initialValue: widget.formData.tags,
                 validator: (value) => value == null
-                    ? "At least one tag should be selected."
+                    ? l10n.tagValidationError
                     : null,
                 onSaved: (value) {
                   if (value != null) widget.formData.tags = value;
@@ -99,7 +102,7 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
                             }
                           },
                           prefix: const Icon(FIcons.tag),
-                          child: const Text("Select tags"),
+                          child: Text(l10n.selectTags),
                         ),
                       ),
                     ],
@@ -110,7 +113,7 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
           ),
           const SizedBox(height: 4),
           FTextField.multiline(
-            hint: 'Notes',
+            hint: l10n.notesHint,
             control: .managed(controller: _noteController),
           ),
           const SizedBox(height: 4),

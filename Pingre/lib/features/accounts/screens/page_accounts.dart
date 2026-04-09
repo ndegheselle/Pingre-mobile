@@ -5,6 +5,7 @@ import 'package:pingre/features/accounts/widgets/account_type_icon.dart';
 import 'package:pingre/features/accounts/services/accounts.dart';
 import 'package:pingre/common/widgets/data/value_display.dart';
 import 'package:pingre/common/widgets/inputs/search_add.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class PageAccounts extends StatefulWidget {
@@ -22,7 +23,10 @@ class _PageAccountsState extends State<PageAccounts> {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Column(
         children: [
           SearchWithAdd(controller: _controller, onAdd: _addAccount),
           const SizedBox(height: 4),
@@ -37,7 +41,7 @@ class _PageAccountsState extends State<PageAccounts> {
                         : service.search(_controller.text);
 
                     return filteredAccounts.isEmpty
-                        ? const Center(child: Text('No accounts found'))
+                        ? Center(child: Text(l10n.noAccountsFound))
                         : FTileGroup(
                             divider: .full,
                             children: filteredAccounts
@@ -61,4 +65,5 @@ class _PageAccountsState extends State<PageAccounts> {
           const SizedBox(height: 4),
         ],
       );
+  }
 }

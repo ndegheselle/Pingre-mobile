@@ -1,3 +1,6 @@
+import 'package:intl/intl.dart';
+import 'package:pingre/l10n/app_localizations.dart';
+
 /// Represent a range of time
 enum TimeRangeUnit { day, week, twoWeeks, month, quarter, year }
 
@@ -111,18 +114,17 @@ return switch (unit) {
       ? .current(unit, start: end.add(const Duration(days: 1)))
       : .elapsed(unit, start: end.add(const Duration(days: 1)));
 
-  /// Get the name of the group based on the [range]
-  String getName() {
-    // Original logic for other cases
+  /// Get the display name of the group based on the [range], formatted for [locale].
+  String getName(String locale) {
     switch (unit) {
       case TimeRangeUnit.day:
-        return start.formatShort();
+        return start.formatShort(locale);
       case TimeRangeUnit.week:
       case TimeRangeUnit.twoWeeks:
-        return '${start.formatShort()} - ${end.formatShort()}';
+        return '${start.formatShort(locale)} - ${end.formatShort(locale)}';
       case TimeRangeUnit.month:
       case TimeRangeUnit.quarter:
-        return start.formatShortMonth();
+        return start.formatShortMonth(locale);
       case TimeRangeUnit.year:
         return '${start.year}';
     }
@@ -130,20 +132,20 @@ return switch (unit) {
 }
 
 extension TimeRangeUnitLabel on TimeRangeUnit {
-  String get label {
+  String localizedLabel(AppLocalizations l10n) {
     switch (this) {
       case TimeRangeUnit.day:
-        return 'day';
+        return l10n.timeRangeDay;
       case TimeRangeUnit.week:
-        return 'week';
+        return l10n.timeRangeWeek;
       case TimeRangeUnit.twoWeeks:
-        return '2 weeks';
+        return l10n.timeRangeTwoWeeks;
       case TimeRangeUnit.month:
-        return 'month';
+        return l10n.timeRangeMonth;
       case TimeRangeUnit.quarter:
-        return 'quarter';
+        return l10n.timeRangeQuarter;
       case TimeRangeUnit.year:
-        return 'year';
+        return l10n.timeRangeYear;
     }
   }
 }
@@ -173,60 +175,19 @@ extension DateTimeExtension on DateTime {
   DateTime toEnd() =>
       toStart().add(Duration(days: 1)).subtract(Duration(microseconds: 1));
 
-  String formatShort() {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${months[month - 1]} $day';
+  String formatShort(String locale) {
+    return DateFormat('d MMM', locale).format(this);
   }
 
-  String formatWithHour() {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
+  String formatWithHour(String locale) {
+    final datePart = DateFormat('d MMM yyyy', locale).format(this);
     final h = hour.toString().padLeft(2, '0');
     final m = minute.toString().padLeft(2, '0');
-    return '$day ${months[month - 1]} $year - ${h}h$m';
+    return '$datePart - ${h}h$m';
   }
 
-  String formatShortMonth() {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    final label = months[month - 1];
+  String formatShortMonth(String locale) {
+    final label = DateFormat('MMMM', locale).format(this);
     return year != DateTime.now().year ? '$label $year' : label;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/features/tags/models/tags_selection.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 
 class TagsDisplay extends StatelessWidget {
   final TagsSelection? selection;
@@ -10,9 +11,11 @@ class TagsDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (selection == null) {
-      return const Center(
-        child: Opacity(opacity: 0.5, child: Text("No tags")),
+      return Center(
+        child: Opacity(opacity: 0.5, child: Text(l10n.noTags)),
       );
     }
 

@@ -8,6 +8,7 @@ import 'package:pingre/features/reports/screens/overlay_tag_detail.dart';
 import 'package:pingre/features/reports/widgets/tag_graph_bar.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
 import 'package:pingre/common/widgets/data/value_display.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class ReportViewPrimary extends StatefulWidget {
@@ -135,7 +136,7 @@ class ReportViewPrimaryState extends State<ReportViewPrimary> {
                             ),
                             const Spacer(),
                             Text(
-                              _range.getName(),
+                              _range.getName(Localizations.localeOf(context).languageCode),
                               style: context.theme.typography.base,
                             ),
                             const Spacer(),
@@ -163,7 +164,7 @@ class ReportViewPrimaryState extends State<ReportViewPrimary> {
                   tagTotals.isEmpty
                       ? Expanded(child: Center(
                           child: Text(
-                            'No transactions in this period',
+                            AppLocalizations.of(context)!.reportNoTransactions,
                             style: context.theme.typography.base,
                           ),
                         ))

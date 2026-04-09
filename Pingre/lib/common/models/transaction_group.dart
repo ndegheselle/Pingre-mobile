@@ -3,18 +3,17 @@ import 'package:pingre/common/models/time_range.dart';
 import 'package:pingre/features/transactions/models/transaction.dart';
 
 class TransactionGroup {
-  late final String name;
   final TimeRange range;
   final List<Transaction> transactions;
   Decimal total;
 
   TransactionGroup({required this.range, List<Transaction>? items})
     : transactions = items ?? [],
-      total = .zero {
-    name = range.getName();
-  }
+      total = .zero;
 
   bool get isEmpty => transactions.isEmpty;
+
+  String getName(String locale) => range.getName(locale);
 
   /// Create the previous transaction group
   TransactionGroup previous() => TransactionGroup(range: range.previous());

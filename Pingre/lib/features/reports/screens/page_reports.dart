@@ -5,6 +5,7 @@ import 'package:pingre/features/reports/models/report_filters.dart';
 import 'package:pingre/features/reports/screens/overlay_report_filters.dart';
 import 'package:pingre/features/reports/screens/views/view_primary.dart';
 import 'package:pingre/common/widgets/inputs/time_range_select.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 
 enum _ReportView { primary, all }
 
@@ -30,6 +31,8 @@ class _PageReportsState extends State<PageReports> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         TimeRangeSelect(
@@ -51,51 +54,51 @@ class _PageReportsState extends State<PageReports> {
                   onChange: (values) {},
                 ),
                 prefix: const Icon(FIcons.squareChartGantt),
-                title: const Text('View'),
+                title: Text(l10n.reportView),
                 detailsBuilder: (context, values, child) => Text(
                   values
                       .map(
                         (v) => switch (v) {
-                          _ReportView.primary => 'Primary',
-                          _ReportView.all => 'All',
+                          _ReportView.primary => l10n.reportViewPrimary,
+                          _ReportView.all => l10n.reportViewAll,
                         },
                       )
                       .join(', '),
                 ),
-                menu: const [
+                menu: [
                   .suffix(
-                    prefix: Icon(FIcons.listTree),
-                    title: Text("Primary"),
-                    subtitle: Text("Grouup by primary tag"),
+                    prefix: const Icon(FIcons.listTree),
+                    title: Text(l10n.reportViewPrimary),
+                    subtitle: Text(l10n.reportViewPrimaryDesc),
                     value: .primary,
                   ),
                   .suffix(
-                    prefix: Icon(FIcons.list),
-                    title: Text("All"),
-                    subtitle: Text("Group by tag (with duplicates)"),
+                    prefix: const Icon(FIcons.list),
+                    title: Text(l10n.reportViewAll),
+                    subtitle: Text(l10n.reportViewAllDesc),
                     value: .all,
                   ),
                 ],
               ),
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             FTooltip(
-              tipBuilder: (context, _) => const Text('Filters'),
+              tipBuilder: (context, _) => Text(l10n.reportFiltersTooltip),
               child: FButton.icon(
                 size: .lg,
                 variant: .outline,
                 onPress: _openFilterSheet,
-                child: Icon(FIcons.funnel),
+                child: const Icon(FIcons.funnel),
               ),
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             FTooltip(
-              tipBuilder: (context, _) => const Text('Export'),
+              tipBuilder: (context, _) => Text(l10n.reportExportTooltip),
               child: FButton.icon(
                 size: .lg,
                 variant: .outline,
                 onPress: null,
-                child: Icon(FIcons.fileUp),
+                child: const Icon(FIcons.fileUp),
               ),
             ),
           ],

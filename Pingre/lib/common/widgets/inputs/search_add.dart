@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 
 class SearchWithAdd extends StatefulWidget {
   final void Function(String) onAdd;
@@ -20,6 +21,8 @@ class _SearchWithAddState extends State<SearchWithAdd> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Row(
       children: [
         Expanded(
@@ -29,7 +32,7 @@ class _SearchWithAddState extends State<SearchWithAdd> {
               padding: .directional(start: 8),
               child: Opacity(opacity: 0.5, child: Icon(FIcons.search)),
             ),
-            hint: widget.hint ?? 'Search ...',
+            hint: widget.hint ?? l10n.searchHint,
             clearable: (value) => value.text.isNotEmpty,
           ),
         ),

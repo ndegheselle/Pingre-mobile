@@ -6,6 +6,7 @@ import 'package:pingre/features/recurring/screens/page_recurring.dart';
 import 'package:pingre/features/reports/screens/page_reports.dart';
 import 'package:pingre/features/transactions/screens/overlay_transaction_edit.dart';
 import 'package:pingre/features/transactions/screens/page_transactions.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 
 final contents = [
   const PageTransactions(),
@@ -32,9 +33,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     final headers = [
       FHeader(
-        title: const Text('Transactions'),
+        title: Text(l10n.navTransactions),
         suffixes: [
           FHeaderAction(
             icon: const Icon(FIcons.settings),
@@ -43,7 +46,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       FHeader(
-        title: const Text('Recurring'),
+        title: Text(l10n.navRecurring),
         suffixes: [
           FHeaderAction(
             icon: const Icon(FIcons.settings),
@@ -52,7 +55,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       FHeader(
-        title: const Text('Accounts'),
+        title: Text(l10n.navAccounts),
         suffixes: [
           FHeaderAction(
             icon: const Icon(FIcons.settings),
@@ -61,7 +64,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       FHeader(
-        title: const Text('Report'),
+        title: Text(l10n.navReport),
         suffixes: [
           FHeaderAction(
             icon: const Icon(FIcons.settings),
@@ -86,24 +89,24 @@ class _HomePageState extends State<HomePage> {
                 _index = index;
               }
             }),
-            children: const [
+            children: [
               FBottomNavigationBarItem(
-                icon: Icon(FIcons.coins),
-                label: Text('Transactions'),
+                icon: const Icon(FIcons.coins),
+                label: Text(l10n.navTransactions),
               ),
               FBottomNavigationBarItem(
-                icon: Icon(FIcons.calendarSync),
-                label: Text('Recurring'),
+                icon: const Icon(FIcons.calendarSync),
+                label: Text(l10n.navRecurring),
               ),
               // Spacing for the add transaction button
-              SizedBox(),
+              const SizedBox(),
               FBottomNavigationBarItem(
-                icon: Icon(FIcons.piggyBank),
-                label: Text('Accounts'),
+                icon: const Icon(FIcons.piggyBank),
+                label: Text(l10n.navAccounts),
               ),
               FBottomNavigationBarItem(
-                icon: Icon(FIcons.chartNoAxesCombined),
-                label: Text('Report'),
+                icon: const Icon(FIcons.chartNoAxesCombined),
+                label: Text(l10n.navReport),
               ),
             ],
           ),
@@ -116,7 +119,7 @@ class _HomePageState extends State<HomePage> {
           right: 0,
           child: Center(
             child: FTooltip(
-              tipBuilder: (context, _) => const Text('Add transaction'),
+              tipBuilder: (context, _) => Text(l10n.addTransactionTooltip),
               child: SizedBox(
                 width: 64,
                 height: 64,

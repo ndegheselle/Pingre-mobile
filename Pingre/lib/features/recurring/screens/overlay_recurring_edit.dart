@@ -7,6 +7,7 @@ import 'package:pingre/features/transactions/widgets/transaction_form_fields.dar
 import 'package:pingre/features/recurring/services/recurring.dart';
 import 'package:pingre/common/widgets/inputs/time_range_select.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 /// Show the recurring transaction edit page as a sheet
@@ -106,31 +107,31 @@ class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransa
   }
 
   void _onSaved() {
+    final l10n = AppLocalizations.of(context)!;
     showFToast(
       context: context,
       alignment: .topCenter,
       icon: const Icon(FIcons.check),
-      title: const Text("Saved"),
-      description: const Text("The recurring transaction has been saved"),
+      title: Text(l10n.toastSavedTitle),
+      description: Text(l10n.recurringSavedDesc),
     );
     Navigator.of(context).pop();
   }
 
   void _remove() {
+    final l10n = AppLocalizations.of(context)!;
     showFDialog(
       context: context,
       builder: (context, style, animation) => FDialog(
         style: style,
         animation: animation,
-        title: const Text('Remove recurring transaction'),
-        body: const Text(
-          'Are you sure you want to remove this recurring transaction?',
-        ),
+        title: Text(l10n.recurringRemovedDialogTitle),
+        body: Text(l10n.recurringRemovedDialogBody),
         actions: [
           FButton(
             variant: .destructive,
             size: .sm,
-            child: const Text('Remove'),
+            child: Text(l10n.actionRemove),
             onPress: () {
               context.read<RecurringTransactionsService>().remove(
                 widget.recurringTransaction!.id,
@@ -143,7 +144,7 @@ class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransa
           FButton(
             variant: .outline,
             size: .sm,
-            child: const Text('Cancel'),
+            child: Text(l10n.actionCancel),
             onPress: () => Navigator.of(context).pop(),
           ),
         ],
@@ -152,22 +153,22 @@ class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransa
   }
 
   void _onRemove() {
+    final l10n = AppLocalizations.of(context)!;
     showFToast(
       context: context,
       alignment: .topCenter,
       icon: const Icon(FIcons.check),
-      title: const Text("Removed"),
-      description: const Text("The recurring transaction has been removed"),
+      title: Text(l10n.toastRemovedTitle),
+      description: Text(l10n.recurringRemovedDesc),
     );
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SheetContainer(
-      title: _isEditing
-          ? "Edit recurring transaction"
-          : "New recurring transaction",
+      title: _isEditing ? l10n.editRecurring : l10n.newRecurring,
       child: Form(
         key: _formKey,
         child: Column(
@@ -180,11 +181,11 @@ class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransa
             const SizedBox(height: 4),
             FormField<String>(
               validator: (_) => _nameController.text.trim().isEmpty
-                  ? "A name is required."
+                  ? l10n.nameRequired
                   : null,
               builder: (state) => FTextField(
                 error: state.errorText == null ? null : Text(state.errorText!),
-                hint: 'Name',
+                hint: l10n.nameHint,
                 control: .managed(controller: _nameController),
               ),
             ),
@@ -199,14 +200,14 @@ class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransa
                   variant: .destructive,
                   onPress: _remove,
                   prefix: const Icon(FIcons.trash),
-                  child: const Text("Remove"),
+                  child: Text(l10n.actionRemove),
                 ),
               ),
             const SizedBox(height: 8),
             FButton(
               onPress: _save,
               prefix: const Icon(FIcons.save),
-              child: const Text("Save"),
+              child: Text(l10n.actionSave),
             ),
           ],
         ),

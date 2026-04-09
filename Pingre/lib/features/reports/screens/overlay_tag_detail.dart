@@ -6,6 +6,7 @@ import 'package:pingre/features/transactions/models/transaction.dart';
 import 'package:pingre/features/transactions/widgets/transaction_summary.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 /// Show a draggable bottom sheet listing all transactions for [tag] in [range].
@@ -79,7 +80,7 @@ class OverlayTagDetailState extends State<OverlayTagDetail> {
           if (transactions.isEmpty) {
             return Center(
               child: Text(
-                'No transactions for this tag',
+                AppLocalizations.of(context)!.reportNoTransactionsForTag,
                 style: context.theme.typography.base,
               ),
             );

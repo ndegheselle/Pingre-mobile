@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/assets.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 
 class ElasticPullToRefresh extends StatefulWidget {
   final void Function() onRefresh;
@@ -65,6 +66,7 @@ class _ElasticPullToRefreshState extends State<ElasticPullToRefresh>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final height = _applyResistance(_drag);
 
     return GestureDetector(
@@ -96,10 +98,10 @@ class _ElasticPullToRefreshState extends State<ElasticPullToRefresh>
                       children: [
                         const Icon(FIcons.check),
                         SizedBox(width: 8),
-                        Text("Release for more"),
+                        Text(l10n.releaseForMore),
                       ],
                     )
-                  : Text("Pull for more"),
+                  : Text(l10n.pullForMore),
             ),
             Spacer(flex: 3),
           ],

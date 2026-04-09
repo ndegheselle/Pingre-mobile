@@ -5,6 +5,7 @@ import 'package:pingre/features/recurring/screens/overlay_recurring_edit.dart';
 import 'package:pingre/features/recurring/services/recurring.dart';
 import 'package:pingre/common/widgets/data/value_display.dart';
 import 'package:pingre/common/widgets/inputs/search_add.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class PageRecurring extends StatefulWidget {
@@ -22,51 +23,53 @@ class _PageRecurringState extends State<PageRecurring> {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
-    children: [
-      SearchWithAdd(controller: _controller, onAdd: _addRecurring),
-      const SizedBox(height: 4),
-      ValueListenableBuilder(
-        valueListenable: _controller,
-        builder: (context, _, _) {
-          return Expanded(
-            child: Consumer<RecurringTransactionsService>(
-              builder: (context, service, child) {
-                final filteredRecurring = _controller.text.isEmpty
-                    ? service.recurringTransactions
-                    : service.search(_controller.text);
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
 
-                return filteredRecurring.isEmpty
-                    ? const Center(
-                        child: Text('No recurring transactions found'),
-                      )
-                    : FTileGroup(
-                        divider: .full,
-                        children: filteredRecurring
-                            .map(
-                              (recurring) => FTile(
-                                prefix: TimeRangeIcon(unit: recurring.range),
-                                title: Text(recurring.name),
-                                subtitle: Text(
-                                  recurring.transaction.tags.all
-                                      .map((t) => t.name)
-                                      .join(", "),
+    return Column(
+      children: [
+        SearchWithAdd(controller: _controller, onAdd: _addRecurring),
+        const SizedBox(height: 4),
+        ValueListenableBuilder(
+          valueListenable: _controller,
+          builder: (context, _, _) {
+            return Expanded(
+              child: Consumer<RecurringTransactionsService>(
+                builder: (context, service, child) {
+                  final filteredRecurring = _controller.text.isEmpty
+                      ? service.recurringTransactions
+                      : service.search(_controller.text);
+
+                  return filteredRecurring.isEmpty
+                      ? Center(child: Text(l10n.noRecurringFound))
+                      : FTileGroup(
+                          divider: .full,
+                          children: filteredRecurring
+                              .map(
+                                (recurring) => FTile(
+                                  prefix: TimeRangeIcon(unit: recurring.range),
+                                  title: Text(recurring.name),
+                                  subtitle: Text(
+                                    recurring.transaction.tags.all
+                                        .map((t) => t.name)
+                                        .join(", "),
+                                  ),
+                                  details: ValueDisplay(
+                                    value: recurring.transaction.value,
+                                  ),
+                                  suffix: const Icon(FIcons.chevronRight),
+                                  onPress: () => showRecurringTransactionEdit(context, recurringTransaction: recurring),
                                 ),
-                                details: ValueDisplay(
-                                  value: recurring.transaction.value,
-                                ),
-                                suffix: const Icon(FIcons.chevronRight),
-                                onPress: () => showRecurringTransactionEdit(context, recurringTransaction: recurring),
-                              ),
-                            )
-                            .toList(),
-                      );
-              },
-            ),
-          );
-        },
-      ),
-      const SizedBox(height: 4),
-    ],
-  );
+                              )
+                              .toList(),
+                        );
+                },
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 4),
+      ],
+    );
+  }
 }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/features/accounts/services/accounts.dart';
 import 'package:pingre/features/recurring/services/recurring.dart';
 import 'package:pingre/features/tags/services/tags.dart';
 import 'package:pingre/features/settings/services/settings.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 import 'package:pingre/theme_extensions.dart';
 import 'package:provider/provider.dart';
 
@@ -42,7 +44,8 @@ class Application extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = context.watch<SettingsService>().themeMode;
+    final settings = context.watch<SettingsService>();
+    final themeMode = settings.themeMode;
 
     final light = FThemes.zinc.light.copyWith(
       extensions: const [
@@ -63,9 +66,16 @@ class Application extends StatelessWidget {
     );
 
     return MaterialApp(
-      supportedLocales: FLocalizations.supportedLocales,
-      localizationsDelegates: const [...FLocalizations.localizationsDelegates],
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        ...FLocalizations.localizationsDelegates,
+      ],
 
+      locale: settings.locale,
       theme: light.toApproximateMaterialTheme(),
       darkTheme: dark.toApproximateMaterialTheme(),
       themeMode: themeMode,

@@ -4,6 +4,7 @@ import 'package:pingre/features/tags/services/tags.dart';
 import 'package:pingre/features/tags/models/tags_selection.dart';
 import 'package:pingre/common/widgets/inputs/search_add.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 Future<TagsSelection?> showTagsSelect(
@@ -87,14 +88,16 @@ class _OverlayTagsSelectState extends State<OverlayTagsSelect> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SheetContainer(
-      title: "Select tags",
+      title: l10n.selectTagsTitle,
       child: Column(
         children: [
           const SizedBox(height: 4),
-          SearchWithAdd(controller: _controller, onAdd: _addTag, hint: "Tag name ...", alwaysShowAdd: false),
+          SearchWithAdd(controller: _controller, onAdd: _addTag, hint: l10n.tagSearchHint, alwaysShowAdd: false),
           const SizedBox(height: 4),
-          Center(child: Opacity(opacity: 0.5, child: Text("Long press to set primary tag", style: context.theme.typography.sm))),
+          Center(child: Opacity(opacity: 0.5, child: Text(l10n.longPressForPrimary, style: context.theme.typography.sm))),
           const SizedBox(height: 4),
           Expanded(
             child: SizedBox(
@@ -119,7 +122,7 @@ class _OverlayTagsSelectState extends State<OverlayTagsSelect> {
           FButton(
             onPress: _confirm,
             prefix: const Icon(FIcons.check),
-            child: const Text("Confirm"),
+            child: Text(l10n.actionConfirm),
           ),
         ],
       ),
@@ -150,13 +153,15 @@ class TagsWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Consumer<TagsService>(
       builder: (context, service, child) {
         if (service.tags.isEmpty) {
-          return const Center(
+          return Center(
             child: Opacity(
               opacity: 0.5,
-              child: Text("No existing tag"),
+              child: Text(l10n.noExistingTag),
             ),
           );
         }

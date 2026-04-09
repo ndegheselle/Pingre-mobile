@@ -48,11 +48,13 @@ class SettingsService extends ChangeNotifier {
   static const _themeModeKey = 'themeMode';
   static const _lastRecurringSetupKey = 'lastRecurringSetup';
   static const _currencyKey = 'currency';
+  static const _localeKey = 'locale';
 
   SharedPreferences? _prefs;
   ThemeMode _themeMode = ThemeMode.system;
   DateTime? _lastRecurringSetup;
   Currency _currency = Currency.euro;
+  Locale? _locale;
 
   ThemeMode get themeMode => _themeMode;
 
@@ -69,6 +71,19 @@ class SettingsService extends ChangeNotifier {
     if (_currency == value) return;
     _currency = value;
     _prefs?.setInt(_currencyKey, value.index);
+    notifyListeners();
+  }
+
+  Locale? get locale => _locale;
+
+  set locale(Locale? value) {
+    if (_locale == value) return;
+    _locale = value;
+    if (value != null) {
+      _prefs?.setString(_localeKey, value.languageCode);
+    } else {
+      _prefs?.remove(_localeKey);
+    }
     notifyListeners();
   }
 
@@ -93,6 +108,8 @@ class SettingsService extends ChangeNotifier {
         : null;
     final currencyIndex = _prefs!.getInt(_currencyKey);
     _currency = currencyIndex != null ? Currency.values[currencyIndex] : Currency.euro;
+    final localeCode = _prefs!.getString(_localeKey);
+    _locale = localeCode != null ? Locale(localeCode) : null;
     notifyListeners();
   }
 }
