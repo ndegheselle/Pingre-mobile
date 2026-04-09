@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
@@ -6,6 +8,7 @@ import 'package:pingre/features/reports/models/report_filters.dart';
 import 'package:pingre/features/reports/models/tag_total.dart';
 import 'package:pingre/features/reports/screens/overlay_report_filters.dart';
 import 'package:pingre/features/reports/screens/overlay_tag_detail.dart';
+import 'package:pingre/features/reports/services/csv_export.dart';
 import 'package:pingre/features/reports/widgets/tag_graph_bar.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
 import 'package:pingre/common/widgets/data/value_display.dart';
@@ -139,6 +142,61 @@ class _PageReportsState extends State<PageReports> {
     }
   }
 
+  Future<void> _exportCsv() async {
+    final l10n = AppLocalizations.of(context)!;
+    final transactions = await _transactions.getByRange(_range);
+
+    final filtered = transactions.where((t) {
+      if (t.value < Decimal.zero &&
+          !_filters.transactionType.contains(TransactionFilter.expenses)) {
+        return false;
+      }
+      if (t.value > Decimal.zero &&
+          !_filters.transactionType.contains(TransactionFilter.income)) {
+        return false;
+      }
+      if (_filters.tagIds.isNotEmpty) {
+        final tagIds = t.tags.all.map((tag) => tag.id).toSet();
+        if (tagIds.intersection(_filters.tagIds).isEmpty) return false;
+      }
+      return true;
+    }).toList();
+
+    final buffer = StringBuffer();
+    buffer.writeln('date,value,primary_tag,tags,notes');
+    for (final t in filtered) {
+      final date =
+          '${t.date.year}-${t.date.month.toString().padLeft(2, '0')}-${t.date.day.toString().padLeft(2, '0')}';
+      final value = t.value.toString();
+      final primaryTag = _escapeCsv(t.tags.primary.name);
+      final allTags = _escapeCsv(t.tags.all.map((tag) => tag.name).join(';'));
+      final notes = _escapeCsv(t.notes);
+      buffer.writeln('$date,$value,$primaryTag,$allTags,$notes');
+    }
+
+    final today = DateTime.now();
+    final filename =
+        'transactions_${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}.csv';
+    final bytes = utf8.encode(buffer.toString());
+    final path = await saveCsvFile(bytes, filename);
+
+    if (!mounted) return;
+    showFToast(
+      context: context,
+      alignment: .topCenter,
+      icon: const Icon(FIcons.fileUp),
+      title: Text(l10n.reportExportSuccess),
+      description: path != null ? Text(path) : Text(l10n.reportExportDownloaded),
+    );
+  }
+
+  String _escapeCsv(String value) {
+    if (value.contains(',') || value.contains('"') || value.contains('\n')) {
+      return '"${value.replaceAll('"', '""')}"';
+    }
+    return value;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -214,7 +272,7 @@ class _PageReportsState extends State<PageReports> {
               child: FButton.icon(
                 size: .lg,
                 variant: .outline,
-                onPress: null,
+                onPress: _exportCsv,
                 child: const Icon(FIcons.fileUp),
               ),
             ),

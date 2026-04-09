@@ -290,6 +290,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportExportTooltip => 'Export';
 
   @override
+  String get reportExportSuccess => 'Exported';
+
+  @override
+  String get reportExportDownloaded => 'CSV downloaded';
+
+  @override
   String get reportFiltersTitle => 'Filters';
 
   @override
