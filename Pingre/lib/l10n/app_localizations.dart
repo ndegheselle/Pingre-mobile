@@ -650,6 +650,12 @@ abstract class AppLocalizations {
   /// **'Export'**
   String get reportExportTooltip;
 
+  /// No description provided for @reportExportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Exported'**
+  String get reportExportSuccess;
+
   /// No description provided for @reportFiltersTitle.
   ///
   /// In en, this message translates to:

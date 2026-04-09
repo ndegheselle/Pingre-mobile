@@ -103,6 +103,7 @@
   "reportViewAllDesc": "Group by tag (with duplicates)",
   "reportFiltersTooltip": "Filters",
   "reportExportTooltip": "Export",
+  "reportExportSuccess": "Exported",
   "reportFiltersTitle": "Filters",
   "reportTransactionTypeSection": "Transaction type",
   "reportTransactionTypeLabel": "Transaction Type",

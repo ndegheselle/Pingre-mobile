@@ -103,6 +103,7 @@
   "reportViewAllDesc": "Grouper par tag (avec doublons)",
   "reportFiltersTooltip": "Filtres",
   "reportExportTooltip": "Exporter",
+  "reportExportSuccess": "Exporté",
   "reportFiltersTitle": "Filtres",
   "reportTransactionTypeSection": "Type de transaction",
   "reportTransactionTypeLabel": "Type de transaction",
