@@ -5,8 +5,9 @@ import 'package:pingre/features/tags/models/tag.dart';
 class TagTotal {
   final Tag tag;
   final Decimal total;
+  final double? percent;
 
-  TagTotal({required this.tag, required this.total});
+  TagTotal({required this.tag, required this.total, this.percent});
 }
 
 const List<Color> palette = [
