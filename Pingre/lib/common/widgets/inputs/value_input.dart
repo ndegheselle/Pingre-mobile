@@ -1,7 +1,9 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/features/settings/services/settings.dart';
 import 'package:pingre/theme_extensions.dart';
+import 'package:provider/provider.dart';
 
 class NumberValueController extends ValueNotifier<Decimal> {
   NumberValueController([Decimal? initialValue]) : super(initialValue ?? Decimal.zero);
@@ -135,7 +137,7 @@ class _ValueInputState extends State<ValueInput> {
           width: 48,
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Icon(FIcons.euro, size: 28, color: color, fontWeight: .bold),
+            child: Icon(context.read<SettingsService>().currency.icon, size: 28, color: color, fontWeight: .bold),
           ),
         ),
       ],

@@ -21,7 +21,7 @@ class _PageSettingsState extends State<PageSettings> {
         title: const Text('Settings'),
         prefixes: [FHeaderAction.back(onPress: () => Navigator.pop(context))],
       ),
-      child: Column(
+      child: FTileGroup(
         children: [
           FSelectMenuTile<ThemeMode>(
             selectControl: .managedRadio(
@@ -52,7 +52,26 @@ class _PageSettingsState extends State<PageSettings> {
               ),
             ],
           ),
-          FItem(
+          FSelectMenuTile<Currency>(
+            selectControl: .managedRadio(
+              initial: settings.currency,
+              onChange: (values) {
+                if (values.isNotEmpty) settings.currency = values.first;
+              },
+            ),
+            prefix: Icon(settings.currency.icon),
+            title: const Text('Currency'),
+            detailsBuilder: (_, values, _) => Text(values.firstOrNull?.label ?? ''),
+            menu: [
+              for (final c in Currency.values)
+                FSelectTile<Currency>.suffix(
+                  prefix: Icon(c.icon),
+                  title: Text(c.label),
+                  value: c,
+                ),
+            ],
+          ),
+          .tile(
             prefix: const Icon(FIcons.tags),
             title: const Text('Tags'),
             suffix: const Icon(FIcons.chevronRight),

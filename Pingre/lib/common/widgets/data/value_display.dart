@@ -1,7 +1,9 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/features/settings/services/settings.dart';
 import 'package:pingre/theme_extensions.dart';
+import 'package:provider/provider.dart';
 
 class ValueDisplay extends StatelessWidget {
   final Decimal value;
@@ -57,7 +59,7 @@ class ValueDisplay extends StatelessWidget {
         ),
         const SizedBox(width: 2),
         Icon(
-          FIcons.euro,
+          context.read<SettingsService>().currency.icon,
           color: color,
           size: 14,
           fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
