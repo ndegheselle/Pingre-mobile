@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/common/models/time_range.dart';
 import 'package:pingre/common/models/transaction_group.dart';
-import 'package:pingre/features/transactions/models/transaction.dart';
-import 'package:pingre/features/transactions/widgets/transaction_summary.dart';
-import 'package:pingre/features/transactions/services/transactions.dart';
 import 'package:pingre/common/widgets/data/elastic_pull_refresh.dart';
 import 'package:pingre/common/widgets/data/value_display.dart';
 import 'package:pingre/common/widgets/inputs/time_range_select.dart';
+import 'package:pingre/features/transactions/models/transaction.dart';
+import 'package:pingre/features/transactions/services/transactions.dart';
+import 'package:pingre/features/transactions/widgets/transaction_summary.dart';
 import 'package:provider/provider.dart';
 
 class PageTransactions extends StatefulWidget {
@@ -128,42 +128,27 @@ class _PageTransactionsState extends State<PageTransactions> {
 
                       if (item is TransactionGroup) {
                         return Padding(
-                          padding: .symmetric(vertical: 4),
-                          child: Column(
-                            children: [
-                              FTile(
-                                style: .delta(
-                                  contentStyle: .delta(
-                                    padding: .value(.all(8)),
-                                  ),
-                                ),
-                                prefix: const Icon(FIcons.calendar),
-                                title: Text(item.getName(locale)),
-                                suffix: ValueDisplay(
-                                  value: item.total,
-                                  isHeader: true,
-                                ),
-                              ),
-                            ],
+                          padding: .only(top: 4),
+                          child: FTile(
+                            style: .delta(
+                              contentStyle: .delta(padding: .value(.all(8))),
+                            ),
+                            prefix: const Icon(FIcons.calendar),
+                            title: Text(item.getName(locale)),
+                            suffix: ValueDisplay(
+                              value: item.total,
+                              isHeader: true,
+                            ),
                           ),
                         );
                       }
 
                       if (item is Transaction) {
-                        final isLast =
-                            index ==
-                                1 ||
-                            flatItems[flatItems.length - index - 1]
-                                is TransactionGroup;
-                        return Column(
-                          children: [
-                            TransactionSummary(transaction: item),
-                            if (isLast) SizedBox(height: 4),
-                          ],
+                        return Padding(
+                          padding: .only(top: 4),
+                          child: TransactionSummary(transaction: item),
                         );
                       }
-
-                      return SizedBox.shrink();
                     },
                   ),
                   if (!_noMoreTransactions)

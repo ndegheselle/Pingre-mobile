@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/common/models/time_range.dart';
+import 'package:pingre/common/widgets/data/value_display.dart';
+import 'package:pingre/common/widgets/layout/sheet_container.dart';
 import 'package:pingre/features/tags/widgets/tags_display.dart';
 import 'package:pingre/features/transactions/models/transaction.dart';
 import 'package:pingre/features/transactions/screens/overlay_transaction_edit.dart';
-import 'package:pingre/common/widgets/data/value_display.dart';
-import 'package:pingre/common/widgets/layout/sheet_container.dart';
 import 'package:pingre/l10n/app_localizations.dart';
 
 Future<dynamic> showTransactionDetail(
@@ -33,11 +33,14 @@ class OverlayTransactionDetail extends StatelessWidget {
     return SheetContainer(
       title: l10n.transactionDetailTitle,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ValueDisplay(value: transaction.value, isHeader: true),
-          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: .spaceBetween,
+            children: [
           Text(transaction.date.formatWithHour(locale)),
+          ValueDisplay(value: transaction.value, isHeader: true)
+          ]),
           const SizedBox(height: 4),
           TagsDisplay(selection: transaction.tags),
           const SizedBox(height: 4),
@@ -54,7 +57,7 @@ class OverlayTransactionDetail extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 8),
           FButton(
             onPress: () {
               Navigator.of(context).pop();
@@ -63,8 +66,6 @@ class OverlayTransactionDetail extends StatelessWidget {
             prefix: const Icon(FIcons.pencil),
             child: Text(l10n.actionEdit),
           ),
-
-          const SizedBox(height: 4),
         ],
       ),
     );

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/common/models/time_range.dart';
+import 'package:pingre/common/widgets/layout/sheet_container.dart';
 import 'package:pingre/features/tags/models/tag.dart';
 import 'package:pingre/features/transactions/models/transaction.dart';
-import 'package:pingre/features/transactions/widgets/transaction_summary.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
-import 'package:pingre/common/widgets/layout/sheet_container.dart';
+import 'package:pingre/features/transactions/widgets/transaction_summary.dart';
 import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -22,10 +22,14 @@ Future<void> showTagDetail(
     builder: (context) => DraggableScrollableSheet(
       expand: false,
       builder: (context, controller) => ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(
-          dragDevices: {.touch, .mouse, .trackpad},
+        behavior: ScrollConfiguration.of(
+          context,
+        ).copyWith(dragDevices: {.touch, .mouse, .trackpad}),
+        child: OverlayTagDetail(
+          tag: tag,
+          range: range,
+          scrollController: controller,
         ),
-        child: OverlayTagDetail(tag: tag, range: range, scrollController: controller),
       ),
     ),
   );
@@ -89,8 +93,10 @@ class OverlayTagDetailState extends State<OverlayTagDetail> {
           return ListView.builder(
             controller: widget.scrollController,
             itemCount: transactions.length,
-            itemBuilder: (context, index) =>
-                TransactionSummary(transaction: transactions[index]),
+            itemBuilder: (context, index) => Padding(
+              padding: .only(top: 4),
+              child: TransactionSummary(transaction: transactions[index]),
+            ),
           );
         },
       ),

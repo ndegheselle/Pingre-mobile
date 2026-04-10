@@ -50,7 +50,7 @@ class SheetContainer extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  right: 0,
+                  left: 0,
                   child: FButton.icon(
                     variant: .ghost,
                     onPress: () => Navigator.of(context).pop(),

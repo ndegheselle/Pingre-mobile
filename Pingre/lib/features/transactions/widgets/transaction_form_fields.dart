@@ -1,12 +1,12 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/features/tags/widgets/tags_display.dart';
-import 'package:pingre/features/tags/screens/overlay_tags_select.dart';
-import 'package:pingre/features/tags/models/tags_selection.dart';
-import 'package:pingre/features/transactions/models/transaction.dart';
 import 'package:pingre/common/widgets/data/error_display.dart';
 import 'package:pingre/common/widgets/inputs/value_input.dart';
+import 'package:pingre/features/tags/models/tags_selection.dart';
+import 'package:pingre/features/tags/screens/overlay_tags_select.dart';
+import 'package:pingre/features/tags/widgets/tags_display.dart';
+import 'package:pingre/features/transactions/models/transaction.dart';
 import 'package:pingre/l10n/app_localizations.dart';
 
 class TransactionFormData {
@@ -84,25 +84,26 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
                 builder: (state) => ErrorDisplay(
                   error: state.errorText,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       TagsDisplay(selection: state.value),
                       const SizedBox(height: 4),
-                      SizedBox(
-                        width: 150,
+                      Align(
+                        alignment: Alignment.center,
                         child: FButton(
-                          size: .sm,
-                          variant: .secondary,
-                          onPress: () async {
-                            final selection = await showTagsSelect(
-                              context,
-                              initialSelection: state.value,
-                            );
-                            if (selection != null) {
-                              state.didChange(selection);
-                            }
-                          },
-                          prefix: const Icon(FIcons.tag),
-                          child: Text(l10n.selectTags),
+                            size: .sm,
+                            variant: .secondary,
+                            onPress: () async {
+                              final selection = await showTagsSelect(
+                                context,
+                                initialSelection: state.value,
+                              );
+                              if (selection != null) {
+                                state.didChange(selection);
+                              }
+                            },
+                            prefix: const Icon(FIcons.tag),
+                            child: Text(l10n.selectTags),
                         ),
                       ),
                     ],
