@@ -1,82 +1,63 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:pingre/database/drift.dart';
 import 'package:pingre/features/tags/models/tag.dart';
+import 'package:pingre/features/tags/models/tag.db.dart';
 
 class TagsService extends ChangeNotifier {
+  final AppDatabase _db;
+
+  /// In-memory cache — kept in sync with the DB on every mutation.
   final Map<String, Tag> tagsMap = {};
   Iterable<Tag> get tags => tagsMap.values;
 
-  TagsService() {
-    // Initialize with test tags
-    _initializeTestTags();
-  }
+  TagsService(this._db);
 
-  void _initializeTestTags() {
-    List<String> testTagNames = [
-      'Urgent',
-      'Work',
-      'Personal',
-      'Shopping',
-      'Travel',
-      'Health',
-      'Fitness',
-      'Study',
-      'Meeting',
-      'Family',
-      'Friends',
-      'Hobby',
-      'Food',
-      'Music',
-      'Books',
-      'Movies',
-      'Sports',
-      'Finance',
-      'Project',
-      'Ideas',
-    ];
-
-    for (var name in testTagNames) {
-      createIfMissing(name);
+  Future<void> initialize() async {
+    final rows = await _db.select(_db.tagsTable).get();
+    tagsMap.clear();
+    for (final row in rows) {
+      tagsMap[row.id] = TagMapper.fromData(row);
     }
+    notifyListeners();
   }
 
-  Tag _addTag(Tag tag) {
+  Future<Tag> _addTag(Tag tag) async {
+    await _db.into(_db.tagsTable).insert(tag.toData());
     tagsMap[tag.id] = tag;
     notifyListeners();
     return tag;
   }
 
-  /// Create the tag if no tag of the [name] exist, return the existing or created tag.
-  Tag getOrCreate(String name) {
-    String cleanedName = name.trim();
-    var tag = tags.firstWhereOrNull(
+  /// Returns the existing tag with [name] (case-insensitive), or creates one.
+  Future<Tag> getOrCreate(String name) async {
+    final cleanedName = name.trim();
+    final existing = tags.firstWhereOrNull(
       (t) => t.name.toLowerCase() == cleanedName.toLowerCase(),
     );
-
-    return tag ?? _addTag(Tag(name: cleanedName));
+    return existing ?? await _addTag(Tag(name: cleanedName));
   }
 
-  /// Create a tag if it doesn't exist.
-  Tag createIfMissing(String name) {
-    return getOrCreate(name);
-  }
+  Future<Tag> createIfMissing(String name) => getOrCreate(name);
 
   Iterable<Tag> search(String name) {
-    return tags.where((t) => t.name.toLowerCase().contains(name.trim().toLowerCase()));
+    return tags.where(
+      (t) => t.name.toLowerCase().contains(name.trim().toLowerCase()),
+    );
   }
 
-  Tag? getTagById(String id) {
-    return tagsMap[id];
-  }
+  Tag? getTagById(String id) => tagsMap[id];
 
-  void update(String id, {String? name, Color? color}) {
+  Future<void> update(String id, {String? name, Color? color}) async {
     if (!tagsMap.containsKey(id)) return;
-
-    tagsMap[id] = tagsMap[id]!.copyWith(name: name, color: color);
+    final updated = tagsMap[id]!.copyWith(name: name, color: color);
+    await _db.update(_db.tagsTable).replace(updated.toData());
+    tagsMap[id] = updated;
     notifyListeners();
   }
 
-  void remove(String id) {
+  Future<void> remove(String id) async {
+    await (_db.delete(_db.tagsTable)..where((t) => t.id.equals(id))).go();
     tagsMap.remove(id);
     notifyListeners();
   }

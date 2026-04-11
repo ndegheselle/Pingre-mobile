@@ -115,6 +115,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionRemovedDesc => 'The transaction has been removed';
 
   @override
+  String get transactionNoMoreFound => 'No more transactions found.';
+
+  @override
   String get selectTags => 'Select tags';
 
   @override

@@ -70,8 +70,9 @@ class _OverlayTagsSelectState extends State<OverlayTagsSelect> {
   }
 
   void _addTag(String name) {
-    var tag = context.read<TagsService>().getOrCreate(name);
-    _toggleTag(tag.id);
+    context.read<TagsService>().getOrCreate(name).then((tag) {
+      _toggleTag(tag.id);
+    });
   }
 
   void _confirm() {

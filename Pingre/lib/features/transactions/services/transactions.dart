@@ -1,120 +1,220 @@
 import 'dart:collection';
-import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:decimal/decimal.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:pingre/common/models/time_range.dart';
+import 'package:pingre/database/drift.dart';
 import 'package:pingre/features/tags/models/tag.dart';
 import 'package:pingre/features/tags/models/tags_selection.dart';
+import 'package:pingre/features/tags/services/tags.dart';
 import 'package:pingre/features/transactions/models/transaction.dart';
+import 'package:pingre/features/transactions/models/transaction.db.dart';
 
 class TransactionsService extends ChangeNotifier {
-  final Map<String, Transaction> _transactionsMap = _generateFakeData();
+  final AppDatabase _db;
+  final TagsService _tagsService;
 
-  static Map<String, Transaction> _generateFakeData() {
-    final rng = Random();
-
-    final primaryTags = [
-      Tag(name: 'Food'),
-      Tag(name: 'Transport'),
-      Tag(name: 'Shopping'),
-      Tag(name: 'Health'),
-      Tag(name: 'Entertainment'),
-      Tag(name: 'Housing'),
-      Tag(name: 'Travel'),
-    ];
-
-    var list = List.generate(200, (i) {
-      final daysAgo = rng.nextInt(365);
-      final primary = primaryTags[rng.nextInt(primaryTags.length)];
-      return Transaction(
-        value: Decimal.parse(
-          (rng.nextDouble() * 500).roundToDouble().toString(),
-        ),
-        date: DateTime.now().subtract(Duration(days: daysAgo)),
-        tags: TagsSelection(primary: primary, secondaries: [
-          primaryTags[rng.nextInt(primaryTags.length)],
-          primaryTags[rng.nextInt(primaryTags.length)],
-        ]),
-        notes: 'Transaction $i',
-      );
-    });
-    return {for (var e in list) e.id: e};
-  }
+  TransactionsService(this._db, this._tagsService);
 
   Future<List<Transaction>> getByRange(TimeRange range) async {
-    return _transactionsMap.values
-        .where((t) => t.date.isBefore(range.end) && t.date.isAfter(range.start))
-        .toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
+    final rows = await (
+      _db.select(_db.transactionsTable)
+        ..where(
+          (t) =>
+              t.date.isBiggerThan(Variable(range.start)) &
+              t.date.isSmallerThan(Variable(range.end)),
+        )
+        ..orderBy([(t) => OrderingTerm.desc(t.date)])
+    ).get();
+
+    final tagsMap = await _resolveTagsForTransactions(rows.map((r) => r.id).toList());
+    return rows
+        .where((r) => tagsMap.containsKey(r.id))
+        .map((r) => TransactionMapper.fromData(r, tagsMap[r.id]!))
+        .toList();
   }
 
-  /// Calculates the average transaction value for each tag over the previous periods
-  Future<HashMap<String, Decimal>> getPreviousAverages(TimeRange currentRange, {int numberOfPeriods = 3, bool onlyPrimary = false}) async {
-
+  /// Calculates the average transaction value per tag over the [numberOfPeriods]
+  /// periods preceding [currentRange].
+  Future<HashMap<String, Decimal>> getPreviousAverages(
+    TimeRange currentRange, {
+    int numberOfPeriods = 3,
+    bool onlyPrimary = false,
+  }) async {
     TimeRange oldestRange = currentRange;
-    for (int i = 1; i <= numberOfPeriods; i++)
-    {
+    for (int i = 1; i <= numberOfPeriods; i++) {
       oldestRange = oldestRange.previous();
     }
-    TimeRange fullRange = TimeRange(unit: currentRange.unit, start: oldestRange.start, end: currentRange.start.subtract(const Duration(days: 1)));
+    final fullRange = TimeRange(
+      unit: currentRange.unit,
+      start: oldestRange.start,
+      end: currentRange.start.subtract(const Duration(days: 1)),
+    );
 
-    final transactions = _transactionsMap.values
-        .where((t) => t.date.isBefore(fullRange.end) && t.date.isAfter(fullRange.start))
-        .toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
+    final rows = await (
+      _db.select(_db.transactionsTable)
+        ..where(
+          (t) =>
+              t.date.isBiggerThan(Variable(fullRange.start)) &
+              t.date.isSmallerThan(Variable(fullRange.end)),
+        )
+    ).get();
 
-    HashMap<String, Decimal> averages = HashMap();
-    for (var transaction in transactions) {
-      final tagsToConsider = onlyPrimary ? [transaction.tags.primary] : transaction.tags.all;
-      for (var tag in tagsToConsider) {
-        averages[tag.id] = (averages[tag.id] ?? Decimal.zero) + transaction.value;
+    final tagsMap = await _resolveTagsForTransactions(rows.map((r) => r.id).toList());
+
+    final HashMap<String, Decimal> averages = HashMap();
+    for (final row in rows) {
+      final tags = tagsMap[row.id];
+      if (tags == null) continue;
+      final value = Decimal.parse(row.value);
+      final tagsToConsider = onlyPrimary ? [tags.primary] : tags.all;
+      for (final tag in tagsToConsider) {
+        averages[tag.id] = (averages[tag.id] ?? Decimal.zero) + value;
       }
     }
-
-    for (var key in averages.keys) {
-      averages[key] = (averages[key]! / Decimal.fromInt(numberOfPeriods)).toDecimal(scaleOnInfinitePrecision: 2);
+    for (final key in averages.keys) {
+      averages[key] = (averages[key]! / Decimal.fromInt(numberOfPeriods))
+          .toDecimal(scaleOnInfinitePrecision: 2);
     }
-
     return averages;
   }
 
-  Transaction create(Transaction transaction) {
-    _transactionsMap[transaction.id] = transaction;
+  Future<Transaction> create(Transaction transaction) async {
+    await _db.into(_db.transactionsTable).insert(transaction.toData());
+    await _writeTransactionTags(transaction.id, transaction.tags);
     notifyListeners();
     return transaction;
   }
 
-  void update(
+  Future<void> update(
     String id, {
     Decimal? value,
     TagsSelection? tags,
     DateTime? date,
     String? notes,
-  }) {
-    if (!_transactionsMap.containsKey(id)) return;
+  }) async {
+    final existing = await (
+      _db.select(_db.transactionsTable)..where((t) => t.id.equals(id))
+    ).getSingleOrNull();
+    if (existing == null) return;
 
-    _transactionsMap[id] = _transactionsMap[id]!.copyWith(
-      value: value,
-      tags: tags,
-      date: date,
-      notes: notes,
-    );
+    await _db.update(_db.transactionsTable).replace(
+          TransactionsTableData(
+            id: id,
+            value: value?.toString() ?? existing.value,
+            date: date ?? existing.date,
+            notes: notes ?? existing.notes,
+          ),
+        );
+    if (tags != null) {
+      await _writeTransactionTags(id, tags);
+    }
     notifyListeners();
   }
 
-  void remove(String id) {
-    _transactionsMap.remove(id);
+  Future<void> remove(String id) async {
+    await (_db.delete(_db.transactionTagsTable)
+          ..where((t) => t.transactionId.equals(id)))
+        .go();
+    await (_db.delete(_db.transactionsTable)..where((t) => t.id.equals(id)))
+        .go();
     notifyListeners();
   }
 
   /// Returns true if a transaction already exists on the same calendar day
   /// with the same primary tag — used to prevent duplicate recurring entries.
-  bool existsByDateAndPrimaryTag(DateTime date, Tag primaryTag) {
-    return _transactionsMap.values.any((t) =>
-        t.date.year == date.year &&
-        t.date.month == date.month &&
-        t.date.day == date.day &&
-        t.tags.primary.name == primaryTag.name);
+  Future<bool> existsByDateAndPrimaryTag(DateTime date, Tag primaryTag) async {
+    final start = DateTime(date.year, date.month, date.day);
+    final end = start.add(const Duration(days: 1));
+
+    final query = _db.select(_db.transactionsTable).join([
+      innerJoin(
+        _db.transactionTagsTable,
+        _db.transactionTagsTable.transactionId
+            .equalsExp(_db.transactionsTable.id),
+      ),
+    ])
+      ..where(
+        _db.transactionsTable.date.isBiggerOrEqualValue(start) &
+            _db.transactionsTable.date.isSmallerThanValue(end) &
+            _db.transactionTagsTable.tagId.equals(primaryTag.id) &
+            _db.transactionTagsTable.isPrimary.equals(true),
+      );
+
+    return (await query.get()).isNotEmpty;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+
+  /// Fetches tag links for all [transactionIds] in one query and resolves them
+  /// against the [TagsService] cache. Returns a map keyed by transaction id.
+  Future<Map<String, TagsSelection>> _resolveTagsForTransactions(
+    List<String> transactionIds,
+  ) async {
+    if (transactionIds.isEmpty) return {};
+
+    final tagRows = await (
+      _db.select(_db.transactionTagsTable)
+        ..where((t) => t.transactionId.isIn(transactionIds))
+    ).get();
+
+    final byTxId = <String, List<TransactionTagsTableData>>{};
+    for (final row in tagRows) {
+      byTxId.putIfAbsent(row.transactionId, () => []).add(row);
+    }
+
+    final result = <String, TagsSelection>{};
+    for (final txId in transactionIds) {
+      final rows = byTxId[txId] ?? [];
+      final primaryRow = rows.firstWhereOrNull((r) => r.isPrimary);
+      if (primaryRow == null) continue;
+
+      final primary = _tagsService.getTagById(primaryRow.tagId);
+      if (primary == null) continue;
+
+      final secondaries = rows
+          .where((r) => !r.isPrimary)
+          .map((r) => _tagsService.getTagById(r.tagId))
+          .whereType<Tag>()
+          .toList();
+
+      result[txId] = TagsSelection(primary: primary, secondaries: secondaries);
+    }
+    return result;
+  }
+
+  /// Replaces all tag links for [transactionId] with the given [tags].
+  Future<void> _writeTransactionTags(
+    String transactionId,
+    TagsSelection tags,
+  ) async {
+    await (_db.delete(_db.transactionTagsTable)
+          ..where((t) => t.transactionId.equals(transactionId)))
+        .go();
+
+    await _db.batch((batch) {
+      batch.insert(
+        _db.transactionTagsTable,
+        TransactionTagsTableData(
+          transactionId: transactionId,
+          tagId: tags.primary.id,
+          isPrimary: true,
+        ),
+      );
+      for (final tag in tags.secondaries) {
+        batch.insert(
+          _db.transactionTagsTable,
+          TransactionTagsTableData(
+            transactionId: transactionId,
+            tagId: tag.id,
+            isPrimary: false,
+          ),
+        );
+      }
+    });
   }
 }

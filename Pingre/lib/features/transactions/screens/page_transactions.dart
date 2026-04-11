@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/common/models/time_range.dart';
@@ -8,6 +10,7 @@ import 'package:pingre/common/widgets/inputs/time_range_select.dart';
 import 'package:pingre/features/transactions/models/transaction.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
 import 'package:pingre/features/transactions/widgets/transaction_summary.dart';
+import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class PageTransactions extends StatefulWidget {
@@ -25,7 +28,6 @@ class _PageTransactionsState extends State<PageTransactions> {
   late TimeRange _lastTimeRange;
 
   late ScrollController _scrollController;
-  bool _noMoreTransactions = false;
 
   @override
   void initState() {
@@ -57,7 +59,6 @@ class _PageTransactionsState extends State<PageTransactions> {
 
   /// Load transactions, reset the current [_groups] if previous transactions where manually loaded by the user.
   Future<List<Object>> _loadTransactions(TimeRangeUnit unit) async {
-    _noMoreTransactions = false;
     _lastTimeRange = .elapsed(.month);
     // Get a month of transactions
     var transactions = await _transactions.getByRange(_lastTimeRange);
@@ -79,11 +80,21 @@ class _PageTransactionsState extends State<PageTransactions> {
     );
 
     var transactions = await _transactions.getByRange(_lastTimeRange);
-    var groups = transactions.continueToGroupFrom(_groups.last);
-    if (groups.isEmpty) {
-      _noMoreTransactions = true;
+    if (transactions.isEmpty) {
+      if (context.mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        showFToast(
+          context: context,
+          alignment: .topCenter,
+          icon: const Icon(FIcons.check),
+          title: Text(l10n.transactionDetailTitle),
+          description: Text(l10n.transactionNoMoreFound),
+        );
+      }
       return _flatenGroups(_groups);
     }
+
+    var groups = transactions.continueToGroupFrom(_groups.last);
     _groups.addAll(groups);
     return _flatenGroups(_groups);
   }
@@ -100,6 +111,7 @@ class _PageTransactionsState extends State<PageTransactions> {
   @override
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context).languageCode;
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -117,6 +129,14 @@ class _PageTransactionsState extends State<PageTransactions> {
             builder: (context, snapshot) {
               if (!snapshot.hasData) return FCircularProgress();
               final flatItems = snapshot.data!;
+
+              final hasTransactions = flatItems.any(
+                (item) => item is Transaction,
+              );
+
+              if (!hasTransactions) {
+                return Center(child: Text(l10n.reportNoTransactions));
+              }
 
               return CustomScrollView(
                 controller: _scrollController,
@@ -151,19 +171,18 @@ class _PageTransactionsState extends State<PageTransactions> {
                       }
                     },
                   ),
-                  if (!_noMoreTransactions)
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: ElasticPullToRefresh(
-                          onRefresh: _loadMore,
-                          onDrag: () => _scrollController.jumpTo(
-                            _scrollController.position.maxScrollExtent,
-                          ),
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: ElasticPullToRefresh(
+                        onRefresh: _loadMore,
+                        onDrag: () => _scrollController.jumpTo(
+                          _scrollController.position.maxScrollExtent,
                         ),
                       ),
                     ),
+                  ),
                 ],
               );
             },

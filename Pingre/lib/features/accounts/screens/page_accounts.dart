@@ -49,7 +49,7 @@ class _PageAccountsState extends State<PageAccounts> {
                                   (account) => FTile(
                                     prefix: AccountTypeIcon(type: account.type),
                                     title: Text(account.name),
-                                    subtitle: Text(account.description),
+                                    subtitle: account.description.isEmpty ? null : Text(account.description),
                                     details: ValueDisplay(value: account.balance),
                                     suffix: const Icon(FIcons.chevronRight),
                                     onPress: () => showAccountEdit(context, account: account),

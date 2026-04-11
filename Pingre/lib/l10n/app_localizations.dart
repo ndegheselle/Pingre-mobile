@@ -308,6 +308,12 @@ abstract class AppLocalizations {
   /// **'The transaction has been removed'**
   String get transactionRemovedDesc;
 
+  /// No description provided for @transactionNoMoreFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No more transactions found.'**
+  String get transactionNoMoreFound;
+
   /// No description provided for @selectTags.
   ///
   /// In en, this message translates to:

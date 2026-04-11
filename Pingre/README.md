@@ -10,6 +10,12 @@ Generate the localizations files :
 flutter run
 ```
 
+Generate the Drift tables :
+```
+dart run build_runner build
+dart run build_runner watch
+```
+
 # Inspiration
 
 https://www.macstories.net/reviews/nudget-review-budgeting-made-simple/

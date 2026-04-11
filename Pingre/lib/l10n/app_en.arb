@@ -41,6 +41,7 @@
   "transactionRemovedDialogTitle": "Removed transaction",
   "transactionRemovedDialogBody": "Are you sure you want to remove this transaction?",
   "transactionRemovedDesc": "The transaction has been removed",
+  "transactionNoMoreFound": "No more transactions found.",
   "selectTags": "Select tags",
   "notesHint": "Notes",
   "tagValidationError": "At least one tag should be selected.",

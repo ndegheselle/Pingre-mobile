@@ -17,8 +17,9 @@ class _PageTagsState extends State<PageTags> {
   final TextEditingController _controller = TextEditingController();
 
   void _addTag(String name) {
-    var tag = context.read<TagsService>().createIfMissing(name);
-    showTagEdit(context, tag);
+    context.read<TagsService>().createIfMissing(name).then((tag) {
+      if (mounted) showTagEdit(context, tag);
+    });
   }
 
   @override

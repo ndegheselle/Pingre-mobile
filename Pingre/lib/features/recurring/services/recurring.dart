@@ -1,45 +1,46 @@
-import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:pingre/common/models/time_range.dart';
+import 'package:pingre/database/drift.dart';
 import 'package:pingre/features/recurring/models/recurring.dart';
+import 'package:pingre/features/recurring/models/recurring.db.dart';
 import 'package:pingre/features/tags/models/tag.dart';
 import 'package:pingre/features/tags/models/tags_selection.dart';
+import 'package:pingre/features/tags/services/tags.dart';
 import 'package:pingre/features/transactions/models/transaction.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
 
 class RecurringTransactionsService extends ChangeNotifier {
-  final Map<String, RecurringTransaction> _recurringTransactionsMap = {};
+  final AppDatabase _db;
+  final TagsService _tagsService;
 
+  final Map<String, RecurringTransaction> _recurringTransactionsMap = {};
   Iterable<RecurringTransaction> get recurringTransactions =>
       _recurringTransactionsMap.values;
 
-  RecurringTransactionsService() {
-    _initializeTestRecurringTransactions();
-  }
+  RecurringTransactionsService(this._db, this._tagsService);
 
-  void _initializeTestRecurringTransactions() {
-    List<RecurringTransaction> testRecurringTransactions = [
-      RecurringTransaction(
-        id: "1",
-        name: "Monthly Rent",
-        transaction: Transaction(
-          value: Decimal.parse("-1200.00"),
-          date: DateTime.now(),
-          tags: TagsSelection(
-            primary: Tag(name: "Pouet 🏠"),
-            secondaries: [Tag(name: "Fafa 🏐")],
-          ),
-        ),
-        range: TimeRangeUnit.month,
-      ),
-    ];
-
-    for (var recurringTransaction in testRecurringTransactions) {
-      create(recurringTransaction);
+  Future<void> initialize() async {
+    final rows = await _db.select(_db.recurringTransactionsTable).get();
+    _recurringTransactionsMap.clear();
+    for (final row in rows) {
+      final tags = await _resolveTagsForRecurring(row.id);
+      if (tags == null) continue;
+      _recurringTransactionsMap[row.id] =
+          RecurringTransactionMapper.fromData(row, tags);
     }
+    notifyListeners();
   }
 
-  RecurringTransaction create(RecurringTransaction recurringTransaction) {
+  Future<RecurringTransaction> create(
+    RecurringTransaction recurringTransaction,
+  ) async {
+    await _db
+        .into(_db.recurringTransactionsTable)
+        .insert(recurringTransaction.toData());
+    await _writeRecurringTransactionTags(
+      recurringTransaction.id,
+      recurringTransaction.transaction.tags,
+    );
     _recurringTransactionsMap[recurringTransaction.id] = recurringTransaction;
     notifyListeners();
     return recurringTransaction;
@@ -55,22 +56,34 @@ class RecurringTransactionsService extends ChangeNotifier {
     return recurringTransactions.where((rt) => rt.range == range);
   }
 
-  void update(
+  Future<void> update(
     String id, {
     String? name,
     Transaction? transaction,
     TimeRangeUnit? range,
-  }) {
+  }) async {
     if (!_recurringTransactionsMap.containsKey(id)) return;
-    _recurringTransactionsMap[id] = _recurringTransactionsMap[id]!.copyWith(
+
+    final updated = _recurringTransactionsMap[id]!.copyWith(
+      name: name,
       transaction: transaction,
       range: range,
-      name: name,
     );
+    await _db.update(_db.recurringTransactionsTable).replace(updated.toData());
+    if (transaction != null) {
+      await _writeRecurringTransactionTags(id, transaction.tags);
+    }
+    _recurringTransactionsMap[id] = updated;
     notifyListeners();
   }
 
-  void remove(String id) {
+  Future<void> remove(String id) async {
+    await (_db.delete(_db.recurringTransactionTagsTable)
+          ..where((t) => t.recurringTransactionId.equals(id)))
+        .go();
+    await (_db.delete(_db.recurringTransactionsTable)
+          ..where((t) => t.id.equals(id)))
+        .go();
     _recurringTransactionsMap.remove(id);
     notifyListeners();
   }
@@ -88,18 +101,81 @@ class RecurringTransactionsService extends ChangeNotifier {
 
     for (final recurring in recurringTransactions) {
       for (final date in _getOccurrencesBetween(recurring, lastRun, now)) {
-        if (!transactionsService.existsByDateAndPrimaryTag(
+        if (!await transactionsService.existsByDateAndPrimaryTag(
           date,
           recurring.transaction.tags.primary,
         )) {
-          transactionsService.create(recurring.transaction.copyWith(date: date));
+          await transactionsService.create(
+            recurring.transaction.copyWith(date: date),
+          );
         }
       }
     }
   }
 
-  /// Returns every occurrence of [recurring] that falls strictly after [from]
-  /// and on or before [to], based on the recurrence period.
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+
+  Future<TagsSelection?> _resolveTagsForRecurring(
+    String recurringTransactionId,
+  ) async {
+    final tagRows = await (
+      _db.select(_db.recurringTransactionTagsTable)
+        ..where(
+          (t) => t.recurringTransactionId.equals(recurringTransactionId),
+        )
+    ).get();
+
+    final primaryRow =
+        tagRows.where((r) => r.isPrimary).firstOrNull;
+    if (primaryRow == null) return null;
+
+    final primary = _tagsService.getTagById(primaryRow.tagId);
+    if (primary == null) return null;
+
+    final secondaries = tagRows
+        .where((r) => !r.isPrimary)
+        .map((r) => _tagsService.getTagById(r.tagId))
+        .whereType<Tag>()
+        .toList();
+
+    return TagsSelection(primary: primary, secondaries: secondaries);
+  }
+
+  /// Replaces all tag links for [recurringTransactionId] with [tags].
+  Future<void> _writeRecurringTransactionTags(
+    String recurringTransactionId,
+    TagsSelection tags,
+  ) async {
+    await (_db.delete(_db.recurringTransactionTagsTable)
+          ..where(
+            (t) => t.recurringTransactionId.equals(recurringTransactionId),
+          ))
+        .go();
+
+    await _db.batch((batch) {
+      batch.insert(
+        _db.recurringTransactionTagsTable,
+        RecurringTransactionTagsTableData(
+          recurringTransactionId: recurringTransactionId,
+          tagId: tags.primary.id,
+          isPrimary: true,
+        ),
+      );
+      for (final tag in tags.secondaries) {
+        batch.insert(
+          _db.recurringTransactionTagsTable,
+          RecurringTransactionTagsTableData(
+            recurringTransactionId: recurringTransactionId,
+            tagId: tag.id,
+            isPrimary: false,
+          ),
+        );
+      }
+    });
+  }
+
   List<DateTime> _getOccurrencesBetween(
     RecurringTransaction recurring,
     DateTime from,
@@ -108,16 +184,13 @@ class RecurringTransactionsService extends ChangeNotifier {
     final occurrences = <DateTime>[];
     var current = recurring.transaction.date;
 
-    // Advance anchor to the first occurrence strictly after `from`
     while (!current.isAfter(from)) {
       current = _addPeriod(current, recurring.range);
     }
-
     while (!current.isAfter(to)) {
       occurrences.add(current);
       current = _addPeriod(current, recurring.range);
     }
-
     return occurrences;
   }
 

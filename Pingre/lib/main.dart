@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:forui/forui.dart';
+import 'package:pingre/database/drift.dart';
 import 'package:pingre/features/accounts/services/accounts.dart';
 import 'package:pingre/features/recurring/services/recurring.dart';
 import 'package:pingre/features/tags/services/tags.dart';
@@ -14,11 +15,24 @@ import 'home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   final settingsService = SettingsService();
   await settingsService.load();
 
-  final transactionsService = TransactionsService();
-  final recurringTransactionsService = RecurringTransactionsService();
+  final db = AppDatabase();
+
+  // Tags must be initialized first — other services resolve tags from its cache.
+  final tagsService = TagsService(db);
+  await tagsService.initialize();
+
+  final accountsService = AccountsService(db);
+  await accountsService.initialize();
+
+  final transactionsService = TransactionsService(db, tagsService);
+
+  final recurringTransactionsService =
+      RecurringTransactionsService(db, tagsService);
+  await recurringTransactionsService.initialize();
 
   // Non-blocking: apply any recurring transactions missed since last open,
   // then record the timestamp so the next launch can pick up from here.
@@ -27,16 +41,16 @@ void main() async {
       .then((_) => settingsService.lastRecurringSetup = DateTime.now());
 
   runApp(MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AccountsService()),
-        ChangeNotifierProvider(create: (_) => TagsService()),
-        ChangeNotifierProvider.value(value: transactionsService),
-        ChangeNotifierProvider.value(value: recurringTransactionsService),
-        ChangeNotifierProvider.value(value: settingsService),
-        // add more services here
-      ],
-      child: const Application(),
-    ),);
+    providers: [
+      ChangeNotifierProvider.value(value: accountsService),
+      ChangeNotifierProvider.value(value: tagsService),
+      ChangeNotifierProvider.value(value: transactionsService),
+      ChangeNotifierProvider.value(value: recurringTransactionsService),
+      ChangeNotifierProvider.value(value: settingsService),
+      // add more services here
+    ],
+    child: const Application(),
+  ));
 }
 
 class Application extends StatelessWidget {
