@@ -1,4 +1,4 @@
-package com.example.pingre
+package com.lubriciel.pingre
 
 import io.flutter.embedding.android.FlutterActivity
 

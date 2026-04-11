@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="50mm"
+   height="50mm"
+   viewBox="0 0 50 50"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   sodipodi:docname="icon.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="1.4520903"
+     inkscape:cx="65.422926"
+     inkscape:cy="217.27298"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3">
+      <path
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.0999998;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:50;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
+         d="m 75.058976,160 h 27.695714 l -2.27761,14.93292 -25.053685,0.1822 z"
+         id="path4"
+         sodipodi:nodetypes="ccccc" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4">
+      <path
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.0999998;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:50;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
+         d="m 65.7773,155.87945 28.971171,6.74172 0.45552,16.67208 -30.155526,0.36441 z"
+         id="path5"
+         sodipodi:nodetypes="ccccc" />
+    </clipPath>
+  </defs>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:56.4444px;line-height:0px;font-family:Corbel;-inkscape-font-specification:Corbel;text-align:start;letter-spacing:-2.64583px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#25343f;fill-opacity:1;stroke:#25343f;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:50;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
+       x="9.5239153"
+       y="44.82658"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:56.4444px;font-family:'Madimi One';-inkscape-font-specification:'Madimi One';fill:#25343f;fill-opacity:1;stroke:#25343f;stroke-width:2;stroke-dasharray:none;stroke-opacity:1"
+         x="9.5239153"
+         y="44.82658">P</tspan></text>
+  </g>
+</svg>
