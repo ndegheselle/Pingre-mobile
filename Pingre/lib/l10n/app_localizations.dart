@@ -380,6 +380,30 @@ abstract class AppLocalizations {
   /// **'A name is required.'**
   String get nameRequired;
 
+  /// No description provided for @positives.
+  ///
+  /// In en, this message translates to:
+  /// **'Positives'**
+  String get positives;
+
+  /// No description provided for @negatives.
+  ///
+  /// In en, this message translates to:
+  /// **'Negatives'**
+  String get negatives;
+
+  /// No description provided for @recurringTotalMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get recurringTotalMonthly;
+
+  /// No description provided for @recurringTotalYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get recurringTotalYearly;
+
   /// No description provided for @newAccount.
   ///
   /// In en, this message translates to:

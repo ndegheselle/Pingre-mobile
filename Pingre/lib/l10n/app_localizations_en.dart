@@ -153,6 +153,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nameRequired => 'A name is required.';
 
   @override
+  String get positives => 'Positives';
+
+  @override
+  String get negatives => 'Negatives';
+
+  @override
+  String get recurringTotalMonthly => 'Monthly';
+
+  @override
+  String get recurringTotalYearly => 'Yearly';
+
+  @override
   String get newAccount => 'New account';
 
   @override

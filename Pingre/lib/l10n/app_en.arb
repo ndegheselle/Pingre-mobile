@@ -54,6 +54,10 @@
   "recurringRemovedDesc": "The recurring transaction has been removed",
   "nameHint": "Name",
   "nameRequired": "A name is required.",
+  "positives": "Positives",
+  "negatives": "Negatives",
+  "recurringTotalMonthly": "Monthly",
+  "recurringTotalYearly": "Yearly",
 
   "newAccount": "New account",
   "editAccount": "Edit account",

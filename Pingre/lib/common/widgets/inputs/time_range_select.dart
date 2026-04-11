@@ -50,8 +50,9 @@ class _TimeRangeSelectState extends State<TimeRangeSelect> {
     return Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: theme.colors.secondary,
+        color: theme.colors.card,
         borderRadius: theme.style.borderRadius,
+        border: .all(color: context.theme.colors.border)
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {

@@ -9,12 +9,13 @@ import 'package:pingre/features/reports/models/report_filters.dart';
 import 'package:pingre/features/reports/models/tag_total.dart';
 import 'package:pingre/features/reports/screens/overlay_report_filters.dart';
 import 'package:pingre/features/reports/screens/overlay_tag_detail.dart';
-import 'package:pingre/features/reports/services/csv_export.dart';
 import 'package:pingre/features/reports/widgets/tag_graph_bar.dart';
+import 'package:pingre/features/transactions/models/transaction.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
 import 'package:pingre/common/widgets/data/value_display.dart';
 import 'package:pingre/common/widgets/inputs/time_range_select.dart';
 import 'package:pingre/l10n/app_localizations.dart';
+import 'package:pingre/theme_extensions.dart';
 import 'package:provider/provider.dart';
 
 enum _ReportView { primary, all }
@@ -62,67 +63,45 @@ class _PageReportsState extends State<PageReports> {
 
   Future<List<TagTotal>> _loadPrimary() async {
     final transactions = await _transactions.getByRange(_range);
+    final previousAverages = await _transactions.getPreviousAverages(
+      _range,
+      onlyPrimary: true,
+    );
 
     final Map<String, TagTotal> groups = {};
     for (var transaction in transactions) {
-      if (transaction.value < Decimal.zero &&
-          _filters.transactionType.contains(TransactionFilter.expenses) == false) {
-        continue;
-      }
-      if (transaction.value > Decimal.zero &&
-          _filters.transactionType.contains(TransactionFilter.income) == false) {
-        continue;
-      }
-      if (_filters.tagIds.isNotEmpty) {
-        final transactionTagIds = transaction.tags.all.map((t) => t.id).toSet();
-        if (transactionTagIds.intersection(_filters.tagIds).isEmpty) continue;
-      }
+      if (!_passFilters(transaction)) continue;
+
       final tag = transaction.tags.primary;
       tag.color = tag.color ?? palette[groups.length % palette.length];
       final current = groups[tag.id];
       groups[tag.id] = TagTotal(
         tag: tag,
         total: (current?.total ?? Decimal.zero) + transaction.value,
+        previousAverage: previousAverages[tag.id] ?? Decimal.zero,
       );
     }
 
     final sorted = groups.values.toList()
       ..sort((a, b) => b.total.compareTo(a.total));
-
-    final grandTotal = sorted.fold(Decimal.zero, (sum, t) => sum + t.total);
-    return sorted.map((t) => TagTotal(
-      tag: t.tag,
-      total: t.total,
-      percent: grandTotal != Decimal.zero
-          ? t.total.abs().toDouble() / grandTotal.abs().toDouble() * 100
-          : 0.0,
-    )).toList();
+    return sorted;
   }
 
   Future<List<TagTotal>> _loadAll() async {
     final transactions = await _transactions.getByRange(_range);
+    final previousAverages = await _transactions.getPreviousAverages(_range);
 
     final Map<String, TagTotal> groups = {};
     for (var transaction in transactions) {
-      if (transaction.value > Decimal.zero &&
-          _filters.transactionType.contains(TransactionFilter.expenses) == false) {
-        continue;
-      }
-      if (transaction.value < Decimal.zero &&
-          _filters.transactionType.contains(TransactionFilter.income) == false) {
-        continue;
-      }
-      if (_filters.tagIds.isNotEmpty) {
-        final transactionTagIds = transaction.tags.all.map((t) => t.id).toSet();
-        if (transactionTagIds.intersection(_filters.tagIds).isEmpty) continue;
-      }
+      if (!_passFilters(transaction)) continue;
 
       for (var tag in transaction.tags.all) {
         tag.color = tag.color ?? palette[groups.length % palette.length];
         final current = groups[tag.id];
         groups[tag.id] = TagTotal(
           tag: tag,
-          total: (current?.total ?? Decimal.zero) + transaction.value.abs(),
+          total: (current?.total ?? Decimal.zero) + transaction.value,
+          previousAverage: previousAverages[tag.id] ?? Decimal.zero,
         );
       }
     }
@@ -133,6 +112,23 @@ class _PageReportsState extends State<PageReports> {
     return sorted;
   }
 
+  bool _passFilters(Transaction transaction) {
+    if (transaction.value < Decimal.zero &&
+        _filters.transactionType.contains(TransactionFilter.expenses) ==
+            false) {
+      return false;
+    }
+    if (transaction.value > Decimal.zero &&
+        _filters.transactionType.contains(TransactionFilter.income) == false) {
+      return false;
+    }
+    if (_filters.tagIds.isNotEmpty) {
+      final transactionTagIds = transaction.tags.all.map((t) => t.id).toSet();
+      if (transactionTagIds.intersection(_filters.tagIds).isEmpty) return false;
+    }
+    return true;
+  }
+
   Future<void> _openFilterSheet() async {
     final result = await showReportFilterSheet(context, current: _filters);
     if (result != null) {
@@ -141,61 +137,6 @@ class _PageReportsState extends State<PageReports> {
         _future = _load();
       });
     }
-  }
-
-  Future<void> _exportCsv() async {
-    final l10n = AppLocalizations.of(context)!;
-    final transactions = await _transactions.getByRange(_range);
-
-    final filtered = transactions.where((t) {
-      if (t.value < Decimal.zero &&
-          !_filters.transactionType.contains(TransactionFilter.expenses)) {
-        return false;
-      }
-      if (t.value > Decimal.zero &&
-          !_filters.transactionType.contains(TransactionFilter.income)) {
-        return false;
-      }
-      if (_filters.tagIds.isNotEmpty) {
-        final tagIds = t.tags.all.map((tag) => tag.id).toSet();
-        if (tagIds.intersection(_filters.tagIds).isEmpty) return false;
-      }
-      return true;
-    }).toList();
-
-    final buffer = StringBuffer();
-    buffer.writeln('date,value,primary_tag,tags,notes');
-    for (final t in filtered) {
-      final date =
-          '${t.date.year}-${t.date.month.toString().padLeft(2, '0')}-${t.date.day.toString().padLeft(2, '0')}';
-      final value = t.value.toString();
-      final primaryTag = _escapeCsv(t.tags.primary.name);
-      final allTags = _escapeCsv(t.tags.all.map((tag) => tag.name).join(';'));
-      final notes = _escapeCsv(t.notes);
-      buffer.writeln('$date,$value,$primaryTag,$allTags,$notes');
-    }
-
-    final today = DateTime.now();
-    final filename =
-        'transactions_${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}.csv';
-    final bytes = Uint8List.fromList(utf8.encode(buffer.toString()));
-    final path = await saveCsvFile(bytes, filename);
-
-    if (!mounted || path == null) return;
-    showFToast(
-      context: context,
-      alignment: .topCenter,
-      icon: const Icon(FIcons.fileUp),
-      title: Text(l10n.reportExportSuccess),
-      description: Text(path),
-    );
-  }
-
-  String _escapeCsv(String value) {
-    if (value.contains(',') || value.contains('"') || value.contains('\n')) {
-      return '"${value.replaceAll('"', '""')}"';
-    }
-    return value;
   }
 
   @override
@@ -235,10 +176,12 @@ class _PageReportsState extends State<PageReports> {
                 title: Text(l10n.reportView),
                 detailsBuilder: (context, values, child) => Text(
                   values
-                      .map((v) => switch (v) {
-                            _ReportView.primary => l10n.reportViewPrimary,
-                            _ReportView.all => l10n.reportViewAll,
-                          })
+                      .map(
+                        (v) => switch (v) {
+                          _ReportView.primary => l10n.reportViewPrimary,
+                          _ReportView.all => l10n.reportViewAll,
+                        },
+                      )
                       .join(', '),
                 ),
                 menu: [
@@ -265,16 +208,6 @@ class _PageReportsState extends State<PageReports> {
                 variant: .outline,
                 onPress: _openFilterSheet,
                 child: const Icon(FIcons.funnel),
-              ),
-            ),
-            const SizedBox(width: 4),
-            FTooltip(
-              tipBuilder: (context, _) => Text(l10n.reportExportTooltip),
-              child: FButton.icon(
-                size: .lg,
-                variant: .outline,
-                onPress: _exportCsv,
-                child: const Icon(FIcons.fileUp),
               ),
             ),
           ],
@@ -316,7 +249,9 @@ class _PageReportsState extends State<PageReports> {
                             ),
                             const Spacer(),
                             Text(
-                              _range.getName(Localizations.localeOf(context).languageCode),
+                              _range.getName(
+                                Localizations.localeOf(context).languageCode,
+                              ),
                               style: context.theme.typography.base,
                             ),
                             const Spacer(),
@@ -366,9 +301,20 @@ class _PageReportsState extends State<PageReports> {
                                     ),
                                   ),
                                   title: Text(t.tag.name),
-                                  subtitle: t.percent != null
-                                      ? Text('${t.percent!.toStringAsFixed(1)}%')
-                                      : null,
+                                  subtitle: t.percentageDifference == 0
+                                      ? null
+                                      : Row(
+                                          mainAxisSize: .min,
+                                          children: [
+                                            Text('${t.percentageDifference}%'),
+                                            Icon(
+                                              t.percentageDifference > 0
+                                                  ? FIcons.arrowUpRight
+                                                  : FIcons.arrowDownRight,
+                                              size: 12,
+                                            ),
+                                          ],
+                                        ),
                                   suffix: ValueDisplay(value: t.total),
                                   onPress: () => showTagDetail(
                                     context,

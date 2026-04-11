@@ -5,9 +5,21 @@ import 'package:pingre/features/tags/models/tag.dart';
 class TagTotal {
   final Tag tag;
   final Decimal total;
-  final double? percent;
+  final Decimal previousAverage;
 
-  TagTotal({required this.tag, required this.total, this.percent});
+  double get percentageDifference => previousAverage == Decimal.zero
+      ? 0
+      : (((total - previousAverage) / previousAverage).toDecimal(
+                  scaleOnInfinitePrecision: 2,
+                ) *
+                Decimal.fromInt(100))
+            .toDouble();
+
+  TagTotal({
+    required this.tag,
+    required this.total,
+    required this.previousAverage,
+  });
 }
 
 const List<Color> palette = [

@@ -43,3 +43,21 @@ class TagsDisplay extends StatelessWidget {
     );
   }
 }
+
+class TagsDisplayText extends StatelessWidget {
+  final TagsSelection? selection;
+
+  const TagsDisplayText({super.key, required this.selection});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    if (selection == null) {
+      return Center(
+        child: Opacity(opacity: 0.5, child: Text(l10n.noTags)),
+      );
+    }
+    return Text(selection!.all.map((t) => t.name).join(', '));
+  }
+}

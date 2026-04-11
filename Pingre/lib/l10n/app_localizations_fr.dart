@@ -155,6 +155,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get nameRequired => 'Un nom est requis.';
 
   @override
+  String get positives => 'Positives';
+
+  @override
+  String get negatives => 'Négatives';
+
+  @override
+  String get recurringTotalMonthly => 'Mensuel';
+
+  @override
+  String get recurringTotalYearly => 'Annuel';
+
+  @override
   String get newAccount => 'Nouveau compte';
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:pingre/common/models/time_range.dart';
 
 class TimeRangeIcon extends StatelessWidget {

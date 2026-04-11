@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:decimal/decimal.dart';
@@ -46,6 +47,36 @@ class TransactionsService extends ChangeNotifier {
         .where((t) => t.date.isBefore(range.end) && t.date.isAfter(range.start))
         .toList()
       ..sort((a, b) => b.date.compareTo(a.date));
+  }
+
+  /// Calculates the average transaction value for each tag over the previous periods
+  Future<HashMap<String, Decimal>> getPreviousAverages(TimeRange currentRange, {int numberOfPeriods = 3, bool onlyPrimary = false}) async {
+
+    TimeRange oldestRange = currentRange;
+    for (int i = 1; i <= numberOfPeriods; i++)
+    {
+      oldestRange = oldestRange.previous();
+    }
+    TimeRange fullRange = TimeRange(unit: currentRange.unit, start: oldestRange.start, end: currentRange.start.subtract(const Duration(days: 1)));
+
+    final transactions = _transactionsMap.values
+        .where((t) => t.date.isBefore(fullRange.end) && t.date.isAfter(fullRange.start))
+        .toList()
+      ..sort((a, b) => b.date.compareTo(a.date));
+
+    HashMap<String, Decimal> averages = HashMap();
+    for (var transaction in transactions) {
+      final tagsToConsider = onlyPrimary ? [transaction.tags.primary] : transaction.tags.all;
+      for (var tag in tagsToConsider) {
+        averages[tag.id] = (averages[tag.id] ?? Decimal.zero) + transaction.value;
+      }
+    }
+
+    for (var key in averages.keys) {
+      averages[key] = (averages[key]! / Decimal.fromInt(numberOfPeriods)).toDecimal(scaleOnInfinitePrecision: 2);
+    }
+
+    return averages;
   }
 
   Transaction create(Transaction transaction) {

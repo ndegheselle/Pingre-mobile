@@ -33,15 +33,13 @@ class TransactionSummary extends StatelessWidget {
           Row(
             mainAxisAlignment: .spaceBetween,
             children: [
-              Expanded(child: 
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: TagsDisplay(
-                  selection: transaction.tags,
-                  alignement: .start,
-                  wrap: false,
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: TagsDisplayText(selection: transaction.tags),
                 ),
-              )),
+              ),
+              SizedBox(width: 4),
               ValueDisplay(value: transaction.value),
             ],
           ),

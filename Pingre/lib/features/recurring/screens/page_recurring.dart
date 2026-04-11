@@ -1,9 +1,9 @@
+import 'package:collection/collection.dart';
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
-import 'package:forui/forui.dart';
-import 'package:pingre/common/models/time_range_icon.dart';
 import 'package:pingre/features/recurring/screens/overlay_recurring_edit.dart';
 import 'package:pingre/features/recurring/services/recurring.dart';
-import 'package:pingre/common/widgets/data/value_display.dart';
+import 'package:pingre/features/recurring/widgets/recurring_tile_group.dart';
 import 'package:pingre/common/widgets/inputs/search_add.dart';
 import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -40,28 +40,28 @@ class _PageRecurringState extends State<PageRecurring> {
                       ? service.recurringTransactions
                       : service.search(_controller.text);
 
+                  final negatives = filteredRecurring
+                      .where((r) => r.transaction.value < Decimal.zero)
+                      .sortedBy((r) => r.name);
+                  final positives = filteredRecurring
+                      .where((r) => r.transaction.value > Decimal.zero)
+                      .sortedBy((r) => r.name);
+
                   return filteredRecurring.isEmpty
                       ? Center(child: Text(l10n.noRecurringFound))
-                      : FTileGroup(
-                          divider: .full,
-                          children: filteredRecurring
-                              .map(
-                                (recurring) => FTile(
-                                  prefix: TimeRangeIcon(unit: recurring.range),
-                                  title: Text(recurring.name),
-                                  subtitle: Text(
-                                    recurring.transaction.tags.all
-                                        .map((t) => t.name)
-                                        .join(", "),
-                                  ),
-                                  details: ValueDisplay(
-                                    value: recurring.transaction.value,
-                                  ),
-                                  suffix: const Icon(FIcons.chevronRight),
-                                  onPress: () => showRecurringTransactionEdit(context, recurringTransaction: recurring),
-                                ),
-                              )
-                              .toList(),
+                      : ListView(
+                          children: [
+                            if (positives.isNotEmpty)
+                               RecurringTileGroup(
+                                label: l10n.positives,
+                                items: positives,
+                              ),
+                            if (negatives.isNotEmpty)
+                              RecurringTileGroup(
+                                label: l10n.negatives,
+                                items: negatives,
+                              ),
+                          ],
                         );
                 },
               ),
