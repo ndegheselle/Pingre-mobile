@@ -168,6 +168,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recurringTotalYearly => 'Yearly';
 
   @override
+  String get recurringActive => 'Active';
+
+  @override
   String get newAccount => 'New account';
 
   @override

@@ -42,7 +42,7 @@ class RecurringTileGroup extends StatelessWidget {
   });
 
   Decimal _computeTotal(Decimal Function(TimeRangeUnit) multiplier) {
-    return items.where((r) => r.isActive).fold(Decimal.zero, (sum, r) {
+    return items.fold(Decimal.zero, (sum, r) {
       final scaled = (r.transaction.value.toRational() * multiplier(r.range).toRational()).toDecimal(scaleOnInfinitePrecision: 2);
       return sum + scaled;
     });
@@ -51,7 +51,6 @@ class RecurringTileGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final service = context.read<RecurringTransactionsService>();
     final monthlyTotal = _computeTotal(_monthlyMultiplier);
     final yearlyTotal = _computeTotal(_yearlyMultiplier);
 
@@ -60,23 +59,15 @@ class RecurringTileGroup extends StatelessWidget {
       divider: .full,
       children: [
         ...items.map(
-          (recurring) => Opacity(
-            opacity: recurring.isActive ? 1.0 : 0.5,
-            child: FTile(
+          (recurring) => FTile(
               prefix: TimeRangeIcon(unit: recurring.range),
               title: Text(recurring.name),
               subtitle: TagsDisplayText(selection: recurring.transaction.tags),
-              details: ValueDisplay(value: recurring.transaction.value),
-              suffix: FSwitch(
-                semanticsLabel: recurring.name,
-                value: recurring.isActive,
-                onChange: (value) => service.update(recurring.id, isActive: value),
-              ),
+              suffix: ValueDisplay(value: recurring.transaction.value),
               onPress: () => showRecurringTransactionEdit(
                 context,
                 recurringTransaction: recurring,
               ),
-            ),
           ),
         ),
         FTile(

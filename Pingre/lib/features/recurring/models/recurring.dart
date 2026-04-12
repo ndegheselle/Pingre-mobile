@@ -7,16 +7,13 @@ class RecurringTransaction {
   final String name;
   final Transaction transaction;
   final TimeRangeUnit range;
-  final bool isActive;
 
   RecurringTransaction({
     required this.name,
     required this.transaction,
     required this.range,
-    String? id,
-    bool? isActive,
-  }) : id = id ?? const Uuid().v4(),
-       isActive = isActive ?? true;
+    String? id
+  }) : id = id ?? const Uuid().v4();
 
   RecurringTransaction copyWith({
     String? id,
@@ -30,7 +27,6 @@ class RecurringTransaction {
       name: name ?? this.name,
       transaction: transaction ?? this.transaction,
       range: range ?? this.range,
-      isActive: isActive ?? this.isActive,
     );
   }
 }

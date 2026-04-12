@@ -17,7 +17,6 @@ class RecurringTransactionsTable extends Table {
   TextColumn get transactionValue => text()(); // store Decimal as string
   DateTimeColumn get transactionDate => dateTime()();
   TextColumn get transactionNotes => text()();
-  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -40,7 +39,6 @@ extension RecurringTransactionMapper on RecurringTransaction {
     id: id,
     name: name,
     range: range.name, // enum → string
-    isActive: isActive,
     transactionId: transaction.id,
     transactionValue: transaction.value.toString(),
     transactionDate: transaction.date,
@@ -55,7 +53,6 @@ extension RecurringTransactionMapper on RecurringTransaction {
     id: data.id,
     name: data.name,
     range: TimeRangeUnit.values.byName(data.range),
-    isActive: data.isActive,
     transaction: Transaction(
       id: data.transactionId,
       value: Decimal.parse(data.transactionValue),

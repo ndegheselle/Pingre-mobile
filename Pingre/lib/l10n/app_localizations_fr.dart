@@ -170,6 +170,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get recurringTotalYearly => 'Annuel';
 
   @override
+  String get recurringActive => 'Actif';
+
+  @override
   String get newAccount => 'Nouveau compte';
 
   @override

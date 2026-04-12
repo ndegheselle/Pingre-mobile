@@ -101,7 +101,7 @@ class RecurringTransactionsService extends ChangeNotifier {
     final now = DateTime.now();
     if (lastRun == null || !lastRun.isBefore(now)) return;
 
-    for (final recurring in recurringTransactions.where((r) => r.isActive)) {
+    for (final recurring in recurringTransactions) {
       for (final date in _getOccurrencesBetween(recurring, lastRun, now)) {
         if (!await transactionsService.existsByDateAndPrimaryTag(
           date,

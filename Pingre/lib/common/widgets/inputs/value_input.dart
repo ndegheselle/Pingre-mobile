@@ -6,7 +6,8 @@ import 'package:pingre/theme_extensions.dart';
 import 'package:provider/provider.dart';
 
 class NumberValueController extends ValueNotifier<Decimal> {
-  NumberValueController([Decimal? initialValue]) : super(initialValue ?? Decimal.zero);
+  NumberValueController([Decimal? initialValue])
+    : super(initialValue ?? Decimal.zero);
 
   bool get isNegative => value <= .zero;
   Decimal get absolute => value.abs();
@@ -34,7 +35,11 @@ class ValueInput extends StatefulWidget {
   final NumberValueController controller;
   final bool readonly;
 
-  const ValueInput({super.key, required this.controller, this.readonly = false});
+  const ValueInput({
+    super.key,
+    required this.controller,
+    this.readonly = false,
+  });
 
   @override
   State<ValueInput> createState() => _ValueInputState();
@@ -122,15 +127,10 @@ class _ValueInputState extends State<ValueInput> {
                     [.error.and(.disabled)]: InputBorder.none,
                   },
                 ),
-                contentTextStyle: .delta([
-                  .base(
-                    .delta(
-                      color: color,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ]),
+                contentTextStyle: FVariants(
+                  .new(color: color, fontSize: 32, fontWeight: FontWeight.w600),
+                  variants: {},
+                ),
               ),
             ),
           ),
@@ -139,7 +139,12 @@ class _ValueInputState extends State<ValueInput> {
           width: 48,
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Icon(context.read<SettingsService>().currency.icon, size: 28, color: color, fontWeight: .bold),
+            child: Icon(
+              context.read<SettingsService>().currency.icon,
+              size: 28,
+              color: color,
+              fontWeight: .bold,
+            ),
           ),
         ),
       ],

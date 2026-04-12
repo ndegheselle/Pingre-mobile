@@ -47,7 +47,6 @@ class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransa
   late TransactionFormData _formData;
   late TextEditingController _nameController;
   late TimeRangeUnit _range;
-  late bool _isActive;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -62,7 +61,6 @@ class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransa
       text: widget.recurringTransaction?.name ?? widget.name ?? "",
     );
     _range = widget.recurringTransaction?.range ?? TimeRangeUnit.month;
-    _isActive = widget.recurringTransaction?.isActive ?? true;
   }
 
   @override
@@ -89,7 +87,6 @@ class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransa
           notes: _formData.notes,
         ),
         range: _range,
-        isActive: _isActive,
       );
     } else {
       service.create(
@@ -102,7 +99,6 @@ class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransa
             notes: _formData.notes,
           ),
           range: _range,
-          isActive: _isActive,
         ),
       );
     }
@@ -192,13 +188,6 @@ class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransa
                 hint: l10n.nameHint,
                 control: .managed(controller: _nameController),
               ),
-            ),
-            const SizedBox(height: 8),
-            FSwitch(
-              label: Text(l10n.recurringActive),
-              semanticsLabel: l10n.recurringActive,
-              value: _isActive,
-              onChange: (value) => setState(() => _isActive = value),
             ),
             const SizedBox(height: 4),
             Expanded(

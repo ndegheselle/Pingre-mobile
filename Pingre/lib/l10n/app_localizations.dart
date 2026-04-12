@@ -410,6 +410,12 @@ abstract class AppLocalizations {
   /// **'Yearly'**
   String get recurringTotalYearly;
 
+  /// No description provided for @recurringActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get recurringActive;
+
   /// No description provided for @newAccount.
   ///
   /// In en, this message translates to:
