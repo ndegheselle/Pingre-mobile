@@ -32,8 +32,9 @@ class NumberValueController extends ValueNotifier<Decimal> {
 /// Decimal value input for a transaction
 class ValueInput extends StatefulWidget {
   final NumberValueController controller;
+  final bool readonly;
 
-  const ValueInput({super.key, required this.controller});
+  const ValueInput({super.key, required this.controller, this.readonly = false});
 
   @override
   State<ValueInput> createState() => _ValueInputState();
@@ -87,7 +88,7 @@ class _ValueInputState extends State<ValueInput> {
           width: 48,
           child: FButton.icon(
             variant: .ghost,
-            onPress: widget.controller.toggleSign,
+            onPress: widget.readonly ? null : widget.controller.toggleSign,
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 250),
               transitionBuilder: (child, animation) {
@@ -109,6 +110,7 @@ class _ValueInputState extends State<ValueInput> {
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
               maxLines: 1,
+              enabled: !widget.readonly,
               style: .delta(
                 contentPadding: .value(.zero),
                 border: FVariants(
