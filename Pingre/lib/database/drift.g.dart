@@ -2047,6 +2047,360 @@ class RecurringTransactionTagsTableCompanion
   }
 }
 
+class $SettingsTableTable extends SettingsTable
+    with TableInfo<$SettingsTableTable, SettingsTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SettingsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _themeModeMeta = const VerificationMeta(
+    'themeMode',
+  );
+  @override
+  late final GeneratedColumn<int> themeMode = GeneratedColumn<int>(
+    'theme_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastRecurringSetupMeta =
+      const VerificationMeta('lastRecurringSetup');
+  @override
+  late final GeneratedColumn<int> lastRecurringSetup = GeneratedColumn<int>(
+    'last_recurring_setup',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _currencyMeta = const VerificationMeta(
+    'currency',
+  );
+  @override
+  late final GeneratedColumn<int> currency = GeneratedColumn<int>(
+    'currency',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _localeMeta = const VerificationMeta('locale');
+  @override
+  late final GeneratedColumn<String> locale = GeneratedColumn<String>(
+    'locale',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    themeMode,
+    lastRecurringSetup,
+    currency,
+    locale,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'settings_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SettingsTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('theme_mode')) {
+      context.handle(
+        _themeModeMeta,
+        themeMode.isAcceptableOrUnknown(data['theme_mode']!, _themeModeMeta),
+      );
+    }
+    if (data.containsKey('last_recurring_setup')) {
+      context.handle(
+        _lastRecurringSetupMeta,
+        lastRecurringSetup.isAcceptableOrUnknown(
+          data['last_recurring_setup']!,
+          _lastRecurringSetupMeta,
+        ),
+      );
+    }
+    if (data.containsKey('currency')) {
+      context.handle(
+        _currencyMeta,
+        currency.isAcceptableOrUnknown(data['currency']!, _currencyMeta),
+      );
+    }
+    if (data.containsKey('locale')) {
+      context.handle(
+        _localeMeta,
+        locale.isAcceptableOrUnknown(data['locale']!, _localeMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SettingsTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SettingsTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      themeMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}theme_mode'],
+      )!,
+      lastRecurringSetup: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_recurring_setup'],
+      ),
+      currency: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}currency'],
+      )!,
+      locale: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}locale'],
+      ),
+    );
+  }
+
+  @override
+  $SettingsTableTable createAlias(String alias) {
+    return $SettingsTableTable(attachedDatabase, alias);
+  }
+}
+
+class SettingsTableData extends DataClass
+    implements Insertable<SettingsTableData> {
+  final int id;
+  final int themeMode;
+  final int? lastRecurringSetup;
+  final int currency;
+  final String? locale;
+  const SettingsTableData({
+    required this.id,
+    required this.themeMode,
+    this.lastRecurringSetup,
+    required this.currency,
+    this.locale,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['theme_mode'] = Variable<int>(themeMode);
+    if (!nullToAbsent || lastRecurringSetup != null) {
+      map['last_recurring_setup'] = Variable<int>(lastRecurringSetup);
+    }
+    map['currency'] = Variable<int>(currency);
+    if (!nullToAbsent || locale != null) {
+      map['locale'] = Variable<String>(locale);
+    }
+    return map;
+  }
+
+  SettingsTableCompanion toCompanion(bool nullToAbsent) {
+    return SettingsTableCompanion(
+      id: Value(id),
+      themeMode: Value(themeMode),
+      lastRecurringSetup: lastRecurringSetup == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastRecurringSetup),
+      currency: Value(currency),
+      locale: locale == null && nullToAbsent
+          ? const Value.absent()
+          : Value(locale),
+    );
+  }
+
+  factory SettingsTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SettingsTableData(
+      id: serializer.fromJson<int>(json['id']),
+      themeMode: serializer.fromJson<int>(json['themeMode']),
+      lastRecurringSetup: serializer.fromJson<int?>(json['lastRecurringSetup']),
+      currency: serializer.fromJson<int>(json['currency']),
+      locale: serializer.fromJson<String?>(json['locale']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'themeMode': serializer.toJson<int>(themeMode),
+      'lastRecurringSetup': serializer.toJson<int?>(lastRecurringSetup),
+      'currency': serializer.toJson<int>(currency),
+      'locale': serializer.toJson<String?>(locale),
+    };
+  }
+
+  SettingsTableData copyWith({
+    int? id,
+    int? themeMode,
+    Value<int?> lastRecurringSetup = const Value.absent(),
+    int? currency,
+    Value<String?> locale = const Value.absent(),
+  }) => SettingsTableData(
+    id: id ?? this.id,
+    themeMode: themeMode ?? this.themeMode,
+    lastRecurringSetup: lastRecurringSetup.present
+        ? lastRecurringSetup.value
+        : this.lastRecurringSetup,
+    currency: currency ?? this.currency,
+    locale: locale.present ? locale.value : this.locale,
+  );
+  SettingsTableData copyWithCompanion(SettingsTableCompanion data) {
+    return SettingsTableData(
+      id: data.id.present ? data.id.value : this.id,
+      themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
+      lastRecurringSetup: data.lastRecurringSetup.present
+          ? data.lastRecurringSetup.value
+          : this.lastRecurringSetup,
+      currency: data.currency.present ? data.currency.value : this.currency,
+      locale: data.locale.present ? data.locale.value : this.locale,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SettingsTableData(')
+          ..write('id: $id, ')
+          ..write('themeMode: $themeMode, ')
+          ..write('lastRecurringSetup: $lastRecurringSetup, ')
+          ..write('currency: $currency, ')
+          ..write('locale: $locale')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, themeMode, lastRecurringSetup, currency, locale);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SettingsTableData &&
+          other.id == this.id &&
+          other.themeMode == this.themeMode &&
+          other.lastRecurringSetup == this.lastRecurringSetup &&
+          other.currency == this.currency &&
+          other.locale == this.locale);
+}
+
+class SettingsTableCompanion extends UpdateCompanion<SettingsTableData> {
+  final Value<int> id;
+  final Value<int> themeMode;
+  final Value<int?> lastRecurringSetup;
+  final Value<int> currency;
+  final Value<String?> locale;
+  const SettingsTableCompanion({
+    this.id = const Value.absent(),
+    this.themeMode = const Value.absent(),
+    this.lastRecurringSetup = const Value.absent(),
+    this.currency = const Value.absent(),
+    this.locale = const Value.absent(),
+  });
+  SettingsTableCompanion.insert({
+    this.id = const Value.absent(),
+    this.themeMode = const Value.absent(),
+    this.lastRecurringSetup = const Value.absent(),
+    this.currency = const Value.absent(),
+    this.locale = const Value.absent(),
+  });
+  static Insertable<SettingsTableData> custom({
+    Expression<int>? id,
+    Expression<int>? themeMode,
+    Expression<int>? lastRecurringSetup,
+    Expression<int>? currency,
+    Expression<String>? locale,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (themeMode != null) 'theme_mode': themeMode,
+      if (lastRecurringSetup != null)
+        'last_recurring_setup': lastRecurringSetup,
+      if (currency != null) 'currency': currency,
+      if (locale != null) 'locale': locale,
+    });
+  }
+
+  SettingsTableCompanion copyWith({
+    Value<int>? id,
+    Value<int>? themeMode,
+    Value<int?>? lastRecurringSetup,
+    Value<int>? currency,
+    Value<String?>? locale,
+  }) {
+    return SettingsTableCompanion(
+      id: id ?? this.id,
+      themeMode: themeMode ?? this.themeMode,
+      lastRecurringSetup: lastRecurringSetup ?? this.lastRecurringSetup,
+      currency: currency ?? this.currency,
+      locale: locale ?? this.locale,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (themeMode.present) {
+      map['theme_mode'] = Variable<int>(themeMode.value);
+    }
+    if (lastRecurringSetup.present) {
+      map['last_recurring_setup'] = Variable<int>(lastRecurringSetup.value);
+    }
+    if (currency.present) {
+      map['currency'] = Variable<int>(currency.value);
+    }
+    if (locale.present) {
+      map['locale'] = Variable<String>(locale.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SettingsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('themeMode: $themeMode, ')
+          ..write('lastRecurringSetup: $lastRecurringSetup, ')
+          ..write('currency: $currency, ')
+          ..write('locale: $locale')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3285,387 +3639,13 @@ typedef $$RecurringTransactionTagsTableTableProcessedTableManager =
       RecurringTransactionTagsTableData,
       PrefetchHooks Function()
     >;
-
-class $SettingsTableTable extends SettingsTable
-    with TableInfo<$SettingsTableTable, SettingsTableData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $SettingsTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _themeModeMeta = const VerificationMeta(
-    'themeMode',
-  );
-  @override
-  late final GeneratedColumn<int> themeMode = GeneratedColumn<int>(
-    'theme_mode',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0),
-  );
-  static const VerificationMeta _lastRecurringSetupMeta =
-      const VerificationMeta('lastRecurringSetup');
-  @override
-  late final GeneratedColumn<int> lastRecurringSetup = GeneratedColumn<int>(
-    'last_recurring_setup',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _currencyMeta = const VerificationMeta(
-    'currency',
-  );
-  @override
-  late final GeneratedColumn<int> currency = GeneratedColumn<int>(
-    'currency',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(1),
-  );
-  static const VerificationMeta _localeMeta = const VerificationMeta('locale');
-  @override
-  late final GeneratedColumn<String> locale = GeneratedColumn<String>(
-    'locale',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    themeMode,
-    lastRecurringSetup,
-    currency,
-    locale,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'settings_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<SettingsTableData> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('theme_mode')) {
-      context.handle(
-        _themeModeMeta,
-        themeMode.isAcceptableOrUnknown(data['theme_mode']!, _themeModeMeta),
-      );
-    }
-    if (data.containsKey('last_recurring_setup')) {
-      context.handle(
-        _lastRecurringSetupMeta,
-        lastRecurringSetup.isAcceptableOrUnknown(
-          data['last_recurring_setup']!,
-          _lastRecurringSetupMeta,
-        ),
-      );
-    }
-    if (data.containsKey('currency')) {
-      context.handle(
-        _currencyMeta,
-        currency.isAcceptableOrUnknown(data['currency']!, _currencyMeta),
-      );
-    }
-    if (data.containsKey('locale')) {
-      context.handle(
-        _localeMeta,
-        locale.isAcceptableOrUnknown(data['locale']!, _localeMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  SettingsTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return SettingsTableData(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      )!,
-      themeMode: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}theme_mode'],
-      )!,
-      lastRecurringSetup: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}last_recurring_setup'],
-      ),
-      currency: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}currency'],
-      )!,
-      locale: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}locale'],
-      ),
-    );
-  }
-
-  @override
-  $SettingsTableTable createAlias(String alias) {
-    return $SettingsTableTable(attachedDatabase, alias);
-  }
-}
-
-class SettingsTableData extends DataClass
-    implements Insertable<SettingsTableData> {
-  final int id;
-  final int themeMode;
-  final int? lastRecurringSetup;
-  final int currency;
-  final String? locale;
-  const SettingsTableData({
-    required this.id,
-    required this.themeMode,
-    this.lastRecurringSetup,
-    required this.currency,
-    this.locale,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['theme_mode'] = Variable<int>(themeMode);
-    if (!nullToAbsent || lastRecurringSetup != null) {
-      map['last_recurring_setup'] = Variable<int>(lastRecurringSetup);
-    }
-    map['currency'] = Variable<int>(currency);
-    if (!nullToAbsent || locale != null) {
-      map['locale'] = Variable<String>(locale);
-    }
-    return map;
-  }
-
-  SettingsTableCompanion toCompanion(bool nullToAbsent) {
-    return SettingsTableCompanion(
-      id: Value(id),
-      themeMode: Value(themeMode),
-      lastRecurringSetup: lastRecurringSetup == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastRecurringSetup),
-      currency: Value(currency),
-      locale: locale == null && nullToAbsent
-          ? const Value.absent()
-          : Value(locale),
-    );
-  }
-
-  factory SettingsTableData.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return SettingsTableData(
-      id: serializer.fromJson<int>(json['id']),
-      themeMode: serializer.fromJson<int>(json['themeMode']),
-      lastRecurringSetup: serializer.fromJson<int?>(json['lastRecurringSetup']),
-      currency: serializer.fromJson<int>(json['currency']),
-      locale: serializer.fromJson<String?>(json['locale']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'themeMode': serializer.toJson<int>(themeMode),
-      'lastRecurringSetup': serializer.toJson<int?>(lastRecurringSetup),
-      'currency': serializer.toJson<int>(currency),
-      'locale': serializer.toJson<String?>(locale),
-    };
-  }
-
-  SettingsTableData copyWith({
-    int? id,
-    int? themeMode,
-    Value<int?> lastRecurringSetup = const Value.absent(),
-    int? currency,
-    Value<String?> locale = const Value.absent(),
-  }) => SettingsTableData(
-    id: id ?? this.id,
-    themeMode: themeMode ?? this.themeMode,
-    lastRecurringSetup: lastRecurringSetup.present
-        ? lastRecurringSetup.value
-        : this.lastRecurringSetup,
-    currency: currency ?? this.currency,
-    locale: locale.present ? locale.value : this.locale,
-  );
-  SettingsTableData copyWithCompanion(SettingsTableCompanion data) {
-    return SettingsTableData(
-      id: data.id.present ? data.id.value : this.id,
-      themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
-      lastRecurringSetup: data.lastRecurringSetup.present
-          ? data.lastRecurringSetup.value
-          : this.lastRecurringSetup,
-      currency: data.currency.present ? data.currency.value : this.currency,
-      locale: data.locale.present ? data.locale.value : this.locale,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('SettingsTableData(')
-          ..write('id: $id, ')
-          ..write('themeMode: $themeMode, ')
-          ..write('lastRecurringSetup: $lastRecurringSetup, ')
-          ..write('currency: $currency, ')
-          ..write('locale: $locale')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(id, themeMode, lastRecurringSetup, currency, locale);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is SettingsTableData &&
-          other.id == this.id &&
-          other.themeMode == this.themeMode &&
-          other.lastRecurringSetup == this.lastRecurringSetup &&
-          other.currency == this.currency &&
-          other.locale == this.locale);
-}
-
-class SettingsTableCompanion extends UpdateCompanion<SettingsTableData> {
-  final Value<int> id;
-  final Value<int> themeMode;
-  final Value<int?> lastRecurringSetup;
-  final Value<int> currency;
-  final Value<String?> locale;
-  final Value<int> rowid;
-  const SettingsTableCompanion({
-    this.id = const Value.absent(),
-    this.themeMode = const Value.absent(),
-    this.lastRecurringSetup = const Value.absent(),
-    this.currency = const Value.absent(),
-    this.locale = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  SettingsTableCompanion.insert({
-    required int id,
-    Value<int> themeMode = const Value.absent(),
-    Value<int?> lastRecurringSetup = const Value.absent(),
-    Value<int> currency = const Value.absent(),
-    Value<String?> locale = const Value.absent(),
-    Value<int> rowid = const Value.absent(),
-  }) : id = Value(id),
-       themeMode = themeMode,
-       lastRecurringSetup = lastRecurringSetup,
-       currency = currency,
-       locale = locale,
-       rowid = rowid;
-  static Insertable<SettingsTableData> custom({
-    Expression<int>? id,
-    Expression<int>? themeMode,
-    Expression<int>? lastRecurringSetup,
-    Expression<int>? currency,
-    Expression<String>? locale,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (themeMode != null) 'theme_mode': themeMode,
-      if (lastRecurringSetup != null)
-        'last_recurring_setup': lastRecurringSetup,
-      if (currency != null) 'currency': currency,
-      if (locale != null) 'locale': locale,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  SettingsTableCompanion copyWith({
-    Value<int>? id,
-    Value<int>? themeMode,
-    Value<int?>? lastRecurringSetup,
-    Value<int>? currency,
-    Value<String?>? locale,
-    Value<int>? rowid,
-  }) {
-    return SettingsTableCompanion(
-      id: id ?? this.id,
-      themeMode: themeMode ?? this.themeMode,
-      lastRecurringSetup: lastRecurringSetup ?? this.lastRecurringSetup,
-      currency: currency ?? this.currency,
-      locale: locale ?? this.locale,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (themeMode.present) {
-      map['theme_mode'] = Variable<int>(themeMode.value);
-    }
-    if (lastRecurringSetup.present) {
-      map['last_recurring_setup'] = Variable<int>(lastRecurringSetup.value);
-    }
-    if (currency.present) {
-      map['currency'] = Variable<int>(currency.value);
-    }
-    if (locale.present) {
-      map['locale'] = Variable<String>(locale.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('SettingsTableCompanion(')
-          ..write('id: $id, ')
-          ..write('themeMode: $themeMode, ')
-          ..write('lastRecurringSetup: $lastRecurringSetup, ')
-          ..write('currency: $currency, ')
-          ..write('locale: $locale, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
 typedef $$SettingsTableTableCreateCompanionBuilder =
     SettingsTableCompanion Function({
-      required int id,
+      Value<int> id,
       Value<int> themeMode,
       Value<int?> lastRecurringSetup,
       Value<int> currency,
       Value<String?> locale,
-      Value<int> rowid,
     });
 typedef $$SettingsTableTableUpdateCompanionBuilder =
     SettingsTableCompanion Function({
@@ -3674,7 +3654,6 @@ typedef $$SettingsTableTableUpdateCompanionBuilder =
       Value<int?> lastRecurringSetup,
       Value<int> currency,
       Value<String?> locale,
-      Value<int> rowid,
     });
 
 class $$SettingsTableTableFilterComposer
@@ -3796,10 +3775,8 @@ class $$SettingsTableTableTableManager
           SettingsTableData,
           PrefetchHooks Function()
         > {
-  $$SettingsTableTableTableManager(
-    _$AppDatabase db,
-    $SettingsTableTable table,
-  ) : super(
+  $$SettingsTableTableTableManager(_$AppDatabase db, $SettingsTableTable table)
+    : super(
         TableManagerState(
           db: db,
           table: table,
@@ -3816,30 +3793,26 @@ class $$SettingsTableTableTableManager
                 Value<int?> lastRecurringSetup = const Value.absent(),
                 Value<int> currency = const Value.absent(),
                 Value<String?> locale = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
               }) => SettingsTableCompanion(
                 id: id,
                 themeMode: themeMode,
                 lastRecurringSetup: lastRecurringSetup,
                 currency: currency,
                 locale: locale,
-                rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                required int id,
+                Value<int> id = const Value.absent(),
                 Value<int> themeMode = const Value.absent(),
                 Value<int?> lastRecurringSetup = const Value.absent(),
                 Value<int> currency = const Value.absent(),
                 Value<String?> locale = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
               }) => SettingsTableCompanion.insert(
                 id: id,
                 themeMode: themeMode,
                 lastRecurringSetup: lastRecurringSetup,
                 currency: currency,
                 locale: locale,
-                rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

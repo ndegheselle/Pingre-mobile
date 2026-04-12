@@ -63,6 +63,7 @@
 
   "newAccount": "Nouveau compte",
   "editAccount": "Modifier le compte",
+  "total": "Total",
   "noAccountsFound": "Aucun compte trouvé",
   "accountSavedDesc": "Le compte a été enregistré",
   "accountRemovedDialogTitle": "Supprimer le compte",

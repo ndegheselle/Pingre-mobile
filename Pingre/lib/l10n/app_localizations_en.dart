@@ -177,6 +177,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editAccount => 'Edit account';
 
   @override
+  String get total => 'Total';
+
+  @override
   String get noAccountsFound => 'No accounts found';
 
   @override

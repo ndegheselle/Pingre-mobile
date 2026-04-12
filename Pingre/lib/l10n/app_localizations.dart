@@ -428,6 +428,12 @@ abstract class AppLocalizations {
   /// **'Edit account'**
   String get editAccount;
 
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
   /// No description provided for @noAccountsFound.
   ///
   /// In en, this message translates to:

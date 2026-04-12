@@ -116,12 +116,6 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
             ),
           ),
           const SizedBox(height: 4),
-          FTextField.multiline(
-            hint: l10n.notesHint,
-            control: .managed(controller: _noteController),
-            enabled: !widget.readonly,
-          ),
-          const SizedBox(height: 4),
           Row(
             children: [
               Expanded(
@@ -140,6 +134,12 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 4),
+          FTextField.multiline(
+            hint: l10n.notesHint,
+            control: .managed(controller: _noteController),
+            enabled: !widget.readonly,
           ),
           // Hidden FormField to sync remaining controllers on save
           FormField<void>(

@@ -179,6 +179,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get editAccount => 'Modifier le compte';
 
   @override
+  String get total => 'Total';
+
+  @override
   String get noAccountsFound => 'Aucun compte trouvé';
 
   @override

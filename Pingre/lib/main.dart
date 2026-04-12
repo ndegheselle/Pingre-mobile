@@ -8,7 +8,7 @@ import 'package:pingre/features/tags/services/tags.dart';
 import 'package:pingre/features/settings/services/settings.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
 import 'package:pingre/l10n/app_localizations.dart';
-import 'package:pingre/themes.dart';
+import 'package:pingre/theme_extensions.dart';
 import 'package:provider/provider.dart';
 
 import 'home_page.dart';
@@ -61,8 +61,25 @@ class Application extends StatelessWidget {
     final settings = context.watch<SettingsService>();
     final themeMode = settings.themeMode;
 
-    final light = buildPingreLight();
-    final dark = buildPingreDark();
+    final light = FThemes.zinc.light.copyWith(
+      scaffoldStyle: .delta(backgroundColor: FThemes.zinc.light.colors.background),
+      extensions: const [
+        AppSemanticColors(
+          positive: Color(0xFF48c78e), // green-600
+          negative: Color(0xFFff6685), // red-600
+        ),
+      ],
+    );
+
+    final dark = FThemes.zinc.dark.copyWith(
+      scaffoldStyle: .delta(backgroundColor: FThemes.zinc.dark.colors.background),
+      extensions: const [
+        AppSemanticColors(
+          positive: Color(0xFF48c78e), // lighter green for dark bg
+          negative: Color(0xFFff6685), // lighter red for dark bg
+        ),
+      ],
+    );
 
     return MaterialApp(
       supportedLocales: AppLocalizations.supportedLocales,

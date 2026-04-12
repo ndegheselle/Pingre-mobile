@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:pingre/features/accounts/screens/overlay_account_edit.dart';
@@ -27,43 +28,62 @@ class _PageAccountsState extends State<PageAccounts> {
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
-        children: [
-          SearchWithAdd(controller: _controller, onAdd: _addAccount),
-          const SizedBox(height: 4),
-          ValueListenableBuilder(
-            valueListenable: _controller,
-            builder: (context, _, _) {
-              return Expanded(
-                child: Consumer<AccountsService>(
-                  builder: (context, service, child) {
-                    final filteredAccounts = _controller.text.isEmpty
-                        ? service.accounts
-                        : service.search(_controller.text);
+      children: [
+        SearchWithAdd(controller: _controller, onAdd: _addAccount),
+        const SizedBox(height: 4),
+        ValueListenableBuilder(
+          valueListenable: _controller,
+          builder: (context, _, _) {
+            return Expanded(
+              child: Consumer<AccountsService>(
+                builder: (context, service, child) {
+                  final filteredAccounts = _controller.text.isEmpty
+                      ? service.accounts
+                      : service.search(_controller.text);
 
-                    return filteredAccounts.isEmpty
+                  final total = filteredAccounts.fold(
+                    Decimal.zero,
+                    (sum, a) => sum + a.balance,
+                  );
+
+                  return Expanded(
+                    child: filteredAccounts.isEmpty
                         ? Center(child: Text(l10n.noAccountsFound))
                         : FTileGroup(
                             divider: .full,
-                            children: filteredAccounts
-                                .map(
-                                  (account) => FTile(
-                                    prefix: AccountTypeIcon(type: account.type),
-                                    title: Text(account.name),
-                                    subtitle: account.description.isEmpty ? null : Text(account.description),
-                                    details: ValueDisplay(value: account.balance),
-                                    suffix: const Icon(FIcons.chevronRight),
-                                    onPress: () => showAccountEdit(context, account: account),
+                            children: [
+                              ...filteredAccounts.map(
+                                (account) => FTile(
+                                  prefix: AccountTypeIcon(type: account.type),
+                                  title: Text(account.name),
+                                  subtitle: account.description.isEmpty
+                                      ? null
+                                      : Text(account.description),
+                                  details: ValueDisplay(value: account.balance),
+                                  suffix: const Icon(FIcons.chevronRight),
+                                  onPress: () => showAccountEdit(
+                                    context,
+                                    account: account,
                                   ),
-                                )
-                                .toList(),
-                          );
-                  },
-                ),
-              );
-            },
-          ),
-          const SizedBox(height: 4),
-        ],
-      );
+                                ),
+                              ),
+                              FTile(
+                                title: Text(l10n.total),
+                                details: ValueDisplay(
+                                  value: total,
+                                  isHeader: true,
+                                ),
+                              ),
+                            ],
+                          ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 4),
+      ],
+    );
   }
 }

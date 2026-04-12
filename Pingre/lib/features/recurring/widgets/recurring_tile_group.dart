@@ -6,10 +6,8 @@ import 'package:pingre/common/widgets/data/time_range_icon.dart';
 import 'package:pingre/common/widgets/data/value_display.dart';
 import 'package:pingre/features/recurring/models/recurring.dart';
 import 'package:pingre/features/recurring/screens/overlay_recurring_edit.dart';
-import 'package:pingre/features/recurring/services/recurring.dart';
 import 'package:pingre/features/tags/widgets/tags_display.dart';
 import 'package:pingre/l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
 
 /// Multipliers to convert a recurring transaction value to a monthly equivalent.
 Decimal _monthlyMultiplier(TimeRangeUnit unit) => switch (unit) {
