@@ -16,10 +16,10 @@ import 'home_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final settingsService = SettingsService();
-  await settingsService.load();
-
   final db = AppDatabase();
+
+  final settingsService = SettingsService(db);
+  await settingsService.load();
 
   // Tags must be initialized first — other services resolve tags from its cache.
   final tagsService = TagsService(db);

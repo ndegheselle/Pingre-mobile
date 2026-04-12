@@ -1,6 +1,7 @@
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pingre/database/drift.dart';
 
 enum Currency {
   dollar,
@@ -45,23 +46,22 @@ enum Currency {
 }
 
 class SettingsService extends ChangeNotifier {
-  static const _themeModeKey = 'themeMode';
-  static const _lastRecurringSetupKey = 'lastRecurringSetup';
-  static const _currencyKey = 'currency';
-  static const _localeKey = 'locale';
+  static const _settingsId = 1;
 
-  SharedPreferences? _prefs;
+  final AppDatabase _db;
   ThemeMode _themeMode = ThemeMode.system;
   DateTime? _lastRecurringSetup;
   Currency _currency = Currency.euro;
   Locale? _locale;
+
+  SettingsService(this._db);
 
   ThemeMode get themeMode => _themeMode;
 
   set themeMode(ThemeMode mode) {
     if (_themeMode == mode) return;
     _themeMode = mode;
-    _prefs?.setInt(_themeModeKey, mode.index);
+    _save();
     notifyListeners();
   }
 
@@ -70,7 +70,7 @@ class SettingsService extends ChangeNotifier {
   set currency(Currency value) {
     if (_currency == value) return;
     _currency = value;
-    _prefs?.setInt(_currencyKey, value.index);
+    _save();
     notifyListeners();
   }
 
@@ -79,11 +79,7 @@ class SettingsService extends ChangeNotifier {
   set locale(Locale? value) {
     if (_locale == value) return;
     _locale = value;
-    if (value != null) {
-      _prefs?.setString(_localeKey, value.languageCode);
-    } else {
-      _prefs?.remove(_localeKey);
-    }
+    _save();
     notifyListeners();
   }
 
@@ -91,25 +87,33 @@ class SettingsService extends ChangeNotifier {
 
   set lastRecurringSetup(DateTime? value) {
     _lastRecurringSetup = value;
-    if (value != null) {
-      _prefs?.setInt(_lastRecurringSetupKey, value.millisecondsSinceEpoch);
-    } else {
-      _prefs?.remove(_lastRecurringSetupKey);
-    }
+    _save();
   }
 
   Future<void> load() async {
-    _prefs = await SharedPreferences.getInstance();
-    final index = _prefs!.getInt(_themeModeKey);
-    _themeMode = index != null ? ThemeMode.values[index] : ThemeMode.system;
-    final lastSetupMs = _prefs!.getInt(_lastRecurringSetupKey);
-    _lastRecurringSetup = lastSetupMs != null
-        ? DateTime.fromMillisecondsSinceEpoch(lastSetupMs)
-        : null;
-    final currencyIndex = _prefs!.getInt(_currencyKey);
-    _currency = currencyIndex != null ? Currency.values[currencyIndex] : Currency.euro;
-    final localeCode = _prefs!.getString(_localeKey);
-    _locale = localeCode != null ? Locale(localeCode) : null;
+    final row = await (_db.select(_db.settingsTable)
+          ..where((t) => t.id.equals(_settingsId)))
+        .getSingleOrNull();
+    if (row != null) {
+      _themeMode = ThemeMode.values[row.themeMode];
+      _lastRecurringSetup = row.lastRecurringSetup != null
+          ? DateTime.fromMillisecondsSinceEpoch(row.lastRecurringSetup!)
+          : null;
+      _currency = Currency.values[row.currency];
+      _locale = row.locale != null ? Locale(row.locale!) : null;
+    }
     notifyListeners();
+  }
+
+  void _save() {
+    _db.into(_db.settingsTable).insertOnConflictUpdate(
+      SettingsTableCompanion(
+        id: const Value(_settingsId),
+        themeMode: Value(_themeMode.index),
+        lastRecurringSetup: Value(_lastRecurringSetup?.millisecondsSinceEpoch),
+        currency: Value(_currency.index),
+        locale: Value(_locale?.languageCode),
+      ),
+    );
   }
 }
