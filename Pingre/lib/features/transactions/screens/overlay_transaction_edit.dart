@@ -7,7 +7,10 @@ import 'package:pingre/common/widgets/layout/sheet_container.dart';
 import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
-/// Show the transaction edit page as a sheet
+/// Show the transaction overlay.
+/// When [transaction] is provided the overlay opens in readonly (detail) mode
+/// with an "Edit" button to switch to editable mode.
+/// When [transaction] is null, the overlay opens directly in edit mode for creation.
 Future<dynamic> showTransactionEdit(
   BuildContext context, {
   Transaction? transaction,
@@ -30,7 +33,8 @@ class OverlayTransactionEdit extends StatefulWidget {
 }
 
 class _OverlayTransactionEditState extends State<OverlayTransactionEdit> {
-  late bool _isEditing;
+  late bool _isExistingTransaction;
+  late bool _isReadOnly;
   late TransactionFormData _formData;
   final _formKey = GlobalKey<FormState>();
 
@@ -38,8 +42,13 @@ class _OverlayTransactionEditState extends State<OverlayTransactionEdit> {
   void initState() {
     super.initState();
 
-    _isEditing = widget.transaction != null;
+    _isExistingTransaction = widget.transaction != null;
+    _isReadOnly = _isExistingTransaction;
     _formData = TransactionFormData.fromTransaction(widget.transaction);
+  }
+
+  void _startEditing() {
+    setState(() => _isReadOnly = false);
   }
 
   void _save() {
@@ -48,7 +57,7 @@ class _OverlayTransactionEditState extends State<OverlayTransactionEdit> {
 
     final service = context.read<TransactionsService>();
 
-    if (_isEditing) {
+    if (_isExistingTransaction) {
       service.update(
         widget.transaction!.id,
         value: _formData.value,
@@ -131,8 +140,18 @@ class _OverlayTransactionEditState extends State<OverlayTransactionEdit> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
+    final String title;
+    if (_isReadOnly) {
+      title = l10n.transactionDetailTitle;
+    } else if (_isExistingTransaction) {
+      title = l10n.editTransaction;
+    } else {
+      title = l10n.newTransaction;
+    }
+
     return SheetContainer(
-      title: _isEditing ? l10n.editTransaction : l10n.newTransaction,
+      title: title,
       child: Column(
         children: [
           const SizedBox(height: 4),
@@ -141,27 +160,38 @@ class _OverlayTransactionEditState extends State<OverlayTransactionEdit> {
           Expanded(
             child: Form(
               key: _formKey,
-              child: TransactionFormFields(formData: _formData),
-            ),
-          ),
-
-          if (_isEditing)
-            Padding(
-              padding: const .only(top: 8),
-              child: FButton(
-                variant: .destructive,
-                onPress: _remove,
-                prefix: const Icon(FIcons.trash),
-                child: Text(l10n.actionRemove),
+              child: TransactionFormFields(
+                formData: _formData,
+                readonly: _isReadOnly,
               ),
             ),
-
-          const SizedBox(height: 8),
-          FButton(
-            onPress: _save,
-            prefix: const Icon(FIcons.save),
-            child: Text(l10n.actionSave),
           ),
+
+          if (_isReadOnly) ...[
+            const SizedBox(height: 8),
+            FButton(
+              onPress: _startEditing,
+              prefix: const Icon(FIcons.pencil),
+              child: Text(l10n.actionEdit),
+            ),
+          ] else ...[
+            if (_isExistingTransaction)
+              Padding(
+                padding: const .only(top: 8),
+                child: FButton(
+                  variant: .destructive,
+                  onPress: _remove,
+                  prefix: const Icon(FIcons.trash),
+                  child: Text(l10n.actionRemove),
+                ),
+              ),
+            const SizedBox(height: 8),
+            FButton(
+              onPress: _save,
+              prefix: const Icon(FIcons.save),
+              child: Text(l10n.actionSave),
+            ),
+          ],
         ],
       ),
     );

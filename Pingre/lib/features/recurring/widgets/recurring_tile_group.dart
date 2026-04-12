@@ -6,8 +6,10 @@ import 'package:pingre/common/widgets/data/time_range_icon.dart';
 import 'package:pingre/common/widgets/data/value_display.dart';
 import 'package:pingre/features/recurring/models/recurring.dart';
 import 'package:pingre/features/recurring/screens/overlay_recurring_edit.dart';
+import 'package:pingre/features/recurring/services/recurring.dart';
 import 'package:pingre/features/tags/widgets/tags_display.dart';
 import 'package:pingre/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 /// Multipliers to convert a recurring transaction value to a monthly equivalent.
 Decimal _monthlyMultiplier(TimeRangeUnit unit) => switch (unit) {
@@ -40,7 +42,7 @@ class RecurringTileGroup extends StatelessWidget {
   });
 
   Decimal _computeTotal(Decimal Function(TimeRangeUnit) multiplier) {
-    return items.fold(Decimal.zero, (sum, r) {
+    return items.where((r) => r.isActive).fold(Decimal.zero, (sum, r) {
       final scaled = (r.transaction.value.toRational() * multiplier(r.range).toRational()).toDecimal(scaleOnInfinitePrecision: 2);
       return sum + scaled;
     });
@@ -49,6 +51,7 @@ class RecurringTileGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final service = context.read<RecurringTransactionsService>();
     final monthlyTotal = _computeTotal(_monthlyMultiplier);
     final yearlyTotal = _computeTotal(_yearlyMultiplier);
 
@@ -57,15 +60,22 @@ class RecurringTileGroup extends StatelessWidget {
       divider: .full,
       children: [
         ...items.map(
-          (recurring) => FTile(
-            prefix: TimeRangeIcon(unit: recurring.range),
-            title: Text(recurring.name),
-            subtitle: TagsDisplayText(selection: recurring.transaction.tags),
-            details: ValueDisplay(value: recurring.transaction.value),
-            suffix: const Icon(FIcons.chevronRight),
-            onPress: () => showRecurringTransactionEdit(
-              context,
-              recurringTransaction: recurring,
+          (recurring) => Opacity(
+            opacity: recurring.isActive ? 1.0 : 0.5,
+            child: FTile(
+              prefix: TimeRangeIcon(unit: recurring.range),
+              title: Text(recurring.name),
+              subtitle: TagsDisplayText(selection: recurring.transaction.tags),
+              details: ValueDisplay(value: recurring.transaction.value),
+              suffix: FSwitch(
+                semanticsLabel: recurring.name,
+                value: recurring.isActive,
+                onChange: (value) => service.update(recurring.id, isActive: value),
+              ),
+              onPress: () => showRecurringTransactionEdit(
+                context,
+                recurringTransaction: recurring,
+              ),
             ),
           ),
         ),
