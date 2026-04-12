@@ -59,6 +59,7 @@
   "negatives": "Négatives",
   "recurringTotalMonthly": "Mensuel",
   "recurringTotalYearly": "Annuel",
+  "recurringActive": "Actif",
 
   "newAccount": "Nouveau compte",
   "editAccount": "Modifier le compte",

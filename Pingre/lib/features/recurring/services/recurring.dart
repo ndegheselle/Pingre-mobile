@@ -61,6 +61,7 @@ class RecurringTransactionsService extends ChangeNotifier {
     String? name,
     Transaction? transaction,
     TimeRangeUnit? range,
+    bool? isActive,
   }) async {
     if (!_recurringTransactionsMap.containsKey(id)) return;
 
@@ -68,6 +69,7 @@ class RecurringTransactionsService extends ChangeNotifier {
       name: name,
       transaction: transaction,
       range: range,
+      isActive: isActive,
     );
     await _db.update(_db.recurringTransactionsTable).replace(updated.toData());
     if (transaction != null) {
@@ -99,7 +101,7 @@ class RecurringTransactionsService extends ChangeNotifier {
     final now = DateTime.now();
     if (lastRun == null || !lastRun.isBefore(now)) return;
 
-    for (final recurring in recurringTransactions) {
+    for (final recurring in recurringTransactions.where((r) => r.isActive)) {
       for (final date in _getOccurrencesBetween(recurring, lastRun, now)) {
         if (!await transactionsService.existsByDateAndPrimaryTag(
           date,
