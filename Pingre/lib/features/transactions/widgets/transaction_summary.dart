@@ -3,7 +3,7 @@ import 'package:forui/forui.dart';
 import 'package:pingre/common/widgets/data/value_display.dart';
 import 'package:pingre/features/tags/widgets/tags_display.dart';
 import 'package:pingre/features/transactions/models/transaction.dart';
-import 'package:pingre/features/transactions/screens/overlay_transaction_detail.dart';
+import 'package:pingre/features/transactions/screens/overlay_transaction_edit.dart';
 
 /// A generic widget that displays a single transaction row,
 /// matching the style used in the transactions page.
@@ -53,7 +53,7 @@ class TransactionSummary extends StatelessWidget {
             ),
         ],
       ),
-      onPress: () => showTransactionDetail(context, transaction: transaction),
+      onPress: () => showTransactionEdit(context, transaction: transaction),
     );
   }
 }

@@ -35,10 +35,12 @@ class TransactionFormData {
 
 class TransactionFormFields extends StatefulWidget {
   final TransactionFormData formData;
+  final bool readonly;
 
   const TransactionFormFields({
     super.key,
     required this.formData,
+    this.readonly = false,
   });
 
   @override
@@ -69,7 +71,7 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
 
     return Column(
         children: [
-          ValueInput(controller: _valueController),
+          ValueInput(controller: _valueController, readonly: widget.readonly),
           const SizedBox(height: 4),
           Expanded(
             child: Center(
@@ -88,24 +90,25 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
                     children: [
                       TagsDisplay(selection: state.value),
                       const SizedBox(height: 4),
-                      Align(
-                        alignment: Alignment.center,
-                        child: FButton(
-                            size: .sm,
-                            variant: .secondary,
-                            onPress: () async {
-                              final selection = await showTagsSelect(
-                                context,
-                                initialSelection: state.value,
-                              );
-                              if (selection != null) {
-                                state.didChange(selection);
-                              }
-                            },
-                            prefix: const Icon(FIcons.tag),
-                            child: Text(l10n.selectTags),
+                      if (!widget.readonly)
+                        Align(
+                          alignment: Alignment.center,
+                          child: FButton(
+                              size: .sm,
+                              variant: .secondary,
+                              onPress: () async {
+                                final selection = await showTagsSelect(
+                                  context,
+                                  initialSelection: state.value,
+                                );
+                                if (selection != null) {
+                                  state.didChange(selection);
+                                }
+                              },
+                              prefix: const Icon(FIcons.tag),
+                              child: Text(l10n.selectTags),
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -116,12 +119,16 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
           FTextField.multiline(
             hint: l10n.notesHint,
             control: .managed(controller: _noteController),
+            enabled: !widget.readonly,
           ),
           const SizedBox(height: 4),
           Row(
             children: [
               Expanded(
-                child: FDateField(control: .managed(controller: _dateController)),
+                child: FDateField(
+                  control: .managed(controller: _dateController),
+                  enabled: !widget.readonly,
+                ),
               ),
               const SizedBox(width: 4),
               SizedBox(
@@ -129,6 +136,7 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
                 child: FTimeField(
                   control: .managed(controller: _timeController),
                   hour24: true,
+                  enabled: !widget.readonly,
                 ),
               ),
             ],
