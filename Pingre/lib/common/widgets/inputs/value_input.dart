@@ -47,6 +47,7 @@ class ValueInput extends StatefulWidget {
 
 class _ValueInputState extends State<ValueInput> {
   late TextEditingController _textController;
+  late FocusNode _focusNode;
 
   void _onTextChanged() {
     final value = Decimal.tryParse(_textController.text);
@@ -61,6 +62,15 @@ class _ValueInputState extends State<ValueInput> {
   void initState() {
     super.initState();
     _textController = TextEditingController(text: widget.controller.formatted);
+    _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        _textController.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: _textController.text.length,
+        );
+      }
+    });
 
     // Listen to changes in the controller
     widget.controller.addListener(_onControllerChanged);
@@ -71,6 +81,7 @@ class _ValueInputState extends State<ValueInput> {
   void dispose() {
     // Remove the listener when the widget is disposed
     widget.controller.removeListener(_onControllerChanged);
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -111,7 +122,7 @@ class _ValueInputState extends State<ValueInput> {
         Flexible(
           child: IntrinsicWidth(
             child: FTextField(
-              control: .managed(controller: _textController),
+              control: .managed(controller: _textController, focusNode: _focusNode),
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
               maxLines: 1,
