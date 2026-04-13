@@ -122,7 +122,8 @@ class _ValueInputState extends State<ValueInput> {
         Flexible(
           child: IntrinsicWidth(
             child: FTextField(
-              control: .managed(controller: _textController, focusNode: _focusNode),
+              focusNode: _focusNode,
+              control: .managed(controller: _textController),
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
               maxLines: 1,
