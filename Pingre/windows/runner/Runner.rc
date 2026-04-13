@@ -89,11 +89,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
+            VALUE "CompanyName", "com.lubriciel" "\0"
             VALUE "FileDescription", "pingre" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "pingre" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.lubriciel. All rights reserved." "\0"
             VALUE "OriginalFilename", "pingre.exe" "\0"
             VALUE "ProductName", "pingre" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

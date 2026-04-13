@@ -57,6 +57,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTagsDetail => 'Edit, create and delete';
 
   @override
+  String get settingsBackup => 'Backup';
+
+  @override
+  String get settingsRestore => 'Restore application data';
+
+  @override
+  String get settingsRestoreDialogTitle => 'Confirm data restore';
+
+  @override
+  String get settingsRestoreDialogBody =>
+      'All the current data will be lost, are you sure ?';
+
+  @override
+  String get settingsBackupSuccess => 'Backup successfull.';
+
+  @override
+  String get settingsAppearance => 'Appearance';
+
+  @override
+  String get settingsData => 'Data';
+
+  @override
   String get actionSave => 'Save';
 
   @override

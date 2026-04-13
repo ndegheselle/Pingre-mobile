@@ -42,6 +42,7 @@ void main() async {
 
   runApp(MultiProvider(
     providers: [
+      Provider.value(value: db),
       ChangeNotifierProvider.value(value: accountsService),
       ChangeNotifierProvider.value(value: tagsService),
       ChangeNotifierProvider.value(value: transactionsService),

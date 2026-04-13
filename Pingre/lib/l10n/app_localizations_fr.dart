@@ -57,6 +57,30 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsTagsDetail => 'Modifier, créer et supprimer';
 
   @override
+  String get settingsBackup => 'Sauvegarde';
+
+  @override
+  String get settingsRestore => 'Restorer une sauvegarde';
+
+  @override
+  String get settingsRestoreDialogTitle =>
+      'Confirmer la restauration des données';
+
+  @override
+  String get settingsRestoreDialogBody =>
+      'Toute les données actuelles seront perdu, êtes vous sure de vouloir continuer ?';
+
+  @override
+  String get settingsBackupSuccess =>
+      'Les données ont été sauvegarder avec succès.';
+
+  @override
+  String get settingsAppearance => 'Apparence';
+
+  @override
+  String get settingsData => 'Données';
+
+  @override
   String get actionSave => 'Enregistrer';
 
   @override

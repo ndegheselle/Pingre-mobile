@@ -194,6 +194,48 @@ abstract class AppLocalizations {
   /// **'Edit, create and delete'**
   String get settingsTagsDetail;
 
+  /// No description provided for @settingsBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup'**
+  String get settingsBackup;
+
+  /// No description provided for @settingsRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore application data'**
+  String get settingsRestore;
+
+  /// No description provided for @settingsRestoreDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm data restore'**
+  String get settingsRestoreDialogTitle;
+
+  /// No description provided for @settingsRestoreDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'All the current data will be lost, are you sure ?'**
+  String get settingsRestoreDialogBody;
+
+  /// No description provided for @settingsBackupSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup successfull.'**
+  String get settingsBackupSuccess;
+
+  /// No description provided for @settingsAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsAppearance;
+
+  /// No description provided for @settingsData.
+  ///
+  /// In en, this message translates to:
+  /// **'Data'**
+  String get settingsData;
+
   /// No description provided for @actionSave.
   ///
   /// In en, this message translates to:
