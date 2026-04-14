@@ -34,8 +34,7 @@ class _PageAccountsState extends State<PageAccounts> {
         ValueListenableBuilder(
           valueListenable: _controller,
           builder: (context, _, _) {
-            return Expanded(
-              child: Consumer<AccountsService>(
+            return Consumer<AccountsService>(
                 builder: (context, service, child) {
                   final filteredAccounts = _controller.text.isEmpty
                       ? service.accounts
@@ -78,7 +77,6 @@ class _PageAccountsState extends State<PageAccounts> {
                           ),
                   );
                 },
-              ),
             );
           },
         ),

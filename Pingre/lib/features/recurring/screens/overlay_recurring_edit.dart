@@ -42,11 +42,13 @@ class OverlayRecurringTransactionEdit extends StatefulWidget {
       _OverlayRecurringTransactionEditState();
 }
 
-class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransactionEdit> {
+class _OverlayRecurringTransactionEditState
+    extends State<OverlayRecurringTransactionEdit> {
   late bool _isEditing;
   late TransactionFormData _formData;
   late TextEditingController _nameController;
   late TimeRangeUnit _range;
+  late bool _isActive;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -61,6 +63,7 @@ class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransa
       text: widget.recurringTransaction?.name ?? widget.name ?? "",
     );
     _range = widget.recurringTransaction?.range ?? TimeRangeUnit.month;
+    _isActive = widget.recurringTransaction?.isActive ?? true;
   }
 
   @override
@@ -87,6 +90,7 @@ class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransa
           notes: _formData.notes,
         ),
         range: _range,
+        isActive: _isActive,
       );
     } else {
       service.create(
@@ -99,6 +103,7 @@ class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransa
             notes: _formData.notes,
           ),
           range: _range,
+          isActive: _isActive,
         ),
       );
     }
@@ -179,20 +184,28 @@ class _OverlayRecurringTransactionEditState extends State<OverlayRecurringTransa
               onChanged: (unit) => setState(() => _range = unit),
             ),
             const SizedBox(height: 4),
-            FormField<String>(
-              validator: (_) => _nameController.text.trim().isEmpty
-                  ? l10n.nameRequired
-                  : null,
-              builder: (state) => FTextField(
-                error: state.errorText == null ? null : Text(state.errorText!),
-                hint: l10n.nameHint,
-                control: .managed(controller: _nameController),
-              ),
+            Row(
+              children: [
+                Expanded(child: FormField<String>(
+                  validator: (_) => _nameController.text.trim().isEmpty
+                      ? l10n.nameRequired
+                      : null,
+                  builder: (state) => FTextField(
+                    error: state.errorText == null
+                        ? null
+                        : Text(state.errorText!),
+                    hint: l10n.nameHint,
+                    control: .managed(controller: _nameController),
+                  ),
+                )),
+                FSwitch(
+                  value: _isActive,
+                  onChange: (v) => setState(() => _isActive = v),
+                ),
+              ],
             ),
             const SizedBox(height: 4),
-            Expanded(
-              child: TransactionFormFields(formData: _formData),
-            ),
+            Expanded(child: TransactionFormFields(formData: _formData)),
             if (_isEditing)
               Padding(
                 padding: const .only(top: 8),

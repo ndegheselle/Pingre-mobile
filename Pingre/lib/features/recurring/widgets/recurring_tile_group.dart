@@ -41,6 +41,7 @@ class RecurringTileGroup extends StatelessWidget {
 
   Decimal _computeTotal(Decimal Function(TimeRangeUnit) multiplier) {
     return items.fold(Decimal.zero, (sum, r) {
+      if (!r.isActive) return sum;
       final scaled = (r.transaction.value.toRational() * multiplier(r.range).toRational()).toDecimal(scaleOnInfinitePrecision: 2);
       return sum + scaled;
     });
@@ -56,18 +57,19 @@ class RecurringTileGroup extends StatelessWidget {
       label: Text(label),
       divider: .full,
       children: [
-        ...items.map(
-          (recurring) => FTile(
-              prefix: TimeRangeIcon(unit: recurring.range),
-              title: Text(recurring.name),
-              subtitle: TagsDisplayText(selection: recurring.transaction.tags),
-              suffix: ValueDisplay(value: recurring.transaction.value),
-              onPress: () => showRecurringTransactionEdit(
-                context,
-                recurringTransaction: recurring,
-              ),
-          ),
-        ),
+        ...items.map((recurring) {
+          final opacity = recurring.isActive ? 1.0 : 0.4;
+          return FTile(
+            prefix: Opacity(opacity: opacity, child: TimeRangeIcon(unit: recurring.range)),
+            title: Opacity(opacity: opacity, child: Text(recurring.name)),
+            subtitle: Opacity(opacity: opacity, child: TagsDisplayText(selection: recurring.transaction.tags)),
+            suffix: Opacity(opacity: opacity, child: ValueDisplay(value: recurring.transaction.value)),
+            onPress: () => showRecurringTransactionEdit(
+              context,
+              recurringTransaction: recurring,
+            ),
+          );
+        }),
         FTile(
           style: .delta(contentStyle: .delta(padding: .value(.symmetric(vertical: 4, horizontal: 8)))),
           title: Text(l10n.recurringTotalMonthly),

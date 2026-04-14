@@ -22,13 +22,16 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
       if (from < 3) {
         await m.createTable(settingsTable);
+      }
+      if (from < 4) {
+        await m.addColumn(recurringTransactionsTable, recurringTransactionsTable.isActive);
       }
     },
   );

@@ -377,13 +377,13 @@ abstract class AppLocalizations {
   /// No description provided for @newRecurring.
   ///
   /// In en, this message translates to:
-  /// **'New recurring transaction'**
+  /// **'New recurring'**
   String get newRecurring;
 
   /// No description provided for @editRecurring.
   ///
   /// In en, this message translates to:
-  /// **'Edit recurring transaction'**
+  /// **'Edit recurring'**
   String get editRecurring;
 
   /// No description provided for @noRecurringFound.
@@ -431,13 +431,13 @@ abstract class AppLocalizations {
   /// No description provided for @positives.
   ///
   /// In en, this message translates to:
-  /// **'Positives'**
+  /// **'Incomes'**
   String get positives;
 
   /// No description provided for @negatives.
   ///
   /// In en, this message translates to:
-  /// **'Negatives'**
+  /// **'Expenses'**
   String get negatives;
 
   /// No description provided for @recurringTotalMonthly.

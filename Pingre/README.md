@@ -16,6 +16,16 @@ dart run build_runner build
 dart run build_runner watch
 ```
 
+# Build
+
+## APK
+
+The key file must be in `D:\Projets\Pingre\android\upload-keystore.jks`.
+
+```
+flutter build apk --split-per-abi
+```
+
 # Inspiration
 
 https://www.macstories.net/reviews/nudget-review-budgeting-made-simple/

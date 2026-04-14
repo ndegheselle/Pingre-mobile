@@ -149,10 +149,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tagValidationError => 'At least one tag should be selected.';
 
   @override
-  String get newRecurring => 'New recurring transaction';
+  String get newRecurring => 'New recurring';
 
   @override
-  String get editRecurring => 'Edit recurring transaction';
+  String get editRecurring => 'Edit recurring';
 
   @override
   String get noRecurringFound => 'No recurring transactions found';
@@ -178,10 +178,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nameRequired => 'A name is required.';
 
   @override
-  String get positives => 'Positives';
+  String get positives => 'Incomes';
 
   @override
-  String get negatives => 'Negatives';
+  String get negatives => 'Expenses';
 
   @override
   String get recurringTotalMonthly => 'Monthly';

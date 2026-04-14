@@ -11,6 +11,7 @@ class RecurringTransactionsTable extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
   TextColumn get range => text()(); // store TimeRangeUnit as string
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
 
   // Embedded transaction template fields
   TextColumn get transactionId => text()();
@@ -39,6 +40,7 @@ extension RecurringTransactionMapper on RecurringTransaction {
     id: id,
     name: name,
     range: range.name, // enum → string
+    isActive: isActive,
     transactionId: transaction.id,
     transactionValue: transaction.value.toString(),
     transactionDate: transaction.date,
@@ -53,6 +55,7 @@ extension RecurringTransactionMapper on RecurringTransaction {
     id: data.id,
     name: data.name,
     range: TimeRangeUnit.values.byName(data.range),
+    isActive: data.isActive,
     transaction: Transaction(
       id: data.transactionId,
       value: Decimal.parse(data.transactionValue),

@@ -167,6 +167,8 @@ class _PageTransactionsState extends State<PageTransactions> {
                           child: TransactionSummary(transaction: item),
                         );
                       }
+
+                      return const SizedBox.shrink();
                     },
                   ),
                   SliverFillRemaining(

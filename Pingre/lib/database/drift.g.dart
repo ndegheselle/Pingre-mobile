@@ -1293,6 +1293,21 @@ class $RecurringTransactionsTableTable extends RecurringTransactionsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   static const VerificationMeta _transactionIdMeta = const VerificationMeta(
     'transactionId',
   );
@@ -1343,6 +1358,7 @@ class $RecurringTransactionsTableTable extends RecurringTransactionsTable
     id,
     name,
     range,
+    isActive,
     transactionId,
     transactionValue,
     transactionDate,
@@ -1380,6 +1396,12 @@ class $RecurringTransactionsTableTable extends RecurringTransactionsTable
       );
     } else if (isInserting) {
       context.missing(_rangeMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
     }
     if (data.containsKey('transaction_id')) {
       context.handle(
@@ -1449,6 +1471,10 @@ class $RecurringTransactionsTableTable extends RecurringTransactionsTable
         DriftSqlType.string,
         data['${effectivePrefix}range'],
       )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
       transactionId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}transaction_id'],
@@ -1479,6 +1505,7 @@ class RecurringTransactionsTableData extends DataClass
   final String id;
   final String name;
   final String range;
+  final bool isActive;
   final String transactionId;
   final String transactionValue;
   final DateTime transactionDate;
@@ -1487,6 +1514,7 @@ class RecurringTransactionsTableData extends DataClass
     required this.id,
     required this.name,
     required this.range,
+    required this.isActive,
     required this.transactionId,
     required this.transactionValue,
     required this.transactionDate,
@@ -1498,6 +1526,7 @@ class RecurringTransactionsTableData extends DataClass
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
     map['range'] = Variable<String>(range);
+    map['is_active'] = Variable<bool>(isActive);
     map['transaction_id'] = Variable<String>(transactionId);
     map['transaction_value'] = Variable<String>(transactionValue);
     map['transaction_date'] = Variable<DateTime>(transactionDate);
@@ -1510,6 +1539,7 @@ class RecurringTransactionsTableData extends DataClass
       id: Value(id),
       name: Value(name),
       range: Value(range),
+      isActive: Value(isActive),
       transactionId: Value(transactionId),
       transactionValue: Value(transactionValue),
       transactionDate: Value(transactionDate),
@@ -1526,6 +1556,7 @@ class RecurringTransactionsTableData extends DataClass
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       range: serializer.fromJson<String>(json['range']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
       transactionId: serializer.fromJson<String>(json['transactionId']),
       transactionValue: serializer.fromJson<String>(json['transactionValue']),
       transactionDate: serializer.fromJson<DateTime>(json['transactionDate']),
@@ -1539,6 +1570,7 @@ class RecurringTransactionsTableData extends DataClass
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'range': serializer.toJson<String>(range),
+      'isActive': serializer.toJson<bool>(isActive),
       'transactionId': serializer.toJson<String>(transactionId),
       'transactionValue': serializer.toJson<String>(transactionValue),
       'transactionDate': serializer.toJson<DateTime>(transactionDate),
@@ -1550,6 +1582,7 @@ class RecurringTransactionsTableData extends DataClass
     String? id,
     String? name,
     String? range,
+    bool? isActive,
     String? transactionId,
     String? transactionValue,
     DateTime? transactionDate,
@@ -1558,6 +1591,7 @@ class RecurringTransactionsTableData extends DataClass
     id: id ?? this.id,
     name: name ?? this.name,
     range: range ?? this.range,
+    isActive: isActive ?? this.isActive,
     transactionId: transactionId ?? this.transactionId,
     transactionValue: transactionValue ?? this.transactionValue,
     transactionDate: transactionDate ?? this.transactionDate,
@@ -1570,6 +1604,7 @@ class RecurringTransactionsTableData extends DataClass
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       range: data.range.present ? data.range.value : this.range,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
       transactionId: data.transactionId.present
           ? data.transactionId.value
           : this.transactionId,
@@ -1591,6 +1626,7 @@ class RecurringTransactionsTableData extends DataClass
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('range: $range, ')
+          ..write('isActive: $isActive, ')
           ..write('transactionId: $transactionId, ')
           ..write('transactionValue: $transactionValue, ')
           ..write('transactionDate: $transactionDate, ')
@@ -1604,6 +1640,7 @@ class RecurringTransactionsTableData extends DataClass
     id,
     name,
     range,
+    isActive,
     transactionId,
     transactionValue,
     transactionDate,
@@ -1616,6 +1653,7 @@ class RecurringTransactionsTableData extends DataClass
           other.id == this.id &&
           other.name == this.name &&
           other.range == this.range &&
+          other.isActive == this.isActive &&
           other.transactionId == this.transactionId &&
           other.transactionValue == this.transactionValue &&
           other.transactionDate == this.transactionDate &&
@@ -1627,6 +1665,7 @@ class RecurringTransactionsTableCompanion
   final Value<String> id;
   final Value<String> name;
   final Value<String> range;
+  final Value<bool> isActive;
   final Value<String> transactionId;
   final Value<String> transactionValue;
   final Value<DateTime> transactionDate;
@@ -1636,6 +1675,7 @@ class RecurringTransactionsTableCompanion
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.range = const Value.absent(),
+    this.isActive = const Value.absent(),
     this.transactionId = const Value.absent(),
     this.transactionValue = const Value.absent(),
     this.transactionDate = const Value.absent(),
@@ -1646,6 +1686,7 @@ class RecurringTransactionsTableCompanion
     required String id,
     required String name,
     required String range,
+    this.isActive = const Value.absent(),
     required String transactionId,
     required String transactionValue,
     required DateTime transactionDate,
@@ -1662,6 +1703,7 @@ class RecurringTransactionsTableCompanion
     Expression<String>? id,
     Expression<String>? name,
     Expression<String>? range,
+    Expression<bool>? isActive,
     Expression<String>? transactionId,
     Expression<String>? transactionValue,
     Expression<DateTime>? transactionDate,
@@ -1672,6 +1714,7 @@ class RecurringTransactionsTableCompanion
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (range != null) 'range': range,
+      if (isActive != null) 'is_active': isActive,
       if (transactionId != null) 'transaction_id': transactionId,
       if (transactionValue != null) 'transaction_value': transactionValue,
       if (transactionDate != null) 'transaction_date': transactionDate,
@@ -1684,6 +1727,7 @@ class RecurringTransactionsTableCompanion
     Value<String>? id,
     Value<String>? name,
     Value<String>? range,
+    Value<bool>? isActive,
     Value<String>? transactionId,
     Value<String>? transactionValue,
     Value<DateTime>? transactionDate,
@@ -1694,6 +1738,7 @@ class RecurringTransactionsTableCompanion
       id: id ?? this.id,
       name: name ?? this.name,
       range: range ?? this.range,
+      isActive: isActive ?? this.isActive,
       transactionId: transactionId ?? this.transactionId,
       transactionValue: transactionValue ?? this.transactionValue,
       transactionDate: transactionDate ?? this.transactionDate,
@@ -1713,6 +1758,9 @@ class RecurringTransactionsTableCompanion
     }
     if (range.present) {
       map['range'] = Variable<String>(range.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
     }
     if (transactionId.present) {
       map['transaction_id'] = Variable<String>(transactionId.value);
@@ -1738,6 +1786,7 @@ class RecurringTransactionsTableCompanion
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('range: $range, ')
+          ..write('isActive: $isActive, ')
           ..write('transactionId: $transactionId, ')
           ..write('transactionValue: $transactionValue, ')
           ..write('transactionDate: $transactionDate, ')
@@ -3196,6 +3245,7 @@ typedef $$RecurringTransactionsTableTableCreateCompanionBuilder =
       required String id,
       required String name,
       required String range,
+      Value<bool> isActive,
       required String transactionId,
       required String transactionValue,
       required DateTime transactionDate,
@@ -3207,6 +3257,7 @@ typedef $$RecurringTransactionsTableTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> name,
       Value<String> range,
+      Value<bool> isActive,
       Value<String> transactionId,
       Value<String> transactionValue,
       Value<DateTime> transactionDate,
@@ -3235,6 +3286,11 @@ class $$RecurringTransactionsTableTableFilterComposer
 
   ColumnFilters<String> get range => $composableBuilder(
     column: $table.range,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3283,6 +3339,11 @@ class $$RecurringTransactionsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get transactionId => $composableBuilder(
     column: $table.transactionId,
     builder: (column) => ColumnOrderings(column),
@@ -3321,6 +3382,9 @@ class $$RecurringTransactionsTableTableAnnotationComposer
 
   GeneratedColumn<String> get range =>
       $composableBuilder(column: $table.range, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
 
   GeneratedColumn<String> get transactionId => $composableBuilder(
     column: $table.transactionId,
@@ -3392,6 +3456,7 @@ class $$RecurringTransactionsTableTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> range = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
                 Value<String> transactionId = const Value.absent(),
                 Value<String> transactionValue = const Value.absent(),
                 Value<DateTime> transactionDate = const Value.absent(),
@@ -3401,6 +3466,7 @@ class $$RecurringTransactionsTableTableTableManager
                 id: id,
                 name: name,
                 range: range,
+                isActive: isActive,
                 transactionId: transactionId,
                 transactionValue: transactionValue,
                 transactionDate: transactionDate,
@@ -3412,6 +3478,7 @@ class $$RecurringTransactionsTableTableTableManager
                 required String id,
                 required String name,
                 required String range,
+                Value<bool> isActive = const Value.absent(),
                 required String transactionId,
                 required String transactionValue,
                 required DateTime transactionDate,
@@ -3421,6 +3488,7 @@ class $$RecurringTransactionsTableTableTableManager
                 id: id,
                 name: name,
                 range: range,
+                isActive: isActive,
                 transactionId: transactionId,
                 transactionValue: transactionValue,
                 transactionDate: transactionDate,
