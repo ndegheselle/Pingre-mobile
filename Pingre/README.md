@@ -22,8 +22,20 @@ dart run build_runner watch
 
 The key file must be in `D:\Projets\Pingre\android\upload-keystore.jks`.
 
+Clean cache :
+```
+flutter clean
+flutter pub get
+```
+
+Splitted by abi :
 ```
 flutter build apk --split-per-abi
+```
+
+Install with adb to keep the app data :
+```
+adb install -r build\app\outputs\flutter-apk\app-arm64-v8a-release.apk
 ```
 
 # Inspiration
