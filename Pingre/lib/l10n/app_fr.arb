@@ -38,6 +38,8 @@
   "toastRemovedTitle": "Supprimé",
 
   "addTransactionTooltip": "Ajouter une transaction",
+  "addRecurringTooltip": "Ajouter un récurrent",
+  "addAccountTooltip": "Ajouter un compte",
   "searchHint": "Rechercher ...",
   "pullForMore": "Tirer pour plus",
   "releaseForMore": "Relâcher pour charger",

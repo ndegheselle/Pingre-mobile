@@ -4,6 +4,8 @@ import 'package:pingre/features/accounts/screens/page_accounts.dart';
 import 'package:pingre/features/settings/screens/page_settings.dart';
 import 'package:pingre/features/recurring/screens/page_recurring.dart';
 import 'package:pingre/features/reports/screens/page_reports.dart';
+import 'package:pingre/features/accounts/screens/overlay_account_edit.dart';
+import 'package:pingre/features/recurring/screens/overlay_recurring_edit.dart';
 import 'package:pingre/features/transactions/screens/overlay_transaction_edit.dart';
 import 'package:pingre/features/transactions/screens/page_transactions.dart';
 import 'package:pingre/l10n/app_localizations.dart';
@@ -24,6 +26,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _index = 0;
+
+  String _fabTooltip(AppLocalizations l10n) => switch (_index) {
+    1 => l10n.addRecurringTooltip,
+    2 => l10n.addAccountTooltip,
+    _ => l10n.addTransactionTooltip,
+  };
+
+  VoidCallback _fabAction() => switch (_index) {
+    1 => () => showRecurringTransactionEdit(context),
+    2 => () => showAccountEdit(context),
+    _ => () => showTransactionEdit(context),
+  };
 
   void openSettings() {
     Navigator.of(context).push(
@@ -119,12 +133,12 @@ class _HomePageState extends State<HomePage> {
           right: 0,
           child: Center(
             child: FTooltip(
-              tipBuilder: (context, _) => Text(l10n.addTransactionTooltip),
+              tipBuilder: (context, _) => Text(_fabTooltip(l10n)),
               child: SizedBox(
                 width: 64,
                 height: 64,
                 child: ElevatedButton(
-                  onPressed: () => showTransactionEdit(context),
+                  onPressed: _fabAction(),
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),
                     padding: EdgeInsets.zero,

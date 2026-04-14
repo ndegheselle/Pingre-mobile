@@ -69,13 +69,13 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Column(
+    return SingleChildScrollView(
+      child: Column(
         children: [
           ValueInput(controller: _valueController, readonly: widget.readonly),
           const SizedBox(height: 4),
-          Expanded(
-            child: Center(
-              child: FormField<TagsSelection?>(
+          Center(
+            child: FormField<TagsSelection?>(
                 initialValue: widget.formData.tags,
                 validator: (value) => value == null
                     ? l10n.tagValidationError
@@ -114,7 +114,6 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
                 ),
               ),
             ),
-          ),
           const SizedBox(height: 4),
           Row(
             children: [
@@ -161,6 +160,7 @@ class _TransactionFormFieldsState extends State<TransactionFormFields> {
             builder: (state) => const SizedBox.shrink(),
           ),
         ],
+      ),
     );
   }
 }

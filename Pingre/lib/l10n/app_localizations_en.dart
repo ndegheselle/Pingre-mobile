@@ -106,6 +106,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addTransactionTooltip => 'Add transaction';
 
   @override
+  String get addRecurringTooltip => 'Add recurring';
+
+  @override
+  String get addAccountTooltip => 'Add account';
+
+  @override
   String get searchHint => 'Search ...';
 
   @override

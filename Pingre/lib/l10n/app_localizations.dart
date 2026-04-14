@@ -290,6 +290,18 @@ abstract class AppLocalizations {
   /// **'Add transaction'**
   String get addTransactionTooltip;
 
+  /// No description provided for @addRecurringTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Add recurring'**
+  String get addRecurringTooltip;
+
+  /// No description provided for @addAccountTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Add account'**
+  String get addAccountTooltip;
+
   /// No description provided for @searchHint.
   ///
   /// In en, this message translates to:

@@ -50,18 +50,19 @@ class SheetContainer extends StatelessWidget {
                   ),
                 ),
                 Positioned(
+                  top: 4,
                   left: 0,
                   child: FButton.icon(
                     variant: .ghost,
                     onPress: () => Navigator.of(context).pop(),
-                    child: Icon(FIcons.x),
+                    child: Icon(FIcons.x, size: 18),
                   ),
                 ),
               ],
             ),
           ),
           Expanded(
-            child: Padding(padding: const .all(4), child: child),
+            child: Padding(padding: const EdgeInsets.all(4), child: child),
           ),
         ],
       ),

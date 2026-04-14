@@ -38,6 +38,16 @@ Install with adb to keep the app data :
 adb install -r build\app\outputs\flutter-apk\app-arm64-v8a-release.apk
 ```
 
+## Install with flutter
+
+```
+flutter build apk --release
+```
+
+```
+flutter install --release
+```
+
 # Inspiration
 
 https://www.macstories.net/reviews/nudget-review-budgeting-made-simple/
