@@ -8,6 +8,8 @@ import 'package:pingre/features/tags/services/tags.dart';
 import 'package:pingre/features/settings/services/settings.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
 import 'package:pingre/l10n/app_localizations.dart';
+import 'package:pingre/theme/dark.dart';
+import 'package:pingre/theme/light.dart';
 import 'package:pingre/theme_extensions.dart';
 import 'package:provider/provider.dart';
 
@@ -62,8 +64,8 @@ class Application extends StatelessWidget {
     final settings = context.watch<SettingsService>();
     final themeMode = settings.themeMode;
 
-    final light = FThemes.zinc.light.touch.copyWith(
-      scaffoldStyle: .delta(backgroundColor: FThemes.zinc.light.touch.colors.background),
+    final light = pastelLight.copyWith(
+      scaffoldStyle: .delta(backgroundColor: pastelLight.colors.background),
       extensions: const [
         AppSemanticColors(
           positive: Color(0xFF48c78e), // green-600
@@ -72,8 +74,8 @@ class Application extends StatelessWidget {
       ],
     );
 
-    final dark = FThemes.zinc.dark.touch.copyWith(
-      scaffoldStyle: .delta(backgroundColor: FThemes.zinc.dark.touch.colors.background),
+    final dark = dimDark.copyWith(
+      scaffoldStyle: .delta(backgroundColor: dimDark.colors.background),
       extensions: const [
         AppSemanticColors(
           positive: Color(0xFF48c78e), // lighter green for dark bg

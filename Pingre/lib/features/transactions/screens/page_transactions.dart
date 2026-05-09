@@ -147,13 +147,14 @@ class _PageTransactionsState extends State<PageTransactions> {
                       if (item is TransactionGroup) {
                         return Padding(
                           padding: .only(top: 4),
-                          child: FTile(
-                            style: .delta(),
+                          child: FTile.raw(
                             prefix: const Icon(FIcons.calendar),
-                            title: Text(item.getName(locale)),
-                            suffix: ValueDisplay(
-                              value: item.total,
-                              isHeader: true,
+                            child: Row(
+                              children: [
+                                Text(item.getName(locale)),
+                                Spacer(),
+                                ValueDisplay(value: item.total, isHeader: true),
+                              ],
                             ),
                           ),
                         );

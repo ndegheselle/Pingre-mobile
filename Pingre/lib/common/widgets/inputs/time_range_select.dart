@@ -52,7 +52,7 @@ class _TimeRangeSelectState extends State<TimeRangeSelect> {
       decoration: BoxDecoration(
         color: theme.colors.card,
         borderRadius: theme.style.borderRadius.md,
-        border: .all(color: context.theme.colors.border)
+        border: .all(color: context.theme.colors.border, width: context.theme.style.borderWidth)
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -69,7 +69,7 @@ class _TimeRangeSelectState extends State<TimeRangeSelect> {
                 child: Container(
                   width: itemWidth,
                   decoration: BoxDecoration(
-                    color: theme.colors.background,
+                    color: theme.colors.secondary,
                     borderRadius: theme.style.borderRadius.md,
                   ),
                 ),
