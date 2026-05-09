@@ -15,7 +15,7 @@ class TagGraphBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final absTotal = grandTotal.abs();
     return ClipRRect(
-      borderRadius: context.theme.style.borderRadius,
+      borderRadius: context.theme.style.borderRadius.md,
       child: SizedBox(
         height: 24,
         child: Row(

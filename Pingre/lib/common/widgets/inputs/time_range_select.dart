@@ -51,7 +51,7 @@ class _TimeRangeSelectState extends State<TimeRangeSelect> {
       padding: padding,
       decoration: BoxDecoration(
         color: theme.colors.card,
-        borderRadius: theme.style.borderRadius,
+        borderRadius: theme.style.borderRadius.md,
         border: .all(color: context.theme.colors.border)
       ),
       child: LayoutBuilder(
@@ -70,7 +70,7 @@ class _TimeRangeSelectState extends State<TimeRangeSelect> {
                   width: itemWidth,
                   decoration: BoxDecoration(
                     color: theme.colors.background,
-                    borderRadius: theme.style.borderRadius,
+                    borderRadius: theme.style.borderRadius.md,
                   ),
                 ),
               ),
@@ -93,7 +93,7 @@ class _TimeRangeSelectState extends State<TimeRangeSelect> {
                           child: AnimatedDefaultTextStyle(
                             duration: const Duration(milliseconds: 250),
                             curve: Curves.easeInOut,
-                            style: theme.typography.base.copyWith(
+                            style: theme.typography.md.copyWith(
                               color: isSelected
                                   ? theme.colors.foreground
                                   : theme.colors.mutedForeground,

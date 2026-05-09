@@ -50,9 +50,10 @@ class _PageRecurringState extends State<PageRecurring> {
                   return filteredRecurring.isEmpty
                       ? Center(child: Text(l10n.noRecurringFound))
                       : ListView(
+                          padding: EdgeInsets.zero,
                           children: [
                             if (positives.isNotEmpty)
-                               RecurringTileGroup(
+                              RecurringTileGroup(
                                 label: l10n.positives,
                                 items: positives,
                               ),

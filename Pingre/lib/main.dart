@@ -62,8 +62,8 @@ class Application extends StatelessWidget {
     final settings = context.watch<SettingsService>();
     final themeMode = settings.themeMode;
 
-    final light = FThemes.zinc.light.copyWith(
-      scaffoldStyle: .delta(backgroundColor: FThemes.zinc.light.colors.background),
+    final light = FThemes.zinc.light.touch.copyWith(
+      scaffoldStyle: .delta(backgroundColor: FThemes.zinc.light.touch.colors.background),
       extensions: const [
         AppSemanticColors(
           positive: Color(0xFF48c78e), // green-600
@@ -72,8 +72,8 @@ class Application extends StatelessWidget {
       ],
     );
 
-    final dark = FThemes.zinc.dark.copyWith(
-      scaffoldStyle: .delta(backgroundColor: FThemes.zinc.dark.colors.background),
+    final dark = FThemes.zinc.dark.touch.copyWith(
+      scaffoldStyle: .delta(backgroundColor: FThemes.zinc.dark.touch.colors.background),
       extensions: const [
         AppSemanticColors(
           positive: Color(0xFF48c78e), // lighter green for dark bg

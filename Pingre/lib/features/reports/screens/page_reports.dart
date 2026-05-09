@@ -156,7 +156,9 @@ class _PageReportsState extends State<PageReports> {
           children: [
             Expanded(
               child: FSelectMenuTile<_ReportView>(
-                style: .delta(menuStyle: .delta(maxWidth: 300)),
+                style: .delta(
+                  menuStyle: .delta(maxWidth: 300),
+                ),
                 selectControl: .managedRadio(
                   initial: .primary,
                   onChange: (values) {
@@ -248,7 +250,6 @@ class _PageReportsState extends State<PageReports> {
                               _range.getName(
                                 Localizations.localeOf(context).languageCode,
                               ),
-                              style: context.theme.typography.base,
                             ),
                             const Spacer(),
                             FButton.icon(
@@ -277,7 +278,6 @@ class _PageReportsState extends State<PageReports> {
                           child: Center(
                             child: Text(
                               l10n.reportNoTransactions,
-                              style: context.theme.typography.base,
                             ),
                           ),
                         )

@@ -145,7 +145,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get transactionRemovedDesc => 'La transaction a été supprimée';
 
   @override
-  String get transactionNoMoreFound => 'Aucune transactions chargés.';
+  String get transactionNoMoreFound => 'Aucune nouvelle transactions chargés.';
 
   @override
   String get selectTags => 'Sélectionner des tags';

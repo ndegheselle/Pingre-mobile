@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pingre/database/drift.dart';
 import 'package:pingre/features/settings/services/settings.dart';
 import 'package:pingre/features/tags/screens/page_tags.dart';
@@ -24,25 +23,15 @@ class _PageSettingsState extends State<PageSettings> {
     if (_isProcessing) return;
     setState(() => _isProcessing = true);
     try {
-      final dir = await getApplicationSupportDirectory();
-      final dbPath = '${dir.path}/pingre.db.sqlite';
-      final savedPath = await FilePicker.platform.saveFile(
-        fileName: 'pingre_backup.db',
-        allowedExtensions: ['db'],
-        type: FileType.custom,
+      final db = context.read<AppDatabase>();
+      
+      final bytes = await db.backup();
+      await FilePicker.saveFile(
+        bytes: bytes,
+        dialogTitle: 'Backup :',
+        fileName: 'pingre.backup.sqlite',
       );
-      if (savedPath != null) {
-        await File(dbPath).copy(savedPath);
-        if (mounted) {
-          final l10n = AppLocalizations.of(context)!;
-          showFToast(
-            context: context,
-            alignment: .topCenter,
-            icon: const Icon(FIcons.check),
-            title: Text(l10n.settingsBackupSuccess),
-          );
-        }
-      }
+      
     } finally {
       if (mounted) setState(() => _isProcessing = false);
     }
@@ -51,7 +40,7 @@ class _PageSettingsState extends State<PageSettings> {
   Future<void> _restore() async {
     if (_isProcessing) return;
 
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['sqlite'],
     );
@@ -85,10 +74,7 @@ class _PageSettingsState extends State<PageSettings> {
     if (confirmed != true || !mounted) return;
 
     setState(() => _isProcessing = true);
-    final db = context.read<AppDatabase>();
-    await db.close();
-    final dir = await getApplicationSupportDirectory();
-    await File(filePath).copy('${dir.path}/pingre.db.sqlite');
+    await context.read<AppDatabase>().restore(filePath);
     exit(0);
   }
 
@@ -252,11 +238,11 @@ class _ThemeSquare extends StatelessWidget {
       width: _size,
       height: _size,
       decoration: BoxDecoration(
-        borderRadius: context.theme.style.borderRadius,
+        borderRadius: context.theme.style.borderRadius.md,
         border: Border.all(color: context.theme.colors.border),
       ),
       child: ClipRRect(
-        borderRadius: context.theme.style.borderRadius,
+        borderRadius: context.theme.style.borderRadius.md,
         child: _buildFill(),
       ),
     );

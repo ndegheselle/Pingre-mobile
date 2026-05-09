@@ -22,7 +22,7 @@ class TransactionSummary extends StatelessWidget {
                   states.contains(FTappableVariant.pressed))
               ? context.theme.colors.secondary
               : context.theme.colors.background,
-          borderRadius: context.theme.style.borderRadius,
+          borderRadius: context.theme.style.borderRadius.md,
         ),
         padding: const .all(6),
         child: child!,

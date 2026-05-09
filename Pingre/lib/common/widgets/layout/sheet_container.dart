@@ -18,8 +18,8 @@ class SheetContainer extends StatelessWidget {
         color: context.theme.colors.background,
         border: Border(top: BorderSide(color: context.theme.colors.border)),
         borderRadius: BorderRadius.only(
-          topLeft: context.theme.style.borderRadius.topLeft,
-          topRight: context.theme.style.borderRadius.topRight,
+          topLeft: context.theme.style.borderRadius.md.topLeft,
+          topRight: context.theme.style.borderRadius.md.topRight,
         ),
       ),
       child: Column(
@@ -45,7 +45,7 @@ class SheetContainer extends StatelessWidget {
                     height: 6,
                     decoration: BoxDecoration(
                       color: context.theme.colors.border,
-                      borderRadius: context.theme.style.borderRadius,
+                      borderRadius: context.theme.style.borderRadius.md,
                     ),
                   ),
                 ),

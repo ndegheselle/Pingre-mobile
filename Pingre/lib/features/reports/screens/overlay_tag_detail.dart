@@ -85,7 +85,7 @@ class OverlayTagDetailState extends State<OverlayTagDetail> {
             return Center(
               child: Text(
                 AppLocalizations.of(context)!.reportNoTransactionsForTag,
-                style: context.theme.typography.base,
+                style: context.theme.typography.md,
               ),
             );
           }

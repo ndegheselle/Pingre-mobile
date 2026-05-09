@@ -148,9 +148,7 @@ class _PageTransactionsState extends State<PageTransactions> {
                         return Padding(
                           padding: .only(top: 4),
                           child: FTile(
-                            style: .delta(
-                              contentStyle: .delta(padding: .value(.all(8))),
-                            ),
+                            style: .delta(),
                             prefix: const Icon(FIcons.calendar),
                             title: Text(item.getName(locale)),
                             suffix: ValueDisplay(

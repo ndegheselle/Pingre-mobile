@@ -17,7 +17,7 @@ class ErrorDisplay extends StatelessWidget {
             border: error?.isNotEmpty == true
                 ? Border.all(color: context.theme.colors.error, width: 1)
                 : null,
-            borderRadius: context.theme.style.borderRadius,
+            borderRadius: context.theme.style.borderRadius.md,
           ),
           child: child,
         ),

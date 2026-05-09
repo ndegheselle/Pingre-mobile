@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,5 +45,20 @@ class AppDatabase extends _$AppDatabase {
         databaseDirectory: getApplicationSupportDirectory,
       ),
     );
+  }
+
+  /// Copies the current database file to the specified [targetPath].
+  Future<Uint8List> backup() async {
+    final dir = await getApplicationSupportDirectory();
+    final dbFile = File('${dir.path}/pingre.db.sqlite');
+    return await dbFile.readAsBytes();
+  }
+
+  /// Closes the database connection and replaces the database file with the one at [sourcePath].
+  Future<void> restore(String sourcePath) async {
+    await close();
+    final dir = await getApplicationSupportDirectory();
+    final dbFile = File('${dir.path}/pingre.db.sqlite');
+    await File(sourcePath).copy(dbFile.path);
   }
 }

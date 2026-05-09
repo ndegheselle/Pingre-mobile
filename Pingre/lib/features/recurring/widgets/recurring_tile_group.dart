@@ -71,12 +71,10 @@ class RecurringTileGroup extends StatelessWidget {
           );
         }),
         FTile(
-          style: .delta(contentStyle: .delta(padding: .value(.symmetric(vertical: 4, horizontal: 8)))),
           title: Text(l10n.recurringTotalMonthly),
           details: ValueDisplay(value: monthlyTotal, isHeader: true),
         ),
         FTile(
-          style: .delta(contentStyle: .delta(padding: .value(.symmetric(vertical: 4, horizontal: 8)))),
           title: Text(l10n.recurringTotalYearly),
           details: ValueDisplay(value: yearlyTotal, isHeader: true),
         )

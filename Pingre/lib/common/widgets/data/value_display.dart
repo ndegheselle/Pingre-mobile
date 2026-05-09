@@ -51,10 +51,9 @@ class ValueDisplay extends StatelessWidget {
         const SizedBox(width: 2),
         Text(
           _formatValue(value),
-          style: context.theme.typography.base.copyWith(
+          style: context.theme.typography.sm.copyWith(
             color: color,
             fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
-            height: 1.3,
           ),
         ),
         const SizedBox(width: 2),
