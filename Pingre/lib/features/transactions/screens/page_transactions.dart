@@ -79,7 +79,7 @@ class _PageTransactionsState extends State<PageTransactions> {
 
     var transactions = await _transactions.getByRange(_lastTimeRange);
     if (transactions.isEmpty) {
-      if (context.mounted) {
+      if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         showFToast(
           context: context,
