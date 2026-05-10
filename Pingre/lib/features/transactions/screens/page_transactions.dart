@@ -143,10 +143,11 @@ class _PageTransactionsState extends State<PageTransactions> {
                     itemCount: flatItems.length,
                     itemBuilder: (context, index) {
                       final item = flatItems[index];
+                      final previous = index > 0 ? flatItems[index - 1] : null;
 
                       if (item is TransactionGroup) {
                         return Padding(
-                          padding: .only(top: 4),
+                          padding: .symmetric(vertical: 4),
                           child: FTile.raw(
                             prefix: const Icon(FIcons.calendar),
                             child: Row(
@@ -161,9 +162,18 @@ class _PageTransactionsState extends State<PageTransactions> {
                       }
 
                       if (item is Transaction) {
-                        return Padding(
-                          padding: .only(top: 4),
-                          child: TransactionSummary(transaction: item),
+                        return Column(
+                          children: [
+                            if (previous is Transaction)
+                              FDivider(
+                                style: .delta(
+                                  padding: .value(.symmetric(horizontal: 10)),
+                                  width: context.theme.style.borderWidth,
+                                ),
+                                axis: .horizontal,
+                              ),
+                            TransactionSummary(transaction: item),
+                          ],
                         );
                       }
 

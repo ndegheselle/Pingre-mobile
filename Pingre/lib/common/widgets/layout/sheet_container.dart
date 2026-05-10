@@ -16,7 +16,12 @@ class SheetContainer extends StatelessWidget {
       width: .infinity,
       decoration: BoxDecoration(
         color: context.theme.colors.background,
-        border: Border(top: BorderSide(color: context.theme.colors.border)),
+        border: Border(
+          top: BorderSide(
+            color: context.theme.colors.border,
+            width: context.theme.style.borderWidth,
+          ),
+        ),
         borderRadius: BorderRadius.only(
           topLeft: context.theme.style.borderRadius.md.topLeft,
           topRight: context.theme.style.borderRadius.md.topRight,

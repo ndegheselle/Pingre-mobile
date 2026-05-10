@@ -23,7 +23,7 @@ FThemeData get dimDark {
   const colors = FColors(
     brightness: .dark,
     systemOverlayStyle: .light,
-    barrier: Color(0x79242933),
+    barrier: Color(0x33FFFFFF),
     background: Color(0xFF242933),
     foreground: Color(0xFFb2ccd6),
     primary: Color(0xFFf88479),

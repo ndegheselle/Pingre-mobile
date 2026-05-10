@@ -24,7 +24,7 @@ class TransactionSummary extends StatelessWidget {
               : context.theme.colors.background,
           borderRadius: context.theme.style.borderRadius.md,
         ),
-        padding: const .all(6),
+        padding: const .symmetric(vertical: 6, horizontal: 10),
         child: child!,
       ),
       child: Column(
