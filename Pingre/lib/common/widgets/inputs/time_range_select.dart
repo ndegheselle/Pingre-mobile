@@ -69,7 +69,7 @@ class _TimeRangeSelectState extends State<TimeRangeSelect> {
                 child: Container(
                   width: itemWidth,
                   decoration: BoxDecoration(
-                    color: theme.colors.secondary,
+                    color: theme.colors.background,
                     borderRadius: theme.style.borderRadius.md,
                   ),
                 ),
