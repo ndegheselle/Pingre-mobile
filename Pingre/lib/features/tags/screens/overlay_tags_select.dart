@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:pingre/features/tags/services/tags.dart';
-import 'package:pingre/features/tags/models/tags_selection.dart';
 import 'package:pingre/common/widgets/inputs/search_add.dart';
 import 'package:pingre/common/widgets/layout/sheet_container.dart';
+import 'package:pingre/features/tags/models/tags_selection.dart';
+import 'package:pingre/features/tags/services/tags.dart';
 import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -193,13 +193,6 @@ class TagsWrap extends StatelessWidget {
               onLongPress: () => onLongPress(tag.id),
               onTap: () => onTap(tag.id),
               child: FBadge(
-                style: .delta(
-                  contentStyle: .delta(
-                    labelTextStyle: .delta(
-                      fontSize: context.theme.typography.lg.fontSize,
-                    ),
-                  ),
-                ),
                 variant: isSelected
                     ? (isPrimary ? .android : .secondary)
                     : .outline,
@@ -210,6 +203,7 @@ class TagsWrap extends StatelessWidget {
                         FIcons.check,
                         color: isPrimary ? context.theme.colors.background : context.theme.colors.foreground,
                         fontWeight: .bold,
+                        size: 16,
                       ),
                     SizedBox(width: 4),
                     Text(tag.name),

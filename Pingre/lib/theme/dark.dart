@@ -1,5 +1,5 @@
-import 'package:forui/forui.dart';
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 // ignore_for_file: avoid_redundant_argument_values
 
@@ -23,10 +23,10 @@ FThemeData get dimDark {
   const colors = FColors(
     brightness: .dark,
     systemOverlayStyle: .light,
-    barrier: Color(0x33FFFFFF),
+    barrier: Color(0x33000000),
     background: Color(0xFF242933),
     foreground: Color(0xFFb2ccd6),
-    primary: Color(0xFFf88479),
+    primary: Color(0xFFf88379),
     primaryForeground: Color(0xFF270F0A),
     secondary: Color(0xFF2a303c),
     secondaryForeground: Color(0xFFb2ccd6),

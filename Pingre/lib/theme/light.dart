@@ -1,5 +1,5 @@
-import 'package:forui/forui.dart';
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 // ignore_for_file: avoid_redundant_argument_values
 
@@ -26,7 +26,7 @@ FThemeData get pastelLight {
     barrier: Color(0x33000000),
     background: Color(0xFFFFFFFF),
     foreground: Color(0xFF161616),
-    primary: Color(0xFFf88479),
+    primary: Color(0xFFf88379),
     primaryForeground: Color.fromARGB(255, 255, 239, 230),
     secondary: Color(0xFFe5e6e7),
     secondaryForeground: Color(0xFF161616),

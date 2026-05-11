@@ -3,10 +3,10 @@ import 'package:forui/forui.dart';
 import 'package:pingre/common/models/time_range.dart';
 import 'package:pingre/common/models/transaction_group.dart';
 import 'package:pingre/common/widgets/data/elastic_pull_refresh.dart';
-import 'package:pingre/common/widgets/data/value_display.dart';
 import 'package:pingre/common/widgets/inputs/time_range_select.dart';
 import 'package:pingre/features/transactions/models/transaction.dart';
 import 'package:pingre/features/transactions/services/transactions.dart';
+import 'package:pingre/features/transactions/widgets/group_summary.dart';
 import 'package:pingre/features/transactions/widgets/transaction_summary.dart';
 import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -24,8 +24,12 @@ class _PageTransactionsState extends State<PageTransactions> {
   late List<TransactionGroup> _groups;
   late TransactionsService _transactions;
   late TimeRange _lastTimeRange;
+  TransactionGroup? _currentGroup;
 
   late ScrollController _scrollController;
+
+  static const double transactionHeight = 38;
+  static const double groupHeight = 42;
 
   @override
   void initState() {
@@ -35,12 +39,31 @@ class _PageTransactionsState extends State<PageTransactions> {
     _future = _loadTransactions(_selectedTimeRange);
     _transactions.addListener(_reload);
     _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     _transactions.removeListener(_reload);
+    _transactions.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    final offset = _scrollController.offset;
+    var currentOffest = 0.0;
+    for (var group in _groups) {
+      currentOffest +=
+          groupHeight + group.transactions.length * transactionHeight;
+      if (currentOffest > offset) {
+        setState(() {
+          _currentGroup = group;
+        });
+        break;
+      }
+    }
   }
 
   void _reload() {
@@ -65,6 +88,7 @@ class _PageTransactionsState extends State<PageTransactions> {
       range: .current(unit, end: .now()),
     );
 
+    _currentGroup = firstGroup;
     _groups = [firstGroup];
     _groups.addAll(transactions.continueToGroupFrom(firstGroup));
     return _flatenGroups(_groups);
@@ -99,8 +123,15 @@ class _PageTransactionsState extends State<PageTransactions> {
 
   List<Object> _flatenGroups(List<TransactionGroup> groups) {
     List<Object> flatItems = [];
+    bool firstGroup = true;
+
     for (final group in groups) {
-      flatItems.add(group); // header
+      if (firstGroup) {
+        firstGroup = false;
+      } else {
+        flatItems.add(group);
+      }
+
       flatItems.addAll(group.transactions); // individual rows
     }
     return flatItems;
@@ -108,7 +139,6 @@ class _PageTransactionsState extends State<PageTransactions> {
 
   @override
   Widget build(BuildContext context) {
-    final locale = Localizations.localeOf(context).languageCode;
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
@@ -121,6 +151,8 @@ class _PageTransactionsState extends State<PageTransactions> {
             _reload();
           },
         ),
+        if (_currentGroup != null)
+          GroupSummary(group: _currentGroup!, height: groupHeight),
         Expanded(
           child: FutureBuilder(
             future: _future,
@@ -143,37 +175,31 @@ class _PageTransactionsState extends State<PageTransactions> {
                     itemCount: flatItems.length,
                     itemBuilder: (context, index) {
                       final item = flatItems[index];
-                      final previous = index > 0 ? flatItems[index - 1] : null;
+                      final next = index + 1 < flatItems.length
+                          ? flatItems[index + 1]
+                          : null;
 
                       if (item is TransactionGroup) {
-                        return Padding(
-                          padding: .symmetric(vertical: 4),
-                          child: FTile.raw(
-                            prefix: const Icon(FIcons.calendar),
-                            child: Row(
-                              children: [
-                                Text(item.getName(locale)),
-                                Spacer(),
-                                ValueDisplay(value: item.total, isHeader: true),
-                              ],
-                            ),
-                          ),
-                        );
+                        return GroupSummary(group: item, height: groupHeight);
                       }
 
                       if (item is Transaction) {
-                        return Column(
-                          children: [
-                            if (previous is Transaction)
-                              FDivider(
-                                style: .delta(
-                                  padding: .value(.symmetric(horizontal: 10)),
-                                  width: context.theme.style.borderWidth,
+                        return SizedBox(
+                          height: transactionHeight,
+                          child: Column(
+                            mainAxisAlignment: .start,
+                            children: [
+                              TransactionSummary(transaction: item),
+                              if (next is Transaction)
+                                FDivider(
+                                  style: .delta(
+                                    padding: .value(.symmetric(horizontal: 10)),
+                                    width: context.theme.style.borderWidth,
+                                  ),
+                                  axis: .horizontal,
                                 ),
-                                axis: .horizontal,
-                              ),
-                            TransactionSummary(transaction: item),
-                          ],
+                            ],
+                          ),
                         );
                       }
 
