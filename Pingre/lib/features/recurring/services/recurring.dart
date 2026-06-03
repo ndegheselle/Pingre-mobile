@@ -99,11 +99,14 @@ class RecurringTransactionsService extends ChangeNotifier {
     DateTime? lastRun,
   ) async {
     final now = DateTime.now();
-    if (lastRun == null || !lastRun.isBefore(now)) return;
 
     for (final recurring in recurringTransactions) {
       if (!recurring.isActive) continue;
-      for (final date in _getOccurrencesBetween(recurring, lastRun, now)) {
+      // When lastRun is null (first launch / DB reset), fall back to the
+      // template date so all missed occurrences since creation are backfilled.
+      final from = lastRun ?? recurring.transaction.date;
+      if (!from.isBefore(now)) continue;
+      for (final date in _getOccurrencesBetween(recurring, from, now)) {
         if (!await transactionsService.existsByDateAndPrimaryTag(
           date,
           recurring.transaction.tags.primary,
