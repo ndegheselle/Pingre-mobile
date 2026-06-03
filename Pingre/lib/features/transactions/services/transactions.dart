@@ -43,13 +43,16 @@ class TransactionsService extends ChangeNotifier {
     int numberOfPeriods = 3,
     bool onlyPrimary = false,
   }) async {
-    TimeRange oldestRange = currentRange;
-    for (int i = 1; i <= numberOfPeriods; i++) {
-      oldestRange = oldestRange.previous();
+    final List<TimeRange> periods = [];
+    TimeRange p = currentRange;
+    for (int i = 0; i < numberOfPeriods; i++) {
+      p = p.previous();
+      periods.add(p);
     }
+
     final fullRange = TimeRange(
       unit: currentRange.unit,
-      start: oldestRange.start,
+      start: periods.last.start,
       end: currentRange.start.subtract(const Duration(days: 1)),
     );
 
@@ -61,6 +64,17 @@ class TransactionsService extends ChangeNotifier {
               t.date.isSmallerThan(Variable(fullRange.end)),
         )
     ).get();
+
+    // Divide only by periods that had transactions, so empty months don't dilute the average.
+    final activePeriods = periods
+        .where(
+          (period) => rows.any(
+            (r) => r.date.isAfter(period.start) && r.date.isBefore(period.end),
+          ),
+        )
+        .length;
+
+    if (activePeriods == 0) return HashMap();
 
     final tagsMap = await _resolveTagsForTransactions(rows.map((r) => r.id).toList());
 
@@ -75,7 +89,7 @@ class TransactionsService extends ChangeNotifier {
       }
     }
     for (final key in averages.keys) {
-      averages[key] = (averages[key]! / Decimal.fromInt(numberOfPeriods))
+      averages[key] = (averages[key]! / Decimal.fromInt(activePeriods))
           .toDecimal(scaleOnInfinitePrecision: 2);
     }
     return averages;

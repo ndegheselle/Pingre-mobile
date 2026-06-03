@@ -95,29 +95,30 @@ class _PageTransactionsState extends State<PageTransactions> {
   }
 
   Future<List<Object>> _loadPreviousTransactions(TimeRangeUnit unit) async {
-    // Load one month worth of transactions
-    _lastTimeRange = .elapsed(
-      .month,
-      end: _lastTimeRange.start.subtract(const Duration(days: 1)),
-    );
+    const maxLookback = 36;
+    for (int i = 0; i < maxLookback; i++) {
+      _lastTimeRange = .elapsed(
+        .month,
+        end: _lastTimeRange.start.subtract(const Duration(days: 1)),
+      );
 
-    var transactions = await _transactions.getByRange(_lastTimeRange);
-    if (transactions.isEmpty) {
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        showFToast(
-          context: context,
-          alignment: .topCenter,
-          icon: const Icon(FIcons.check),
-          title: Text(l10n.transactionDetailTitle),
-          description: Text(l10n.transactionNoMoreFound),
-        );
+      var transactions = await _transactions.getByRange(_lastTimeRange);
+      if (transactions.isNotEmpty) {
+        var groups = transactions.continueToGroupFrom(_groups.last);
+        _groups.addAll(groups);
+        return _flatenGroups(_groups);
       }
-      return _flatenGroups(_groups);
     }
 
-    var groups = transactions.continueToGroupFrom(_groups.last);
-    _groups.addAll(groups);
+    if (mounted) {
+      final l10n = AppLocalizations.of(context)!;
+      showFToast(
+        context: context,
+        alignment: .topCenter,
+        icon: const Icon(FIcons.inbox),
+        title: Text(l10n.transactionNoMoreFound),
+      );
+    }
     return _flatenGroups(_groups);
   }
 

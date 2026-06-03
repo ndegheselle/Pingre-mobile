@@ -7,13 +7,16 @@ class TagTotal {
   final Decimal total;
   final Decimal previousAverage;
 
-  double get percentageDifference => previousAverage == Decimal.zero
-      ? 0
-      : (((total - previousAverage) / previousAverage).toDecimal(
+  double get percentageDifference {
+    if (previousAverage == Decimal.zero) return 0;
+    final absTotal = total.abs();
+    final absPrev = previousAverage.abs();
+    return (((absTotal - absPrev) / absPrev).toDecimal(
                   scaleOnInfinitePrecision: 2,
                 ) *
                 Decimal.fromInt(100))
-            .toDouble();
+        .toDouble();
+  }
 
   TagTotal({
     required this.tag,
