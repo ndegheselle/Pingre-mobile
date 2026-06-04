@@ -59,10 +59,6 @@ class _PageReportsState extends State<PageReports> {
 
   Future<List<TagTotal>> _loadPrimary() async {
     final transactions = await _transactions.getByRange(_range);
-    final previousAverages = await _transactions.getPreviousAverages(
-      _range,
-      onlyPrimary: true,
-    );
 
     final Map<String, TagTotal> groups = {};
     for (var transaction in transactions) {
@@ -74,7 +70,6 @@ class _PageReportsState extends State<PageReports> {
       groups[tag.id] = TagTotal(
         tag: tag,
         total: (current?.total ?? Decimal.zero) + transaction.value,
-        previousAverage: previousAverages[tag.id] ?? Decimal.zero,
       );
     }
 
@@ -85,7 +80,6 @@ class _PageReportsState extends State<PageReports> {
 
   Future<List<TagTotal>> _loadAll() async {
     final transactions = await _transactions.getByRange(_range);
-    final previousAverages = await _transactions.getPreviousAverages(_range);
 
     final Map<String, TagTotal> groups = {};
     for (var transaction in transactions) {
@@ -97,7 +91,6 @@ class _PageReportsState extends State<PageReports> {
         groups[tag.id] = TagTotal(
           tag: tag,
           total: (current?.total ?? Decimal.zero) + transaction.value,
-          previousAverage: previousAverages[tag.id] ?? Decimal.zero,
         );
       }
     }
@@ -156,9 +149,7 @@ class _PageReportsState extends State<PageReports> {
           children: [
             Expanded(
               child: FSelectMenuTile<_ReportView>(
-                style: .delta(
-                  menuStyle: .delta(maxWidth: 300),
-                ),
+                style: .delta(menuStyle: .delta(maxWidth: 300)),
                 selectControl: .managedRadio(
                   initial: .primary,
                   onChange: (values) {
@@ -275,11 +266,7 @@ class _PageReportsState extends State<PageReports> {
                   const SizedBox(height: 4),
                   tagTotals.isEmpty
                       ? Expanded(
-                          child: Center(
-                            child: Text(
-                              l10n.reportNoTransactions,
-                            ),
-                          ),
+                          child: Center(child: Text(l10n.reportNoTransactions)),
                         )
                       : Expanded(
                           child: Padding(
@@ -297,20 +284,6 @@ class _PageReportsState extends State<PageReports> {
                                     ),
                                   ),
                                   title: Text(t.tag.name),
-                                  subtitle: t.percentageDifference == 0
-                                      ? null
-                                      : Row(
-                                          mainAxisSize: .min,
-                                          children: [
-                                            Text('${t.percentageDifference}%'),
-                                            Icon(
-                                              t.percentageDifference > 0
-                                                  ? FIcons.arrowUpRight
-                                                  : FIcons.arrowDownRight,
-                                              size: 12,
-                                            ),
-                                          ],
-                                        ),
                                   suffix: ValueDisplay(value: t.total),
                                   onPress: () => showTagDetail(
                                     context,

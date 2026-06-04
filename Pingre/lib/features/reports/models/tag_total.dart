@@ -5,23 +5,10 @@ import 'package:pingre/features/tags/models/tag.dart';
 class TagTotal {
   final Tag tag;
   final Decimal total;
-  final Decimal previousAverage;
-
-  double get percentageDifference {
-    if (previousAverage == Decimal.zero) return 0;
-    final absTotal = total.abs();
-    final absPrev = previousAverage.abs();
-    return (((absTotal - absPrev) / absPrev).toDecimal(
-                  scaleOnInfinitePrecision: 2,
-                ) *
-                Decimal.fromInt(100))
-        .toDouble();
-  }
 
   TagTotal({
     required this.tag,
     required this.total,
-    required this.previousAverage,
   });
 }
 
