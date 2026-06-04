@@ -47,18 +47,38 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
-  /// Copies the current database file to the specified [targetPath].
+  /// Returns a consistent snapshot of the database as raw bytes.
+  ///
+  /// Drift runs SQLite in WAL mode, so recent writes may still live in the
+  /// `-wal` sidecar file and not yet be in the main `.sqlite` file. We force a
+  /// full checkpoint first so the main file is complete and self-contained
+  /// before reading it.
   Future<Uint8List> backup() async {
+    await customStatement('PRAGMA wal_checkpoint(TRUNCATE)');
     final dir = await getApplicationSupportDirectory();
     final dbFile = File('${dir.path}/pingre.db.sqlite');
     return await dbFile.readAsBytes();
   }
 
-  /// Closes the database connection and replaces the database file with the one at [sourcePath].
+  /// Closes the database connection and replaces the database file with the one
+  /// at [sourcePath].
+  ///
+  /// The stale `-wal` and `-shm` sidecar files are deleted as well; leaving them
+  /// in place would let SQLite replay the old WAL on top of the freshly restored
+  /// file, corrupting or overwriting the restored data. The caller is expected
+  /// to restart the app afterwards.
   Future<void> restore(String sourcePath) async {
     await close();
     final dir = await getApplicationSupportDirectory();
-    final dbFile = File('${dir.path}/pingre.db.sqlite');
-    await File(sourcePath).copy(dbFile.path);
+    final dbPath = '${dir.path}/pingre.db.sqlite';
+
+    for (final suffix in const ['-wal', '-shm']) {
+      final sidecar = File('$dbPath$suffix');
+      if (await sidecar.exists()) {
+        await sidecar.delete();
+      }
+    }
+
+    await File(sourcePath).copy(dbPath);
   }
 }

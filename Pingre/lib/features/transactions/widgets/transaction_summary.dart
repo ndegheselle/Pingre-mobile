@@ -24,33 +24,33 @@ class TransactionSummary extends StatelessWidget {
               : context.theme.colors.background,
           borderRadius: context.theme.style.borderRadius.md,
         ),
-        padding: const .symmetric(vertical: 6, horizontal: 10),
+        padding: const .symmetric(horizontal: 10),
         child: child!,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: .spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: .spaceBetween,
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: TagsDisplayText(selection: transaction.tags),
-                ),
-              ),
-              SizedBox(width: 4),
-              ValueDisplay(value: transaction.value),
-            ],
-          ),
-          if (transaction.notes.isEmpty == false)
-            Padding(
-              padding: .only(top: 4),
-              child: Text(
-                style: context.theme.typography.xs,
-                transaction.notes,
+          Expanded(
+            child: Padding(
+              padding: .only(bottom: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: TagsDisplayText(selection: transaction.tags),
+                  ),
+                  if (transaction.notes.isEmpty == false)
+                    Text(
+                      style: context.theme.typography.xs2,
+                      transaction.notes,
+                    ),
+                ],
               ),
             ),
+          ),
+          SizedBox(height: 4),
+          ValueDisplay(value: transaction.value),
         ],
       ),
       onPress: () => showTransactionEdit(context, transaction: transaction),

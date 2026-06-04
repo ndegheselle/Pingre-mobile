@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:forui/forui.dart';
@@ -18,6 +20,18 @@ import 'home_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint('FLUTTER ERROR: ${details.exceptionAsString()}');
+    debugPrintStack(stackTrace: details.stack);
+  };
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('UNCAUGHT ERROR: $error');
+    debugPrintStack(stackTrace: stack);
+    return true;
+  };
+  
   final db = AppDatabase();
 
   final settingsService = SettingsService(db);

@@ -28,7 +28,7 @@ class _PageTransactionsState extends State<PageTransactions> {
 
   late ScrollController _scrollController;
 
-  static const double transactionHeight = 38;
+  static const double transactionHeight = 42;
   static const double groupHeight = 42;
 
   @override
@@ -47,7 +47,6 @@ class _PageTransactionsState extends State<PageTransactions> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _transactions.removeListener(_reload);
-    _transactions.dispose();
     super.dispose();
   }
 
@@ -88,7 +87,13 @@ class _PageTransactionsState extends State<PageTransactions> {
       range: .current(unit, end: .now()),
     );
 
-    _currentGroup = firstGroup;
+    if (_currentGroup == null)
+    {
+      setState(() {
+        _currentGroup = firstGroup;
+      });
+    }
+
     _groups = [firstGroup];
     _groups.addAll(transactions.continueToGroupFrom(firstGroup));
     return _flatenGroups(_groups);

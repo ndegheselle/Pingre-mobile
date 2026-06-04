@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
@@ -8,6 +6,7 @@ import 'package:pingre/features/settings/services/settings.dart';
 import 'package:pingre/features/tags/screens/page_tags.dart';
 import 'package:pingre/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:restart_app/restart_app.dart';
 
 class PageSettings extends StatefulWidget {
   const PageSettings({super.key});
@@ -75,7 +74,7 @@ class _PageSettingsState extends State<PageSettings> {
 
     setState(() => _isProcessing = true);
     await context.read<AppDatabase>().restore(filePath);
-    exit(0);
+    await Restart.restartApp();
   }
 
   @override

@@ -111,8 +111,14 @@ class RecurringTransactionsService extends ChangeNotifier {
           date,
           recurring.transaction.tags.primary,
         )) {
+          final template = recurring.transaction;
           await transactionsService.create(
-            recurring.transaction.copyWith(date: date),
+            Transaction(
+              value: template.value,
+              date: date,
+              tags: template.tags,
+              notes: template.notes,
+            ),
           );
         }
       }

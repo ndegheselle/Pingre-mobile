@@ -94,9 +94,10 @@ class _TimeRangeSelectState extends State<TimeRangeSelect> {
                             duration: const Duration(milliseconds: 250),
                             curve: Curves.easeInOut,
                             style: theme.typography.md.copyWith(
-                              color: isSelected
+                                color: isSelected
                                   ? theme.colors.foreground
                                   : theme.colors.mutedForeground,
+                                fontWeight: isSelected ? .bold : .normal
                             ),
                             child: Text(item.$2),
                           ),

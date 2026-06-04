@@ -6,7 +6,6 @@ enum TimeRangeUnit { day, week, twoWeeks, month, quarter, year }
 
 /// Represent a range of time [start] a date in the past [end] today (inclusive)
 class TimeRange {
-  final bool isCurrent;
   final TimeRangeUnit unit;
   final DateTime start;
   final DateTime end;
@@ -15,7 +14,6 @@ class TimeRange {
     required this.unit,
     required this.start,
     required this.end,
-    this.isCurrent = false,
   });
 
   /// Create a time range spanning the duration defined by [unit], anchored at either [start] or [end].
@@ -105,14 +103,11 @@ return switch (unit) {
   }
 
   /// Returns the previous range of the same unit
-  TimeRange previous() => isCurrent
-      ? .current(unit, end: start.subtract(const Duration(days: 1)))
-      : .elapsed(unit, end: start.subtract(const Duration(days: 1)));
+  TimeRange previous() =>
+      .elapsed(unit, end: start.subtract(const Duration(days: 1)));
 
   /// Returns the next range of the same unit
-  TimeRange next() => isCurrent
-      ? .current(unit, start: end.add(const Duration(days: 1)))
-      : .elapsed(unit, start: end.add(const Duration(days: 1)));
+  TimeRange next() => .elapsed(unit, start: end.add(const Duration(days: 1)));
 
   /// Get the display name of the group based on the [range], formatted for [locale].
   String getName(String locale) {
