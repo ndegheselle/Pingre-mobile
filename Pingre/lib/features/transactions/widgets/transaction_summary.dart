@@ -29,27 +29,25 @@ class TransactionSummary extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: .spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
-            child: Padding(
-              padding: .only(bottom: 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: TagsDisplayText(selection: transaction.tags),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: TagsDisplayText(selection: transaction.tags),
+                ),
+                if (transaction.notes.isEmpty == false)
+                  Text(
+                    style: context.theme.typography.xs2,
+                    transaction.notes,
                   ),
-                  if (transaction.notes.isEmpty == false)
-                    Text(
-                      style: context.theme.typography.xs2,
-                      transaction.notes,
-                    ),
-                ],
-              ),
+              ],
             ),
           ),
-          SizedBox(height: 4),
           ValueDisplay(value: transaction.value),
         ],
       ),

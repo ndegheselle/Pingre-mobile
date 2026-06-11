@@ -195,12 +195,14 @@ class _PageTransactionsState extends State<PageTransactions> {
                           child: Column(
                             mainAxisAlignment: .start,
                             children: [
-                              TransactionSummary(transaction: item),
+                              Expanded(
+                                child: TransactionSummary(transaction: item),
+                              ),
                               if (next is Transaction)
                                 FDivider(
                                   style: .delta(
                                     padding: .value(.symmetric(horizontal: 10)),
-                                    width: context.theme.style.borderWidth,
+                                    width: 1,
                                   ),
                                   axis: .horizontal,
                                 ),
