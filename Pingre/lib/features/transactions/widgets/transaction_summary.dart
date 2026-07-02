@@ -38,11 +38,22 @@ class TransactionSummary extends StatelessWidget {
               children: [
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  child: TagsDisplayText(selection: transaction.tags),
+                  // Tighten the inherited line height (1.5, top-heavy leading)
+                  // and distribute it evenly so the row looks vertically
+                  // centered; 1.45 keeps enough ascent for emoji in tag names.
+                  child: DefaultTextStyle.merge(
+                    style: const TextStyle(
+                      height: 1.45,
+                      leadingDistribution: .even,
+                    ),
+                    child: TagsDisplayText(selection: transaction.tags),
+                  ),
                 ),
                 if (transaction.notes.isEmpty == false)
                   Text(
-                    style: context.theme.typography.xs2,
+                    // xs2 has height 1, which is smaller than the glyphs
+                    // themselves; 1.2 keeps descenders inside the line box.
+                    style: context.theme.typography.xs2.copyWith(height: 1.2),
                     transaction.notes,
                   ),
               ],
