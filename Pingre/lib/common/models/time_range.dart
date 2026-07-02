@@ -10,11 +10,29 @@ class TimeRange {
   final DateTime start;
   final DateTime end;
 
+  /// Length in days of a sliding window, set by [TimeRange.sliding].
+  /// When set, [previous]/[next] slide by whole windows instead of
+  /// calendar periods.
+  final int? slidingDays;
+
   TimeRange({
     required this.unit,
     required this.start,
     required this.end,
+    this.slidingDays,
   });
+
+  /// Create a sliding window of [days] days ending at [end] (inclusive, defaults to now).
+  /// For example, with [end] = 18/03/2026 and [days] = 30, you get 17/02/2026 → 18/03/2026.
+  factory TimeRange.sliding(int days, {DateTime? end}) {
+    end ??= DateTime.now();
+    return TimeRange(
+      unit: .day,
+      slidingDays: days,
+      start: end.subtract(Duration(days: days - 1)).toStart(),
+      end: end.toEnd(),
+    );
+  }
 
   /// Create a time range spanning the duration defined by [unit], anchored at either [start] or [end].
   /// Exactly one of [start] or [end] must be provided; if neither is given, [start] defaults to now.
@@ -103,14 +121,20 @@ return switch (unit) {
   }
 
   /// Returns the previous range of the same unit
-  TimeRange previous() =>
-      .elapsed(unit, end: start.subtract(const Duration(days: 1)));
+  TimeRange previous() => slidingDays == null
+      ? .elapsed(unit, end: start.subtract(const Duration(days: 1)))
+      : .sliding(slidingDays!, end: start.subtract(const Duration(days: 1)));
 
   /// Returns the next range of the same unit
-  TimeRange next() => .elapsed(unit, start: end.add(const Duration(days: 1)));
+  TimeRange next() => slidingDays == null
+      ? .elapsed(unit, start: end.add(const Duration(days: 1)))
+      : .sliding(slidingDays!, end: end.add(Duration(days: slidingDays!)));
 
   /// Get the display name of the group based on the [range], formatted for [locale].
   String getName(String locale) {
+    if (slidingDays != null) {
+      return '${start.formatShort(locale)} - ${end.formatShort(locale)}';
+    }
     switch (unit) {
       case TimeRangeUnit.day:
         return start.formatShort(locale);

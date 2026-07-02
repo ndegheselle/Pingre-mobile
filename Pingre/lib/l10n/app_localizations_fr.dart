@@ -363,6 +363,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reportIncome => 'Revenus';
 
   @override
+  String get reportPeriodSection => 'Période';
+
+  @override
+  String get reportSlidingDaysHint => 'Nombre de jours ...';
+
+  @override
+  String get reportSlidingDaysDesc =>
+      'Affiche les N derniers jours en fenêtre glissante au lieu des périodes calendaires. Laisser vide pour utiliser les périodes calendaires.';
+
+  @override
   String get reportTagsSection => 'Tags';
 
   @override

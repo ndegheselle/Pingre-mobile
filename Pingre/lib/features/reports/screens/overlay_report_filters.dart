@@ -31,12 +31,14 @@ class _OverlayReportFiltersState extends State<OverlayReportFilters> {
   late Set<String> _selectedTagIds;
 
   final TextEditingController _tagSearchController = TextEditingController();
+  final TextEditingController _slidingDaysController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _transactionType = Set.from(widget.current.transactionType);
     _selectedTagIds = Set.from(widget.current.tagIds);
+    _slidingDaysController.text = widget.current.slidingDays?.toString() ?? '';
   }
 
   void _toggleTag(String id) {
@@ -50,10 +52,14 @@ class _OverlayReportFiltersState extends State<OverlayReportFilters> {
   }
 
   void _apply() {
+    final slidingDays = int.tryParse(_slidingDaysController.text.trim());
     Navigator.of(context).pop(
       ReportFilters(
         transactionType: _transactionType,
         tagIds: Set.from(_selectedTagIds),
+        slidingDays: (slidingDays != null && slidingDays > 0)
+            ? slidingDays
+            : null,
       ),
     );
   }
@@ -104,6 +110,34 @@ class _OverlayReportFiltersState extends State<OverlayReportFilters> {
                 value: .income,
               ),
             ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            l10n.reportPeriodSection,
+            style: context.theme.typography.sm.copyWith(
+              color: context.theme.colors.mutedForeground,
+            ),
+          ),
+          const SizedBox(height: 4),
+          FTextField(
+            control: .managed(controller: _slidingDaysController),
+            keyboardType: TextInputType.number,
+            prefixBuilder: (context, style, variants) => Padding(
+              padding: .directional(start: 8),
+              child: Opacity(
+                opacity: 0.5,
+                child: const Icon(FIcons.calendarRange),
+              ),
+            ),
+            hint: l10n.reportSlidingDaysHint,
+            clearable: (value) => value.text.isNotEmpty,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            l10n.reportSlidingDaysDesc,
+            style: context.theme.typography.xs.copyWith(
+              color: context.theme.colors.mutedForeground,
+            ),
           ),
           const SizedBox(height: 12),
           Text(

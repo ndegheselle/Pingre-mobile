@@ -782,6 +782,24 @@ abstract class AppLocalizations {
   /// **'Income'**
   String get reportIncome;
 
+  /// No description provided for @reportPeriodSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get reportPeriodSection;
+
+  /// No description provided for @reportSlidingDaysHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of days ...'**
+  String get reportSlidingDaysHint;
+
+  /// No description provided for @reportSlidingDaysDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the last N days as a sliding window instead of calendar periods. Leave empty to use calendar periods.'**
+  String get reportSlidingDaysDesc;
+
   /// No description provided for @reportTagsSection.
   ///
   /// In en, this message translates to:

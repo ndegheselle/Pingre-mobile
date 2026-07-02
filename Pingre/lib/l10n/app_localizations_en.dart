@@ -357,6 +357,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportIncome => 'Income';
 
   @override
+  String get reportPeriodSection => 'Period';
+
+  @override
+  String get reportSlidingDaysHint => 'Number of days ...';
+
+  @override
+  String get reportSlidingDaysDesc =>
+      'Show the last N days as a sliding window instead of calendar periods. Leave empty to use calendar periods.';
+
+  @override
   String get reportTagsSection => 'Tags';
 
   @override

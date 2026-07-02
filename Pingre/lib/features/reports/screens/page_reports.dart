@@ -122,7 +122,13 @@ class _PageReportsState extends State<PageReports> {
     final result = await showReportFilterSheet(context, current: _filters);
     if (result != null) {
       setState(() {
+        final slidingChanged = result.slidingDays != _filters.slidingDays;
         _filters = result;
+        if (slidingChanged) {
+          _range = result.slidingDays != null
+              ? TimeRange.sliding(result.slidingDays!)
+              : TimeRange.current(_selectedTimeRange);
+        }
         _future = _load();
       });
     }
@@ -139,6 +145,8 @@ class _PageReportsState extends State<PageReports> {
           onChanged: (unit) {
             setState(() {
               _selectedTimeRange = unit;
+              // Explicitly picking a calendar unit disables the sliding window filter.
+              _filters = _filters.withoutSliding();
               _range = .current(unit);
               _future = _load();
             });
